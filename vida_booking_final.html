@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Vida Culinary — Book Your Chef</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#12100E; --cream:#FAF8F4; --parch:#F2EDE4;
+  --gold:#C9A052; --gold-l:#E8CC8A; --gold-p:#FBF5E8;
+  --muted:#7A6E62; --bdr:rgba(201,160,82,.22); --white:#fff;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'DM Sans',sans-serif;
+  --r:12px; --sh:0 4px 24px rgba(18,16,14,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--cream);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;touch-action:manipulation}
+button,a{touch-action:manipulation;cursor:pointer;-webkit-tap-highlight-color:transparent}
+
+/* TOP BAR */
+.topbar{position:sticky;top:0;z-index:100;background:var(--ink);display:flex;align-items:center;justify-content:space-between;padding:0 18px;height:54px}
+.brand{font-family:var(--serif);font-size:22px;font-weight:600;color:#fff}
+.brand em{color:var(--gold);font-style:italic}
+.wa-link{display:flex;align-items:center;gap:7px;background:#25D366;color:#fff;font-size:12px;font-weight:700;padding:8px 14px;border-radius:100px;text-decoration:none;letter-spacing:.04em}
+.wa-link svg{width:14px;height:14px;flex-shrink:0}
+
+/* HERO */
+.hero{background:var(--ink);padding:44px 20px 52px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(201,160,82,.15) 0%,transparent 65%);pointer-events:none}
+.hero-tag{font-size:10px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:14px}
+.hero h1{font-family:var(--serif);font-size:clamp(38px,10vw,72px);font-weight:600;color:#fff;line-height:1}
+.hero h1 em{color:var(--gold);font-style:italic}
+.hero-sub{margin-top:12px;font-size:14px;color:rgba(255,255,255,.5);font-weight:300;max-width:380px;margin-left:auto;margin-right:auto}
+.steps{display:flex;justify-content:center;flex-wrap:wrap;gap:4px 0;margin-top:32px}
+.step{display:flex;align-items:center;gap:8px;padding:6px 12px}
+.step-n{width:24px;height:24px;border-radius:50%;background:var(--gold);color:var(--ink);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-t{font-size:11px;color:rgba(255,255,255,.55);text-align:left}
+.step-t strong{color:rgba(255,255,255,.85);display:block;font-weight:600;font-size:12px}
+.step-arr{color:rgba(255,255,255,.2);font-size:14px}
+
+/* MAIN */
+.main{max-width:680px;margin:0 auto;padding:24px 16px 60px}
+
+/* TABS */
+.tabs{display:flex;gap:8px;margin-bottom:20px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:10px 18px;border-radius:100px;border:1.5px solid var(--bdr);background:var(--white);color:var(--muted);cursor:pointer;transition:all .2s}
+.tab.on{background:var(--ink);color:var(--gold);border-color:var(--ink)}
+
+/* PANELS */
+.panel{display:none}.panel.on{display:block}
+.ptitle{font-family:var(--serif);font-size:30px;font-weight:600;margin-bottom:4px}
+.ptitle em{color:var(--gold);font-style:italic}
+.pdesc{font-size:13px;color:var(--muted);font-weight:300;margin-bottom:20px}
+
+/* CARD */
+.card{background:var(--white);border-radius:var(--r);border:1px solid rgba(0,0,0,.06);padding:20px;margin-bottom:16px;box-shadow:var(--sh)}
+.card-h{font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--bdr)}
+
+/* GUEST COUNTER — phone-first stacked design */
+.counter{border:2px solid var(--gold);border-radius:var(--r);overflow:hidden;margin-bottom:14px}
+.counter-btn{display:block;width:100%;padding:20px;font-size:22px;font-weight:900;border:none;text-align:center;cursor:pointer;letter-spacing:.05em;font-family:var(--sans)}
+.counter-btn.plus{background:var(--ink);color:var(--gold)}
+.counter-btn.minus{background:var(--parch);color:var(--ink)}
+.counter-mid{background:var(--white);border-top:1px solid var(--gold-l);border-bottom:1px solid var(--gold-l);padding:14px;text-align:center}
+.counter-label{font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.counter-val{font-family:var(--serif);font-size:52px;font-weight:700;color:var(--ink);line-height:1}
+
+/* PRICE DISPLAY */
+.price-big{text-align:center;padding:16px 0 8px}
+.price-big .amt{font-family:var(--serif);font-size:48px;font-weight:700;color:var(--ink);display:block;line-height:1}
+.price-big .pp{font-size:12px;color:var(--muted);margin-top:4px;font-weight:300}
+
+/* NOTE */
+.note{background:var(--gold-p);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:10px 14px;font-size:12px;color:var(--muted);font-weight:300;margin-bottom:14px}
+.note strong{color:var(--ink);font-weight:600}
+
+/* PACKAGE CARDS */
+.pkg-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.pkg{border:2px solid var(--bdr);border-radius:var(--r);padding:16px;cursor:pointer;transition:all .2s;background:var(--white);position:relative;text-align:center}
+.pkg:active{transform:scale(.97)}
+.pkg.on{border-color:var(--gold);background:var(--gold-p)}
+.pkg.on::after{content:'✓';position:absolute;top:8px;right:10px;width:20px;height:20px;border-radius:50%;background:var(--gold);color:var(--ink);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.pkg-g{font-size:10px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.pkg-p{font-family:var(--serif);font-size:24px;font-weight:700;color:var(--ink);line-height:1;margin-bottom:6px}
+.pkg-p small{font-family:var(--sans);font-size:11px;font-weight:400;color:var(--muted)}
+.pkg-i{font-size:11px;color:var(--muted);font-weight:300;line-height:1.6}
+.pkg-i strong{color:var(--ink);font-weight:600}
+.pkg-badge{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;background:var(--gold);color:var(--ink);padding:3px 8px;border-radius:100px;margin-bottom:6px}
+
+/* CHEF RECOMMENDS */
+.rec-card{background:linear-gradient(135deg,#1a1208,#2d1f05);border:1.5px solid var(--gold);border-radius:var(--r);padding:20px;margin-bottom:16px;position:relative;overflow:hidden}
+.rec-card::after{content:'👨‍🍳';position:absolute;top:-10px;right:-5px;font-size:70px;opacity:.08;pointer-events:none}
+.rec-tag{font-size:10px;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.rec-title{font-family:var(--serif);font-size:20px;font-weight:600;color:#fff;margin-bottom:12px}
+.rec-dishes{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.rec-dish{background:rgba(201,160,82,.15);border:1px solid rgba(201,160,82,.3);border-radius:100px;padding:5px 12px;font-size:12px;color:rgba(255,255,255,.85)}
+.rec-sub{font-size:12px;color:rgba(255,255,255,.4);margin-bottom:14px;font-weight:300}
+.rec-btn{display:block;width:100%;padding:13px;background:var(--gold);border:none;border-radius:8px;font-family:var(--sans);font-size:14px;font-weight:700;color:var(--ink);text-align:center;cursor:pointer}
+
+/* DISH CHIPS */
+.dish-section{margin-bottom:16px}
+.dish-label{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--ink);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.dish-label span{font-weight:400;color:var(--muted);letter-spacing:0;text-transform:none;font-size:11px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:13px;font-weight:500;padding:9px 16px;border-radius:100px;border:1.5px solid var(--bdr);background:var(--white);color:var(--muted);cursor:pointer;transition:all .15s;user-select:none}
+.chip:active{transform:scale(.95)}
+.chip.on{background:var(--ink);color:var(--gold);border-color:var(--ink)}
+
+/* DIETARY */
+.diet-card{display:flex;align-items:center;justify-content:space-between;background:var(--white);border:1.5px solid var(--bdr);border-radius:10px;padding:14px 16px;cursor:pointer;margin-bottom:10px;gap:12px;transition:all .18s}
+.diet-card:active{transform:scale(.98)}
+.diet-card.on{border-color:var(--gold);background:var(--gold-p)}
+.diet-info{flex:1}
+.diet-tier{font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;margin-bottom:3px}
+.tier-easy{color:#16a34a}.tier-medium{color:#b45309}.tier-complex{color:#b91c1c}
+.diet-name{font-size:13px;font-weight:500;color:var(--ink)}
+.diet-price{font-size:13px;font-weight:700;white-space:nowrap}
+.diet-chk{width:22px;height:22px;border-radius:50%;border:2px solid var(--bdr);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:transparent;transition:all .18s}
+.diet-card.on .diet-chk{background:var(--gold);border-color:var(--gold);color:var(--ink)}
+
+/* ALC ITEMS */
+.alc-item{display:flex;align-items:center;justify-content:space-between;background:var(--white);border:1.5px solid var(--bdr);border-radius:10px;padding:12px 14px;margin-bottom:8px;gap:10px}
+.alc-item.on{border-color:var(--gold);background:var(--gold-p)}
+.alc-name{font-size:13px;font-weight:400;flex:1}
+.alc-r{display:flex;align-items:center;gap:10px}
+.alc-price{font-size:13px;font-weight:700;white-space:nowrap}
+.alc-ctrl{display:flex;align-items:center;gap:0;background:var(--ink);border-radius:100px;overflow:hidden}
+.alc-btn{width:40px;height:40px;background:transparent;border:none;color:var(--gold);font-size:22px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--sans)}
+.alc-num{color:#fff;font-size:14px;font-weight:700;min-width:20px;text-align:center}
+.alc-divider{font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);padding:10px 0 6px;border-top:1px solid var(--bdr);margin-top:6px}
+
+/* DESSERT */
+.dessert-card{display:flex;align-items:center;justify-content:space-between;background:var(--white);border:1.5px solid var(--bdr);border-radius:10px;padding:14px 16px;gap:12px}
+.dessert-info h4{font-size:14px;font-weight:600;margin-bottom:2px}
+.dessert-info p{font-size:12px;color:var(--muted);font-weight:300}
+.dessert-price{font-size:13px;font-weight:700;text-align:center;margin-top:4px}
+
+/* ORDER SUMMARY */
+.order-box{background:var(--ink);border-radius:var(--r);overflow:hidden;margin-bottom:16px}
+.order-head{padding:18px 20px 14px;border-bottom:1px solid rgba(255,255,255,.08)}
+.order-head h3{font-family:var(--serif);font-size:20px;font-weight:600;color:#fff}
+.order-head p{font-size:11px;color:rgba(255,255,255,.35);margin-top:2px}
+.order-body{padding:14px 20px}
+.order-empty{text-align:center;padding:20px 0;font-size:13px;color:rgba(255,255,255,.25);font-weight:300}
+.order-sec{font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.25);padding:8px 0 4px}
+.order-line{display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05);gap:10px}
+.order-line:last-child{border:none}
+.order-line-n{font-size:13px;color:rgba(255,255,255,.7);font-weight:300;flex:1}
+.order-line-p{font-size:13px;color:var(--gold-l);font-weight:600;white-space:nowrap}
+.order-total{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-top:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04)}
+.order-total-l{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.45)}
+.order-total-p{font-family:var(--serif);font-size:32px;font-weight:700;color:var(--gold-l)}
+.order-total-p small{font-family:var(--sans);font-size:12px;color:rgba(255,255,255,.3)}
+
+/* BOOKING FORM */
+.form-wrap{background:var(--ink);border-radius:var(--r);overflow:hidden;padding:20px}
+.f-label{display:block;font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:6px;margin-top:14px}
+.f-label:first-child{margin-top:0}
+.f-input{width:100%;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);border-radius:8px;padding:12px 14px;font-family:var(--sans);font-size:14px;color:#fff;outline:none;transition:border-color .2s}
+.f-input::placeholder{color:rgba(255,255,255,.22)}
+.f-input:focus{border-color:var(--gold)}
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.book-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:20px;background:#25D366;border:none;border-radius:10px;padding:18px;font-family:var(--sans);font-size:16px;font-weight:700;color:#fff;cursor:pointer;letter-spacing:.02em}
+.book-btn svg{width:20px;height:20px;flex-shrink:0}
+.f-note{font-size:11px;color:rgba(255,255,255,.22);text-align:center;margin-top:10px;font-weight:300;line-height:1.6}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="brand">Vida <em>Culinary</em></div>
+  <a class="wa-link" href="https://wa.me/66993106665" target="_blank">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    Chat
+  </a>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <span class="hero-tag">✦ Koh Samui Private Villa Chef</span>
+  <h1>Book Your <em>Chef</em></h1>
+  <p class="hero-sub">Build your menu, get an instant price, confirm via WhatsApp.</p>
+  <div class="steps">
+    <div class="step"><div class="step-n">1</div><div class="step-t"><strong>Choose</strong>Service</div></div>
+    <div class="step-arr">›</div>
+    <div class="step"><div class="step-n">2</div><div class="step-t"><strong>Build</strong>Menu</div></div>
+    <div class="step-arr">›</div>
+    <div class="step"><div class="step-n">3</div><div class="step-t"><strong>Fill</strong>Details</div></div>
+    <div class="step-arr">›</div>
+    <div class="step"><div class="step-n">4</div><div class="step-t"><strong>WhatsApp</strong>Confirm</div></div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab on" onclick="switchTab('bk',this)">☕ Breakfast</button>
+    <button class="tab" onclick="switchTab('dn',this)">🍜 Thai Dinner</button>
+    <button class="tab" onclick="switchTab('bbq',this)">🔥 BBQ & Grill</button>
+  </div>
+
+  <!-- ══ BREAKFAST ══ -->
+  <div id="panel-bk" class="panel on">
+    <div class="ptitle">Villa <em>Breakfast</em></div>
+    <p class="pdesc">All-inclusive — ingredients, chef service & clean-up. Minimum 2 guests.</p>
+
+    <div class="card">
+      <div class="card-h">Number of Guests</div>
+      <div class="counter">
+        <button class="counter-btn plus" id="bk-plus">＋ &nbsp;Add Guest</button>
+        <div class="counter-mid">
+          <div class="counter-label">Guests (min 2 · max 16)</div>
+          <div class="counter-val" id="bk-count">2</div>
+        </div>
+        <button class="counter-btn minus" id="bk-minus">－ &nbsp;Remove Guest</button>
+      </div>
+      <div class="price-big">
+        <span class="amt" id="bk-total">฿1,800</span>
+        <div class="pp" id="bk-pp">฿900 per person · All inclusive</div>
+      </div>
+      <div class="note"><strong>Included per guest:</strong> 2 eggs · 2 sausages · 3 bacon · 2 toast · 2 pancakes · seasonal fruit · OJ + coffee/tea</div>
+    </div>
+
+    <div class="card">
+      <div class="card-h">Dietary Requirements (optional)</div>
+      <div id="diet-bk"></div>
+    </div>
+  </div>
+
+  <!-- ══ DINNER ══ -->
+  <div id="panel-dn" class="panel">
+    <div class="ptitle">Thai Dinner <em>Set Menu</em></div>
+    <p class="pdesc">All-inclusive flat rate. Chef, ingredients, service & clean-up.</p>
+
+    <!-- Chef Recommends -->
+    <div class="rec-card">
+      <div class="rec-tag">✦ Chef Recommends</div>
+      <div class="rec-title">The Vida Signature Set</div>
+      <div class="rec-dishes">
+        <span class="rec-dish">🥜 Chicken Satay</span>
+        <span class="rec-dish">🥗 Thai Papaya Salad</span>
+        <span class="rec-dish">🍤 Tom Yum Shrimp</span>
+        <span class="rec-dish">🍛 Massaman Curry</span>
+        <span class="rec-dish">🍚 Steamed Rice</span>
+      </div>
+      <div class="rec-sub">Select your group size first, then tap to auto-fill all dishes.</div>
+      <button class="rec-btn" onclick="applyRecommends()">✦ Use This Recommendation</button>
+    </div>
+
+    <div class="card">
+      <div class="card-h">Select Package</div>
+      <div class="pkg-grid" id="dn-pkgs">
+        <div class="pkg" onclick="selectDn(this,'1–3',3500,1,1,1,1)">
+          <div class="pkg-g">1–3 Guests</div>
+          <div class="pkg-p">฿3,500 <small>THB</small></div>
+          <div class="pkg-i"><strong>1</strong> Starter · <strong>1</strong> Soup · <strong>1</strong> Salad · <strong>1</strong> Main</div>
+        </div>
+        <div class="pkg" onclick="selectDn(this,'4–6',5500,1,1,1,2)">
+          <div class="pkg-badge">Popular</div>
+          <div class="pkg-g">4–6 Guests</div>
+          <div class="pkg-p">฿5,500 <small>THB</small></div>
+          <div class="pkg-i"><strong>1</strong> Starter · <strong>1</strong> Soup · <strong>1</strong> Salad · <strong>2</strong> Mains</div>
+        </div>
+        <div class="pkg" onclick="selectDn(this,'7–10',9000,2,1,1,2)">
+          <div class="pkg-g">7–10 Guests</div>
+          <div class="pkg-p">฿9,000 <small>THB</small></div>
+          <div class="pkg-i"><strong>2</strong> Starters · <strong>1</strong> Soup · <strong>1</strong> Salad · <strong>2</strong> Mains</div>
+        </div>
+        <div class="pkg" onclick="selectDn(this,'11–14',12500,2,1,2,3)">
+          <div class="pkg-g">11–14 Guests</div>
+          <div class="pkg-p">฿12,500 <small>THB</small></div>
+          <div class="pkg-i"><strong>2</strong> Starters · <strong>1</strong> Soup · <strong>2</strong> Salads · <strong>3</strong> Mains</div>
+        </div>
+        <div class="pkg" onclick="selectDn(this,'15–20',18000,2,2,2,3)">
+          <div class="pkg-g">15–20 Guests</div>
+          <div class="pkg-p">฿18,000 <small>THB</small></div>
+          <div class="pkg-i"><strong>2</strong> Starters · <strong>2</strong> Soups · <strong>2</strong> Salads · <strong>3</strong> Mains</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="dish-card" style="display:none">
+      <div class="card-h">Choose Your Dishes</div>
+      <div class="dish-section" id="sec-starters">
+        <div class="dish-label">Starters <span id="hint-s"></span></div>
+        <div class="chips" id="chips-starters"></div>
+      </div>
+      <div class="dish-section" id="sec-soups" style="margin-top:16px">
+        <div class="dish-label">Soups <span id="hint-sp"></span></div>
+        <div class="chips" id="chips-soups"></div>
+      </div>
+      <div class="dish-section" id="sec-salads" style="margin-top:16px">
+        <div class="dish-label">Salads <span id="hint-sa"></span></div>
+        <div class="chips" id="chips-salads"></div>
+      </div>
+      <div class="dish-section" id="sec-mains" style="margin-top:16px">
+        <div class="dish-label">Mains <span id="hint-m"></span></div>
+        <div class="chips" id="chips-mains"></div>
+      </div>
+      <div class="note" style="margin-top:14px;margin-bottom:0">✦ <strong>Seafood & Beef upgrades</strong> available — confirmed at booking.</div>
+    </div>
+
+    <div class="card" id="dessert-card" style="display:none">
+      <div class="card-h">🍮 Dessert Add-On (Optional)</div>
+      <div class="dessert-card">
+        <div class="dessert-info">
+          <h4>Mango Sticky Rice</h4>
+          <p>Fresh mango · glutinous rice · coconut cream</p>
+          <div class="dessert-price" id="dessert-sub"></div>
+        </div>
+        <div>
+          <div class="alc-ctrl">
+            <button class="alc-btn" id="des-minus">−</button>
+            <span class="alc-num" id="des-qty">0</span>
+            <button class="alc-btn" id="des-plus">+</button>
+          </div>
+          <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px;">฿120/person</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-h">Dietary Requirements (optional)</div>
+      <div id="diet-dn"></div>
+    </div>
+  </div>
+
+  <!-- ══ BBQ ══ -->
+  <div id="panel-bbq" class="panel">
+    <div class="ptitle">BBQ & <em>Grill</em></div>
+    <p class="pdesc">Select chef service fee, then add ingredients à la carte.</p>
+
+    <div class="card">
+      <div class="card-h">Chef Service Fee</div>
+      <div class="pkg-grid" id="bbq-pkgs">
+        <div class="pkg" onclick="selectBbq(this,'1–3',2500)">
+          <div class="pkg-g">1–3 Guests</div>
+          <div class="pkg-p">฿2,500 <small>THB</small></div>
+          <div class="pkg-i">Chef · Equipment · Clean-up</div>
+        </div>
+        <div class="pkg" onclick="selectBbq(this,'4–6',3500)">
+          <div class="pkg-g">4–6 Guests</div>
+          <div class="pkg-p">฿3,500 <small>THB</small></div>
+          <div class="pkg-i">Chef · Equipment · Clean-up</div>
+        </div>
+        <div class="pkg" onclick="selectBbq(this,'7–9',5000)">
+          <div class="pkg-g">7–9 Guests</div>
+          <div class="pkg-p">฿5,000 <small>THB</small></div>
+          <div class="pkg-i">Chef · Equipment · Clean-up</div>
+        </div>
+        <div class="pkg" onclick="selectBbq(this,'10–12',7000)">
+          <div class="pkg-g">10–12 Guests</div>
+          <div class="pkg-p">฿7,000 <small>THB</small></div>
+          <div class="pkg-i">Chef · Equipment · Clean-up</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-h">À La Carte Ingredients</div>
+      <div id="alc-list"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-h">Dietary Requirements (optional)</div>
+      <div id="diet-bbq"></div>
+    </div>
+  </div>
+
+  <!-- ORDER SUMMARY -->
+  <div class="order-box">
+    <div class="order-head"><h3>Order Summary</h3><p>Updates as you build</p></div>
+    <div class="order-body" id="order-body"><div class="order-empty">Select a service to begin.</div></div>
+    <div class="order-total">
+      <div class="order-total-l">Total</div>
+      <div class="order-total-p" id="order-total">฿0 <small>THB</small></div>
+    </div>
+  </div>
+
+  <!-- BOOKING FORM -->
+  <div class="form-wrap">
+    <label class="f-label">Your Name</label>
+    <input class="f-input" type="text" id="f-name" placeholder="Full name">
+    <label class="f-label">Phone / WhatsApp</label>
+    <input class="f-input" type="tel" id="f-phone" placeholder="+66 or local number">
+    <div class="f-row">
+      <div>
+        <label class="f-label">Date</label>
+        <input class="f-input" type="date" id="f-date">
+      </div>
+      <div>
+        <label class="f-label">Time</label>
+        <input class="f-input" type="time" id="f-time">
+      </div>
+    </div>
+    <label class="f-label">Villa / Address</label>
+    <input class="f-input" type="text" id="f-villa" placeholder="Villa name or address">
+    <label class="f-label">Notes (optional)</label>
+    <input class="f-input" type="text" id="f-notes" placeholder="Allergies, special requests...">
+    <button class="book-btn" onclick="sendWA()">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Send Booking via WhatsApp
+    </button>
+    <div class="f-note">Tapping above opens WhatsApp with your full order pre-filled. We confirm within 1 hour.</div>
+  </div>
+
+</div><!-- end main -->
+
+<script>
+// ── DATA ──
+var WA = '66993106665';
+var BK = {2:1800,3:2400,4:3000,5:3500,6:4000,7:4500,8:5000,9:5500,10:6000,11:6500,12:7000,13:7500,14:8000,15:8500,16:9000};
+var STARTERS = ['Vegetable Spring Rolls','Chicken Satay','Deep Fried Chicken','Calamari (+Seafood)','Beef Skewers (+Beef)'];
+var SOUPS    = ['Tom Yum – Shrimp','Tom Yum – Chicken','Tom Yum – Pork','Tom Kha – Chicken','Tom Kha – Pork','Tom Jut (Clear)'];
+var SALADS   = ['Thai Green Papaya','Sweet Corn Salad','Cucumber Salad','Mixed Veggie','Greek Salad','Arabic Salad'];
+var MAINS    = ['Pad Kapao','Oyster Sauce Chicken','Oyster Sauce Pork','Sweet & Sour Stir-fry','Pad Thai','Fried Rice','Rad Naa','Pad Pong Gali','Green Curry','Red Curry','Yellow Curry','Massaman Curry'];
+var ALC = [
+  {n:'Chicken Skewer',    p:120,  u:'/pc',   c:'meat'},
+  {n:'Pork Skewer',       p:130,  u:'/pc',   c:'meat'},
+  {n:'Beef Skewer',       p:200,  u:'/pc',   c:'meat'},
+  {n:'Lamb Skewer',       p:280,  u:'/pc',   c:'meat'},
+  {n:'Grilled Vegetables',p:150,  u:'/tray', c:'side'},
+  {n:'Baked Potatoes',    p:150,  u:'/tray', c:'side'},
+  {n:'Garden Salad',      p:120,  u:'/bowl', c:'side'},
+  {n:'Garlic Bread',      p:120,  u:'/tray', c:'side'},
+  {n:'Australian Steak 300g',p:900, u:'',    c:'prem'},
+  {n:'Tiger Prawns ×4 (~1kg)',p:2500,u:'',   c:'prem'},
+  {n:'Lobster (0.5–1 kg)',p:3200, u:'',      c:'prem'},
+];
+var DIETARY = [
+  {id:'veg',  label:'Vegetarian / Peanut-Free / Dairy-Free', tier:'easy',    tl:'Standard',    fee:200},
+  {id:'vgn',  label:'Vegan / Gluten-Free / Low-Sodium',      tier:'medium',  tl:'Special Prep', fee:350},
+  {id:'ksh',  label:'Kosher / Severe Allergy / Halal',       tier:'complex', tl:'Consultation', fee:null},
+];
+
+// ── STATE ──
+var S = {
+  tab: 'bk',
+  bk:  {guests:2},
+  dn:  {pkg:null, starters:[], soups:[], salads:[], mains:[], dessert:0, rec:false,
+        maxS:0, maxSp:0, maxSa:0, maxM:0},
+  bbq: {pkg:null, qty:{}},
+  diet: null
+};
+
+// ── INIT ──
+window.onload = function(){
+  buildChips('chips-starters', STARTERS, 'starters');
+  buildChips('chips-soups',    SOUPS,    'soups');
+  buildChips('chips-salads',   SALADS,   'salads');
+  buildChips('chips-mains',    MAINS,    'mains');
+  buildDiet('diet-bk'); buildDiet('diet-dn'); buildDiet('diet-bbq');
+  buildAlc();
+  // Breakfast buttons — plain onclick assigned here after DOM ready
+  document.getElementById('bk-plus').onclick  = function(){ bkSet(S.bk.guests + 1); };
+  document.getElementById('bk-minus').onclick = function(){ bkSet(S.bk.guests - 1); };
+  // Dessert buttons
+  document.getElementById('des-plus').onclick  = function(){ desSet(S.dn.dessert + 1); };
+  document.getElementById('des-minus').onclick = function(){ desSet(S.dn.dessert - 1); };
+  // Date min
+  var d = new Date(), pad = function(n){return String(n).padStart(2,'0');};
+  var f = document.getElementById('f-date');
+  if(f) f.min = d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+  renderOrder();
+};
+
+// ── TABS ──
+function switchTab(id, btn){
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on');});
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('on');});
+  btn.classList.add('on');
+  document.getElementById('panel-'+id).classList.add('on');
+  S.tab = id; S.diet = null;
+  document.querySelectorAll('.diet-card').forEach(function(c){
+    c.classList.remove('on');
+    c.querySelector('.diet-chk').textContent='';
+  });
+  renderOrder();
+}
+
+// ── BREAKFAST ──
+function bkSet(g){
+  if(g<2) g=2; if(g>16) g=16;
+  S.bk.guests = g;
+  var total = BK[g] || 9000;
+  var pp = Math.round(total/g);
+  document.getElementById('bk-count').textContent = g;
+  document.getElementById('bk-total').textContent = '\u0e3f' + total.toLocaleString();
+  document.getElementById('bk-pp').textContent = '\u0e3f' + pp.toLocaleString() + ' per person \u00b7 All inclusive';
+  renderOrder();
+}
+
+// ── DINNER ──
+function selectDn(el, guests, price, mS, mSp, mSa, mM){
+  document.querySelectorAll('#dn-pkgs .pkg').forEach(function(p){p.classList.remove('on');});
+  el.classList.add('on');
+  S.dn.pkg = {guests:guests, price:price};
+  S.dn.maxS=mS; S.dn.maxSp=mSp; S.dn.maxSa=mSa; S.dn.maxM=mM;
+  S.dn.starters=[]; S.dn.soups=[]; S.dn.salads=[]; S.dn.mains=[];
+  S.dn.rec=false; S.dn.dessert=0;
+  document.querySelectorAll('#dish-card .chip').forEach(function(c){c.classList.remove('on');});
+  document.getElementById('des-qty').textContent='0';
+  document.getElementById('dessert-sub').textContent='';
+  document.getElementById('dish-card').style.display='block';
+  document.getElementById('dessert-card').style.display='block';
+  document.getElementById('hint-s').textContent  = 'Pick up to '+mS;
+  document.getElementById('hint-sp').textContent = 'Pick up to '+mSp;
+  document.getElementById('hint-sa').textContent = 'Pick up to '+mSa;
+  document.getElementById('hint-m').textContent  = 'Pick up to '+mM;
+  renderOrder();
+}
+
+function buildChips(cid, items, key){
+  var el = document.getElementById(cid);
+  el.innerHTML = items.map(function(name){
+    return '<div class="chip" onclick="toggleChip(this,\''+name+'\',\''+key+'\')">' + name + '</div>';
+  }).join('');
+}
+
+function toggleChip(el, name, key){
+  var arr = S.dn[key];
+  var maxKey = {starters:'maxS',soups:'maxSp',salads:'maxSa',mains:'maxM'}[key];
+  var max = S.dn[maxKey] || 0;
+  if(el.classList.contains('on')){
+    el.classList.remove('on');
+    S.dn[key] = arr.filter(function(x){return x!==name;});
+  } else {
+    if(arr.length >= max) return;
+    el.classList.add('on');
+    S.dn[key].push(name);
+  }
+  renderOrder();
+}
+
+function applyRecommends(){
+  if(!S.dn.pkg){ alert('Please select a group size first.'); return; }
+  S.dn.starters=[]; S.dn.soups=[]; S.dn.salads=[]; S.dn.mains=[];
+  S.dn.rec=true;
+  document.querySelectorAll('#dish-card .chip').forEach(function(c){c.classList.remove('on');});
+  function fillOne(cid, keyword, key, max){
+    if(S.dn[key].length >= max) return;
+    var chips = document.querySelectorAll('#'+cid+' .chip');
+    for(var i=0;i<chips.length;i++){
+      var t = chips[i].textContent.toLowerCase();
+      if(t.indexOf(keyword.toLowerCase())!==-1 && S.dn[key].length<max){
+        chips[i].classList.add('on');
+        S.dn[key].push(chips[i].textContent);
+        break;
+      }
+    }
+  }
+  fillOne('chips-starters','satay','starters',S.dn.maxS);
+  fillOne('chips-soups','shrimp','soups',S.dn.maxSp);
+  fillOne('chips-salads','papaya','salads',S.dn.maxSa);
+  fillOne('chips-mains','massaman','mains',S.dn.maxM);
+  renderOrder();
+}
+
+// ── DESSERT ──
+function desSet(v){
+  if(v<0) v=0;
+  S.dn.dessert = v;
+  document.getElementById('des-qty').textContent = v;
+  var sub = document.getElementById('dessert-sub');
+  sub.textContent = v>0 ? '\u0e3f'+(120*v).toLocaleString()+' THB total' : '';
+  renderOrder();
+}
+
+// ── BBQ ──
+function selectBbq(el, guests, price){
+  document.querySelectorAll('#bbq-pkgs .pkg').forEach(function(p){p.classList.remove('on');});
+  el.classList.add('on');
+  S.bbq.pkg = {guests:guests, price:price};
+  renderOrder();
+}
+
+function buildAlc(){
+  var el = document.getElementById('alc-list');
+  var lastCat='', html='';
+  ALC.forEach(function(item,i){
+    if(item.c!==lastCat){
+      if(item.c==='side') html+='<div class="alc-divider">Sides & Extras</div>';
+      if(item.c==='prem') html+='<div class="alc-divider">Premium Cuts & Seafood</div>';
+      lastCat=item.c;
+    }
+    html+='<div class="alc-item" id="alc-row-'+i+'">'
+      +'<div class="alc-name">'+item.n+(item.u?'<span style="font-size:11px;color:var(--muted)"> '+item.u+'</span>':'')+'</div>'
+      +'<div class="alc-r">'
+        +'<div class="alc-price">\u0e3f'+item.p.toLocaleString()+'</div>'
+        +'<div class="alc-ctrl">'
+          +'<button class="alc-btn" id="alc-m-'+i+'">−</button>'
+          +'<span class="alc-num" id="alc-q-'+i+'">0</span>'
+          +'<button class="alc-btn" id="alc-p-'+i+'">+</button>'
+        +'</div>'
+      +'</div>'
+    +'</div>';
+  });
+  el.innerHTML = html;
+  // Wire after render
+  ALC.forEach(function(item,i){
+    (function(idx){
+      document.getElementById('alc-m-'+idx).onclick = function(){ alcSet(idx,-1); };
+      document.getElementById('alc-p-'+idx).onclick = function(){ alcSet(idx, 1); };
+    })(i);
+  });
+}
+
+function alcSet(i, delta){
+  var cur = S.bbq.qty[i] || 0;
+  var next = Math.max(0, cur+delta);
+  if(next===0) delete S.bbq.qty[i]; else S.bbq.qty[i]=next;
+  document.getElementById('alc-q-'+i).textContent = next;
+  var row = document.getElementById('alc-row-'+i);
+  if(next>0) row.classList.add('on'); else row.classList.remove('on');
+  renderOrder();
+}
+
+// ── DIETARY ──
+function buildDiet(cid){
+  var el=document.getElementById(cid);
+  el.innerHTML = DIETARY.map(function(d){
+    return '<div class="diet-card" onclick="toggleDiet(\''+d.id+'\',this)">'
+      +'<div class="diet-info">'
+        +'<div class="diet-tier tier-'+d.tier+'">'+d.tl+'</div>'
+        +'<div class="diet-name">'+d.label+'</div>'
+      +'</div>'
+      +'<div class="diet-price">'+(d.fee?'+\u0e3f'+d.fee+'/guest':'On Request')+'</div>'
+      +'<div class="diet-chk">✓</div>'
+    +'</div>';
+  }).join('');
+}
+
+function toggleDiet(id, el){
+  var wrap = el.closest('.card') || el.parentElement;
+  var wasOn = el.classList.contains('on');
+  wrap.querySelectorAll('.diet-card').forEach(function(c){
+    c.classList.remove('on');
+    c.querySelector('.diet-chk').textContent='';
+  });
+  S.diet = null;
+  if(!wasOn){
+    el.classList.add('on');
+    el.querySelector('.diet-chk').textContent='✓';
+    S.diet = DIETARY.find(function(d){return d.id===id;});
+  }
+  renderOrder();
+}
+
+// ── RENDER ORDER ──
+function renderOrder(){
+  var lines=[], total=0;
+
+  if(S.tab==='bk'){
+    var g=S.bk.guests, base=BK[g]||9000;
+    total+=base;
+    lines.push({sec:'BREAKFAST', n:'Villa Breakfast × '+g+' guests', p:base});
+    if(S.diet && S.diet.fee){ total+=S.diet.fee*g; lines.push({n:S.diet.label+' ×'+g, p:S.diet.fee*g}); }
+    else if(S.diet) lines.push({n:S.diet.label, p:'TBD'});
+  }
+
+  if(S.tab==='dn' && S.dn.pkg){
+    total+=S.dn.pkg.price;
+    var recTag = S.dn.rec?' ✦ Chef Rec':'';
+    lines.push({sec:'DINNER'+recTag, n:'Thai Dinner – '+S.dn.pkg.guests+' pax', p:S.dn.pkg.price});
+    if(S.dn.starters.length) lines.push({n:'🥜 '+S.dn.starters.join(', ')});
+    if(S.dn.soups.length)    lines.push({n:'🍜 '+S.dn.soups.join(', ')});
+    if(S.dn.salads.length)   lines.push({n:'🥗 '+S.dn.salads.join(', ')});
+    if(S.dn.mains.length)    lines.push({n:'🍛 '+S.dn.mains.join(', ')});
+    if(S.dn.rec)             lines.push({n:'🍚 Steamed Rice'});
+    if(S.dn.dessert>0){ var ds=120*S.dn.dessert; total+=ds; lines.push({n:'🥭 Mango Sticky Rice ×'+S.dn.dessert,p:ds}); }
+    if(S.diet && S.diet.fee) lines.push({n:S.diet.label,p:'Per affected guest'});
+    else if(S.diet) lines.push({n:S.diet.label,p:'TBD'});
+  }
+
+  if(S.tab==='bbq'){
+    if(S.bbq.pkg){ total+=S.bbq.pkg.price; lines.push({sec:'BBQ & GRILL',n:'Chef Service – '+S.bbq.pkg.guests+' guests',p:S.bbq.pkg.price}); }
+    Object.keys(S.bbq.qty).forEach(function(i){
+      var item=ALC[i], qty=S.bbq.qty[i], sub=item.p*qty;
+      total+=sub; lines.push({n:item.n+' × '+qty,p:sub});
+    });
+    if(S.diet && S.diet.fee) lines.push({n:S.diet.label,p:'Per affected guest'});
+    else if(S.diet) lines.push({n:S.diet.label,p:'TBD'});
+  }
+
+  var ob=document.getElementById('order-body');
+  var ot=document.getElementById('order-total');
+  if(!lines.length){
+    ob.innerHTML='<div class="order-empty">Select a service to begin.</div>';
+    ot.innerHTML='฿0 <small>THB</small>'; return;
+  }
+  var html='';
+  lines.forEach(function(l){
+    if(l.sec) html+='<div class="order-sec">'+l.sec+'</div>';
+    var ps = l.p===undefined?'':(typeof l.p==='string'?l.p:'\u0e3f'+l.p.toLocaleString());
+    html+='<div class="order-line"><div class="order-line-n">'+l.n+'</div>'+(ps?'<div class="order-line-p">'+ps+'</div>':'')+'</div>';
+  });
+  ob.innerHTML=html;
+  ot.innerHTML='\u0e3f'+total.toLocaleString()+' <small>THB</small>';
+}
+
+// ── WHATSAPP ──
+function sendWA(){
+  var name=document.getElementById('f-name').value.trim();
+  var phone=document.getElementById('f-phone').value.trim();
+  var date=document.getElementById('f-date').value;
+  var time=document.getElementById('f-time').value;
+  var villa=document.getElementById('f-villa').value.trim();
+  var notes=document.getElementById('f-notes').value.trim();
+  if(!name||!date||!villa){alert('Please fill in your name, date and villa address.');return;}
+
+  var svc='', totalStr='฿0';
+
+  if(S.tab==='bk'){
+    var g=S.bk.guests, base=BK[g]||9000;
+    var dt=S.diet&&S.diet.fee?S.diet.fee*g:0; var grand=base+dt;
+    totalStr='\u0e3f'+grand.toLocaleString();
+    svc='🍳 *SERVICE: Villa Breakfast*\n👥 Guests: '+g+'\n💰 Package: \u0e3f'+base.toLocaleString()+' THB'+(dt?'\n🥗 Dietary ('+S.diet.label+'): +\u0e3f'+dt.toLocaleString():'');
+  }
+
+  if(S.tab==='dn'){
+    if(!S.dn.pkg){alert('Please select a dinner package.');return;}
+    var p=S.dn.pkg, ds=120*S.dn.dessert, grand=p.price+ds;
+    totalStr='\u0e3f'+grand.toLocaleString();
+    var dishes=[
+      S.dn.starters.length?'Starters: '+S.dn.starters.join(', '):'',
+      S.dn.soups.length?'Soups: '+S.dn.soups.join(', '):'',
+      S.dn.salads.length?'Salads: '+S.dn.salads.join(', '):'',
+      S.dn.mains.length?'Mains: '+S.dn.mains.join(', '):'',
+      S.dn.rec?'Sides: Steamed Rice':'',
+    ].filter(Boolean).join('\n   ');
+    svc='🍜 *SERVICE: Thai Dinner Set Menu*'+(S.dn.rec?'\n⭐ Vida Signature Set (Chef Recommends)':'')
+      +'\n👥 Group: '+p.guests+' pax\n💰 Package: \u0e3f'+p.price.toLocaleString()+' THB'
+      +'\n📋 Dishes:\n   '+(dishes||'TBC')
+      +(ds?'\n🥭 Mango Sticky Rice × '+S.dn.dessert+' (\u0e3f'+ds.toLocaleString()+' THB)':'')
+      +(S.diet?'\n🥗 Dietary: '+S.diet.label+(S.diet.fee?' (+\u0e3f'+S.diet.fee+'/guest)':' – consultation needed'):'');
+  }
+
+  if(S.tab==='bbq'){
+    if(!S.bbq.pkg){alert('Please select a BBQ service package.');return;}
+    var p=S.bbq.pkg, ingTotal=0;
+    var ingLines=Object.keys(S.bbq.qty).map(function(i){
+      var item=ALC[i],qty=S.bbq.qty[i],sub=item.p*qty; ingTotal+=sub;
+      return '   '+item.n+' × '+qty+' = \u0e3f'+sub.toLocaleString();
+    }).join('\n');
+    var grand=p.price+ingTotal; totalStr='\u0e3f'+grand.toLocaleString();
+    svc='🔥 *SERVICE: BBQ & Grill*\n👥 Group: '+p.guests+' guests\n🧑‍🍳 Service Fee: \u0e3f'+p.price.toLocaleString()+' THB\n🥩 Ingredients:\n'+(ingLines||'   None selected')
+      +(S.diet?'\n🥗 Dietary: '+S.diet.label+(S.diet.fee?' (+\u0e3f'+S.diet.fee+'/guest)':' – consultation needed'):'');
+  }
+
+  var msg='Hello Vida Culinary! 👋\n\nI would like to make a booking:\n\n'
+    +svc
+    +'\n\n📅 Date: '+date
+    +'\n🕐 Time: '+(time||'TBD')
+    +'\n🏡 Villa: '+villa
+    +'\n👤 Name: '+name
+    +'\n📱 Phone: '+(phone||'See WhatsApp')
+    +(notes?'\n📝 Notes: '+notes:'')
+    +'\n\n💰 Estimated Total: '+totalStr+' THB'
+    +'\n\nPlease confirm availability. Thank you!';
+
+  window.open('https://wa.me/'+WA+'?text='+encodeURIComponent(msg),'_blank');
+}
+</script>
+</body>
+</html>
