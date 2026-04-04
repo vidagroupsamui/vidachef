@@ -231,7 +231,7 @@ button,a{touch-action:manipulation;cursor:pointer;-webkit-tap-highlight-color:tr
                 <div style="font-family:var(--serif);font-size:18px;font-weight:700;color:var(--ink);">฿900<span style="font-size:11px;font-weight:400;color:var(--muted);">/person</span></div>
               </div>
               <div style="font-size:12px;color:var(--muted);font-weight:300;margin-top:4px;">2 eggs · Toast with butter & jam · 2 pancakes · Fresh fruit · OJ + Coffee/Tea</div>
-              <div style="font-size:11px;color:var(--gold);font-weight:600;margin-top:4px;">+ Choose one: Bacon & Sausages · Overnight Oats & Salmon Toast · Hashbrown</div>
+              <div style="font-size:11px;color:var(--gold);font-weight:600;margin-top:4px;">+ Choose one: Bacon, Sausage & Hashbrown · Overnight Oats · Avocado & Smoked Salmon Toast</div>
             </div>
           </div>
         </div>
@@ -1000,9 +1000,9 @@ var BK_STYLES = {
   villa: { name:'Villa Breakfast', emoji:'🍳', pp:900,
     base:'2 eggs your way · Toast with butter & jam · 2 pancakes · Fresh seasonal fruit · OJ + coffee/tea',
     options:[
-      {id:'bacon',    label:'🥓 Bacon & Sausages'},
-      {id:'salmon',   label:'🥑 Overnight Oats + Avocado & Smoked Salmon Toast'},
-      {id:'hashbrown',label:'🥔 Hashbrown'}
+                {id:'bacon',   label:'🥓 Bacon, Sausage & Hashbrown'},
+                {id:'oats',   label:'🥣 Overnight Oats'},
+                {id:'salmon',label:'🥑 Avocado & Smoked Salmon Toast'}
     ]
   },
   thai: { name:'Thai Breakfast', emoji:'🍚', pp:900,
@@ -1112,7 +1112,7 @@ function sendWA(){
   var errs=[];
   if(!name)errs.push('Your name');if(!date)errs.push('Booking date');if(!villa)errs.push('Villa address');
   if(S.tab==='bk'&&!S.bk.style)errs.push('Select a breakfast style');
-  if(S.tab==='bk'&&S.bk.style==='villa'&&!S.bk.option)errs.push('Choose your add-on (Bacon & Sausages / Salmon Toast / Hashbrown)');
+  if(S.tab==='bk'&&S.bk.style==='villa'&&!S.bk.option)errs.push('Choose your add-on (Bacon, SausagBacon, Sausage & Hashbrown / Overnight Oats / Avocado & Salmon Toaste & Hashbrown · Overnight Oats · Avocado & Smoked Salmon Toast)');
   if(S.tab==='dn'&&!S.dn.pkg)errs.push('Select a dinner package');
   if(S.tab==='bbq'&&!S.bbq.pkg)errs.push('Select a BBQ service package');
   if(errs.length){
