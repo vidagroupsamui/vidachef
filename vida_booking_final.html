@@ -1024,7 +1024,7 @@ function selectBkStyle(style, el){
   if(d.options && d.options.length > 0){
     optCard.style.display = 'block';
     optList.innerHTML = d.options.map(function(o){
-      return '<div style="display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid var(--bdr);border-radius:10px;padding:12px 14px;cursor:pointer;" id="bk-opt-'+o.id+'" onclick="selectBkOption(''+o.id+'',this)">'
+      return '<div style="display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid var(--bdr);border-radius:10px;padding:12px 14px;cursor:pointer;" id="bk-opt-'+o.id+'" onclick="selectBkOption(\'' +o.id+ '\',this)">'
         +'<div style="width:20px;height:20px;border-radius:50%;border:2px solid var(--bdr);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:transparent;" class="bk-opt-chk">✓</div>'
         +'<div style="font-size:13px;font-weight:500;">'+o.label+'</div>'
         +'</div>';
