@@ -561,7 +561,7 @@ button,a{touch-action:manipulation;cursor:pointer;-webkit-tap-highlight-color:tr
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
       Send Booking via WhatsApp
     </button>
-    <div class="f-note">Tapping above opens WhatsApp with your full order pre-filled. We confirm within 1 hour.</div>
+    <div class="f-note">Tapping above opens WhatsApp with your full order pre-filled. We confirm within 1 hour.</div><div style="text-align:center;margin-top:12px;font-size:12px;color:rgba(201,160,82,.7)">WhatsApp not working? Call/SMS: <strong>+66 99 310 6665</strong></div>
   </div>
 
   
@@ -1101,7 +1101,7 @@ function sendWA(){
   var villa=document.getElementById('f-villa').value.trim();
   var notes=document.getElementById('f-notes').value.trim();
   var errs=[];
-  if(!name)errs.push('Your name');if(!date)errs.push('Booking date');if(!villa)errs.push('Villa address');
+  if(!name)errs.push('Your name');if(!date)errs.push('Booking date');if(!villa)errs.push('Villa address');if(date){var td=new Date();td.setHours(0,0,0,0);var sd=new Date(date);sd.setHours(0,0,0,0);if(sd<=td)errs.push('Please book at least 24 hours in advance');}
   if(S.tab==='bk'&&!S.bk.style)errs.push('Select a breakfast style');
   if(S.tab==='bk'&&S.bk.style==='villa'&&!S.bk.option)errs.push('Choose your add-on (Bacon, SausagBacon, Sausage & Hashbrown / Overnight Oats / Avocado & Salmon Toaste & Hashbrown · Overnight Oats · Avocado & Smoked Salmon Toast)');
   if(S.tab==='dn'&&!S.dn.pkg)errs.push('Select a dinner package');
