@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Vida Group Ops</title>
+<style>
+:root{
+  --navy:#0d2744;--navy-l:#163a64;--navy-d:#091b30;
+  --gold:#c9a84c;--gold-l:#e0c76e;--gold-dim:rgba(201,168,76,.15);--gold-bdr:rgba(201,168,76,.3);
+  --white:#fff;--bg:#f4f1eb;--card:#fff;--text:#1a1a2e;--muted:#6b7280;--text-l:#9ca3af;
+  --green:#16a34a;--green-bg:#dcfce7;--red:#dc2626;--red-bg:#fee2e2;--orange:#ea580c;--orange-bg:#fff7ed;--blue:#2563eb;--blue-bg:#dbeafe;
+  --r:12px;--r-sm:8px;--r-lg:16px;
+  --sh:0 4px 16px rgba(13,39,68,.08);--sh-lg:0 8px 32px rgba(13,39,68,.12);
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --serif:Georgia,'Times New Roman',serif;
+  --tab-h:56px;--top-h:54px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.5;
+  -webkit-font-smoothing:antialiased;touch-action:manipulation;overflow:hidden;height:100vh}
+button,a{touch-action:manipulation;cursor:pointer;-webkit-tap-highlight-color:transparent}
+input,select,textarea{font-family:var(--sans);font-size:16px;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+input[type=number]{-moz-appearance:textfield}input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
+
+/* LOGIN */
+#login-screen{position:fixed;inset:0;background:var(--navy);display:flex;align-items:center;
+  justify-content:center;z-index:9999;padding:20px}
+.login-card{background:var(--white);border-radius:var(--r-lg);padding:36px 28px;max-width:380px;width:100%;box-shadow:var(--sh-lg)}
+.login-brand{font-family:var(--serif);font-size:32px;font-weight:700;color:var(--navy);text-align:center}
+.login-brand em{color:var(--gold);font-style:italic}
+.login-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:28px;font-weight:300}
+.fg{margin-bottom:16px}
+.fg label{display:block;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.fg input{width:100%;padding:13px 14px;border:2px solid #e5e7eb;border-radius:var(--r-sm);font-size:16px;
+  outline:none;transition:border-color .2s}.fg input:focus{border-color:var(--navy)}
+.login-btn{width:100%;padding:14px;background:var(--navy);color:var(--gold);border:none;border-radius:var(--r-sm);
+  font-size:16px;font-weight:700;letter-spacing:.04em;cursor:pointer;margin-top:8px}
+.login-btn:active{background:var(--navy-l)}
+.login-err{color:var(--red);font-size:13px;text-align:center;margin-top:10px;display:none}
+
+/* APP SHELL */
+#app-shell{display:none;position:fixed;inset:0;background:var(--bg)}
+
+/* TOP BAR */
+#topbar{position:fixed;top:0;left:0;right:0;height:var(--top-h);background:var(--navy);
+  display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:100;
+  border-bottom:2px solid var(--gold)}
+.tb-brand{font-family:var(--serif);font-size:18px;font-weight:700;color:#fff;white-space:nowrap}
+.tb-brand em{color:var(--gold);font-style:italic}
+.tb-title{color:var(--gold);font-size:14px;font-weight:600;letter-spacing:.04em}
+.tb-right{display:flex;align-items:center;gap:10px}
+.tb-user{font-size:12px;color:rgba(255,255,255,.7)}
+.tb-btn{padding:6px 12px;background:transparent;border:1px solid var(--gold-bdr);border-radius:var(--r-sm);
+  color:var(--gold);font-size:12px;font-weight:600;cursor:pointer}
+.tb-btn:active{background:var(--gold-dim)}
+
+/* CONTENT */
+#content{position:fixed;top:var(--top-h);left:0;right:0;bottom:var(--tab-h);overflow-y:auto;
+  -webkit-overflow-scrolling:touch;padding:16px}
+
+/* BOTTOM TAB BAR */
+#bottom-tabs{position:fixed;bottom:0;left:0;right:0;height:var(--tab-h);background:var(--navy);
+  display:flex;align-items:stretch;z-index:100;border-top:1px solid var(--navy-l);
+  padding-bottom:env(safe-area-inset-bottom,0)}
+.tab-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:transparent;border:none;color:rgba(255,255,255,.45);font-size:9px;font-weight:600;
+  letter-spacing:.03em;gap:3px;cursor:pointer;transition:color .15s;min-width:0;overflow:hidden}
+.tab-btn .tab-icon{font-size:18px;line-height:1}
+.tab-btn.on{color:var(--gold)}
+
+/* MODULE */
+.module{display:none}.module.on{display:block}
+
+/* LAYOUT */
+.container{max-width:600px;margin:0 auto}
+.card{background:var(--card);border-radius:var(--r);padding:18px;margin-bottom:14px;box-shadow:var(--sh);border:1px solid rgba(0,0,0,.04)}
+.card-h{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);
+  margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--gold-bdr)}
+.card-h-gold{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);
+  margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--gold)}
+.note{background:var(--gold-dim);border-left:3px solid var(--gold);border-radius:0 var(--r-sm) var(--r-sm) 0;
+  padding:10px 14px;font-size:12px;color:var(--muted);margin-bottom:14px}
+.note strong{color:var(--text)}
+.empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px}
+.empty-icon{font-size:40px;margin-bottom:10px;opacity:.3}
+
+/* TABS (module internal) */
+.tabs{display:flex;gap:6px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab-pill{flex-shrink:0;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  padding:8px 14px;border-radius:100px;border:1.5px solid var(--gold-bdr);background:var(--white);
+  color:var(--muted);cursor:pointer;transition:all .15s;white-space:nowrap}
+.tab-pill.on{background:var(--navy);color:var(--gold);border-color:var(--navy)}
+
+/* FORMS */
+.input,.select,.textarea{width:100%;padding:12px 14px;border:2px solid #e5e7eb;border-radius:var(--r-sm);
+  font-size:15px;outline:none;background:var(--white);transition:border-color .2s}
+.input:focus,.select:focus,.textarea:focus{border-color:var(--navy)}
+.textarea{resize:vertical;min-height:60px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.fg2{margin-bottom:12px}
+.fg2 label{display:block;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:4px}
+
+/* BUTTONS */
+.btn{padding:12px 20px;border:none;border-radius:var(--r-sm);font-size:14px;font-weight:700;
+  cursor:pointer;transition:all .15s;text-align:center}
+.btn:active{transform:scale(.97)}
+.btn-navy{background:var(--navy);color:var(--gold)}
+.btn-gold{background:var(--gold);color:var(--navy)}
+.btn-outline{background:transparent;border:1.5px solid var(--navy);color:var(--navy)}
+.btn-green{background:var(--green);color:#fff}
+.btn-red{background:var(--red);color:#fff}
+.btn-sm{padding:6px 12px;font-size:12px;border-radius:var(--r-sm)}
+.btn-block{width:100%;display:block}
+
+/* COUNTER */
+.counter{border:2px solid var(--gold);border-radius:var(--r);overflow:hidden;margin-bottom:12px}
+.c-btn{display:block;width:100%;padding:16px;font-size:20px;font-weight:900;border:none;cursor:pointer}
+.c-btn.plus{background:var(--navy);color:var(--gold)}
+.c-btn.minus{background:var(--bg);color:var(--text)}
+.c-mid{background:var(--white);border-top:1px solid var(--gold-bdr);border-bottom:1px solid var(--gold-bdr);
+  padding:10px;text-align:center}
+.c-label{font-size:10px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+.c-val{font-family:var(--serif);font-size:44px;font-weight:700;color:var(--text);line-height:1}
+
+/* SLIDER */
+.sl-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.sl-label{font-size:12px;font-weight:600;min-width:80px;color:var(--text)}
+.sl-input{width:60px;text-align:center;font-size:13px;font-weight:700}
+.sl-range{flex:1;accent-color:var(--gold);height:6px;cursor:pointer}
+.sl-pct{font-size:13px;font-weight:700;color:var(--navy);min-width:40px;text-align:right}
+
+/* PRICE */
+.price-display{text-align:center;padding:16px;background:var(--navy);border-radius:var(--r);margin-bottom:12px}
+.price-display .amount{font-family:var(--serif);font-size:36px;font-weight:700;color:var(--gold)}
+.price-display .sub{font-size:12px;color:rgba(255,255,255,.5);margin-top:4px}
+
+/* SUMMARY */
+.summary{background:var(--navy-d);border-radius:var(--r-sm);padding:14px;margin-bottom:12px}
+.summary-row{display:flex;justify-content:space-between;padding:4px 0;font-size:13px;color:rgba(255,255,255,.7)}
+.summary-row.total{border-top:1px solid rgba(255,255,255,.15);margin-top:6px;padding-top:10px;
+  font-size:15px;font-weight:700;color:var(--gold)}
+
+/* BADGES */
+.badge{display:inline-block;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:700;
+  letter-spacing:.03em;text-transform:uppercase}
+.b-pending{background:var(--orange-bg);color:var(--orange)}
+.b-approved{background:var(--green-bg);color:var(--green)}
+.b-rejected{background:var(--red-bg);color:var(--red)}
+.b-info{background:var(--blue-bg);color:var(--blue)}
+
+/* EXPENSE ITEM */
+.exp-item{display:flex;gap:12px;padding:14px;background:var(--white);border-radius:var(--r-sm);
+  margin-bottom:8px;cursor:pointer;border:1px solid rgba(0,0,0,.04);transition:all .15s}
+.exp-item:active{background:var(--bg)}
+.exp-thumb{width:50px;height:50px;border-radius:var(--r-sm);object-fit:cover;background:var(--bg);flex-shrink:0}
+.exp-info{flex:1;min-width:0}
+.exp-villa{font-size:14px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.exp-cat{font-size:12px;color:var(--muted)}
+.exp-amt{font-size:15px;font-weight:700;color:var(--navy);white-space:nowrap}
+
+/* SCHEDULE */
+.sched-head{display:flex;overflow-x:auto;gap:4px;padding-bottom:8px;scrollbar-width:none;margin-bottom:10px}
+.sched-head::-webkit-scrollbar{display:none}
+.sched-day{flex-shrink:0;text-align:center;padding:8px 10px;border-radius:var(--r-sm);min-width:48px;
+  cursor:pointer;transition:all .15s}
+.sched-day.on{background:var(--navy);color:var(--gold)}
+.sched-day .dn{font-size:10px;color:var(--muted);text-transform:uppercase;font-weight:600}
+.sched-day.on .dn{color:rgba(255,255,255,.5)}
+.sched-day .dd{font-size:20px;font-weight:700;color:var(--text);line-height:1.2}
+.sched-day.on .dd{color:var(--gold)}
+.job-card{padding:10px 12px;border-radius:var(--r-sm);margin-bottom:6px;font-size:12px;
+  border-left:4px solid;cursor:pointer}
+.job-card .jt{font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+.job-card .jv{color:var(--muted);margin-top:2px}
+.job-card .jg{font-weight:600}
+.jt-chef-breakfast{background:#fef3c7;border-color:#f59e0b}
+.jt-chef-thai{background:#fed7aa;border-color:#f97316}
+.jt-chef-bbq{background:#fecaca;border-color:#ef4444}
+.jt-chef-custom{background:#e9d5ff;border-color:#a855f7}
+.jt-clean-std{background:#dbeafe;border-color:#3b82f6}
+.jt-clean-deep{background:#ccfbf1;border-color:#14b8a6}
+.jt-clean-move{background:#e0e7ff;border-color:#6366f1}
+
+/* CHART */
+.chart-bar-wrap{margin-bottom:16px}
+.chart-bar-label{font-size:12px;font-weight:600;margin-bottom:4px;color:var(--text)}
+.chart-bar-track{background:#e5e7eb;border-radius:6px;height:24px;position:relative;overflow:hidden;margin-bottom:4px}
+.chart-bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;padding-left:8px;
+  font-size:11px;font-weight:700;color:#fff;transition:width .4s ease;min-width:fit-content}
+.cbf-rev{background:var(--gold);color:var(--navy)}
+.cbf-exp{background:var(--navy)}
+
+/* FILTER BAR */
+.filters{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.filter-btn{padding:6px 14px;border-radius:100px;border:1.5px solid var(--gold-bdr);background:var(--white);
+  color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
+.filter-btn.on{background:var(--navy);color:var(--gold);border-color:var(--navy)}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;
+  align-items:flex-end;justify-content:center}
+.modal-bg.on{display:flex}
+.modal{background:var(--white);border-radius:var(--r-lg) var(--r-lg) 0 0;padding:24px 20px 32px;
+  max-width:500px;width:100%;max-height:80vh;overflow-y:auto}
+.modal-h{font-family:var(--serif);font-size:22px;font-weight:700;color:var(--navy);margin-bottom:16px}
+.modal-x{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;
+  background:var(--bg);border:none;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+/* P&L SUMMARY CARDS */
+.pnl-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.pnl-card{padding:16px;border-radius:var(--r);text-align:center}
+.pnl-card .pv{font-family:var(--serif);font-size:24px;font-weight:700;line-height:1}
+.pnl-card .pl{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;margin-top:4px;opacity:.7}
+.pc-rev{background:var(--gold-dim);color:var(--navy)}.pc-rev .pv{color:var(--navy)}
+.pc-exp{background:var(--navy);color:#fff}.pc-exp .pv{color:var(--gold)}
+.pc-prof{background:var(--green-bg);color:var(--green)}.pc-prof .pv{color:var(--green)}
+.pc-marg{background:var(--bg);color:var(--muted)}.pc-marg .pv{color:var(--text)}
+
+/* RESPONSIVE */
+@media(min-width:768px){
+  #content{padding:20px 40px}
+  .container{max-width:800px}
+  .pnl-grid{grid-template-columns:repeat(4,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-brand">Vida <em>Group</em></div>
+    <div class="login-sub">Operations Dashboard</div>
+    <div class="fg">
+      <label>Username</label>
+      <input type="text" id="login-user" placeholder="Enter username" autocomplete="username">
+    </div>
+    <div class="fg">
+      <label>PIN</label>
+      <input type="password" id="login-pin" inputmode="numeric" maxlength="4"
+        placeholder="4-digit PIN" autocomplete="current-password">
+    </div>
+    <button class="login-btn" onclick="doLogin()">Sign In</button>
+    <div class="login-err" id="login-err">Invalid username or PIN</div>
+  </div>
+</div>
+
+<!-- APP SHELL -->
+<div id="app-shell">
+  <!-- TOP BAR -->
+  <header id="topbar">
+    <div class="tb-brand">Vida <em>Ops</em></div>
+    <div class="tb-title" id="tb-title">Chef Calculator</div>
+    <div class="tb-right">
+      <span class="tb-user" id="tb-user"></span>
+      <button class="tb-btn" onclick="doLogout()">Logout</button>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <main id="content">
+
+    <!-- MODULE 1: CHEF CALCULATOR -->
+    <div id="mod-chef" class="module">
+      <div class="container" id="chef-content"></div>
+    </div>
+
+    <!-- MODULE 2: CLEANING CALCULATOR -->
+    <div id="mod-cleaning" class="module">
+      <div class="container" id="cleaning-content"></div>
+    </div>
+
+    <!-- MODULE 3: EXPENSE UPLOAD -->
+    <div id="mod-upload" class="module">
+      <div class="container" id="upload-content"></div>
+    </div>
+
+    <!-- MODULE 5: SCHEDULE -->
+    <div id="mod-schedule" class="module">
+      <div class="container" id="schedule-content"></div>
+    </div>
+
+    <!-- MODULE 6: P&L SUMMARY -->
+    <div id="mod-pnl" class="module">
+      <div class="container" id="pnl-content"></div>
+    </div>
+
+  </main>
+
+  <!-- BOTTOM TAB BAR -->
+  <nav id="bottom-tabs">
+    <button class="tab-btn" data-mod="chef" onclick="showMod('chef')">
+      <span class="tab-icon">&#127859;</span><span>Chef</span>
+    </button>
+    <button class="tab-btn" data-mod="cleaning" onclick="showMod('cleaning')">
+      <span class="tab-icon">&#129696;</span><span>Cleaning</span>
+    </button>
+    <button class="tab-btn" data-mod="upload" onclick="showMod('upload')">
+      <span class="tab-icon">&#128203;</span><span>Expenses</span>
+    </button>
+    <button class="tab-btn" data-mod="schedule" onclick="showMod('schedule')">
+      <span class="tab-icon">&#128197;</span><span>Schedule</span>
+    </button>
+    <button class="tab-btn" data-mod="pnl" onclick="showMod('pnl')">
+      <span class="tab-icon">&#128200;</span><span>P&L</span>
+    </button>
+    <button class="tab-btn" data-mod="pool" onclick="return false" style="opacity:.3;pointer-events:none">
+      <span class="tab-icon">&#127946;</span><span>Pool</span>
+    </button>
+  </nav>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeModal()">
+  <div class="modal" style="position:relative" id="modal-body"></div>
+</div>
+
+<script>
+// ==================== DATA ====================
+var ACCOUNTS=[
+  {u:'phyo',    pin:'1234',role:'director',name:'Phyo'},
+  {u:'thuhu',   pin:'1112',role:'director',name:'Thuhu'},
+  {u:'director1',pin:'1001',role:'director',name:'Director 1'},
+  {u:'phetop',  pin:'1113',role:'viewer',  name:'Phetop'},
+  {u:'hanwin',  pin:'2221',role:'manager', name:'Han Win'},
+  {u:'ngwezin', pin:'3331',role:'staff',   name:'Ngwe Zin'},
+  {u:'kohein',  pin:'3332',role:'staff',   name:'Ko Hein'},
+  {u:'aungaung',pin:'3333',role:'staff',   name:'Aung Aung'},
+  {u:'thuzar',  pin:'3334',role:'staff',   name:'Thu Zar'}
+];
+
+var CHEF_PRICING={
+  breakfast:[],
+  floating:[],
+  thai:[
+    {min:1,max:3,price:3450},{min:4,max:6,price:5384},{min:7,max:9,price:8801},
+    {min:10,max:12,price:12151},{min:13,max:15,price:17468}
+  ],
+  bbq:[
+    {min:1,max:3,fee:2500},{min:4,max:6,fee:3500},{min:7,max:9,fee:4750},{min:10,max:12,fee:6500}
+  ]
+};
+for(var i=1;i<=16;i++){CHEF_PRICING.breakfast.push({g:i,price:i*900})}
+CHEF_PRICING.floating={fixedPrice:2500,guests:2};
+
+var VILLAS=[
+  {id:'villa_love',name:'Villa Love',group:'ADAM/KAGAMI',co:1500,st:1500,garbage:0,laundry:false},
+  {id:'majesta',name:'Majesta',group:'ADAM/KAGAMI',co:1500,st:1500,garbage:300,laundry:false},
+  {id:'n1',name:'N1',group:'ADAM/KAGAMI',co:1500,st:1500,garbage:0,laundry:false},
+  {id:'n2',name:'N2',group:'ADAM/KAGAMI',co:1500,st:1500,garbage:0,laundry:false},
+  {id:'n3',name:'N3',group:'ADAM/KAGAMI',co:1500,st:1500,garbage:0,laundry:false},
+  {id:'j3',name:'J3',group:'ADAM/KAGAMI',co:2000,st:2000,garbage:0,laundry:false},
+  {id:'sunrise_hill',name:'Sunrise Hill',group:'ADAM/KAGAMI',co:1700,st:1700,garbage:300,laundry:false},
+  {id:'villa_anna',name:'Villa Anna',group:'MPS',co:1300,st:1300,garbage:0,laundry:false},
+  {id:'villa_diana',name:'Villa Diana',group:'MPS',co:1300,st:1300,garbage:0,laundry:false},
+  {id:'villa_yoco',name:'Villa Yoco',group:'MPS',co:1500,st:1500,garbage:0,laundry:false},
+  {id:'big_buddha',name:'Big Buddha',group:'CHEN',co:1500,st:1500,garbage:0,laundry:true,laundryCost:500,cleanCost:1000},
+  {id:'aqua_314',name:'Aqua 314',group:'CHEN',co:1600,st:1600,garbage:0,laundry:true,laundryCost:400,cleanCost:1200},
+  {id:'aqua_319_up',name:'Aqua 319 upstairs',group:'CHEN',co:1600,st:1600,garbage:0,laundry:true,laundryCost:400,cleanCost:1200},
+  {id:'aqua_319_down',name:'Aqua 319 downstairs',group:'CHEN',co:1000,st:1000,garbage:0,laundry:true,laundryCost:250,cleanCost:750},
+  {id:'chacha',name:'Chacha',group:'STEVEN',co:1500,st:1500,garbage:0,laundry:false},
+  {id:'julia',name:'Julia',group:'STEVEN',co:1500,st:1500,garbage:0,laundry:false},
+  {id:'lulu',name:'Lulu',group:'OTHERS',co:2000,st:2000,garbage:0,laundry:false},
+  {id:'nicolas_1',name:'Nicolas 1',group:'OTHERS',co:750,st:250,garbage:0,laundry:false},
+  {id:'nicolas_2',name:'Nicolas 2',group:'OTHERS',co:750,st:250,garbage:0,laundry:false},
+  {id:'nicolas_3',name:'Nicolas 3',group:'OTHERS',co:750,st:250,garbage:0,laundry:false},
+  {id:'bo_phut',name:'Bo Phut/David',group:'OTHERS',co:1700,st:1700,garbage:0,laundry:true,laundryCost:500,cleanCost:0},
+  {id:'sandra_home',name:'Sandra Home',group:'OTHERS',co:1800,st:1800,garbage:0,laundry:false},
+  {id:'sandra_airbnb',name:'Sandra Airbnb',group:'OTHERS',co:1800,st:1800,garbage:0,laundry:false}
+];
+
+var SHARE_LABELS=['Labor','Ingredients','Commission','Company Profit','Buffer'];
+
+var ACCESS={
+  chef:      {director:1,viewer:0,manager:1,staff:0},
+  cleaning:  {director:1,viewer:0,manager:1,staff:0},
+  upload:    {director:1,viewer:0,manager:1,staff:1},
+  schedule:  {director:1,viewer:0,manager:1,staff:1},
+  pnl:       {director:1,viewer:1,manager:0,staff:0}
+};
+
+var EDITABLE={
+  chef:      {director:1,viewer:0,manager:0,staff:0},
+  cleaning:  {director:1,viewer:0,manager:0,staff:0},
+  upload:    {director:1,viewer:0,manager:1,staff:1},
+  schedule:  {director:1,viewer:0,manager:1,staff:1},
+  pnl:       {director:0,viewer:0,manager:0,staff:0}
+};
+
+var MOD_TITLES={chef:'Chef Calculator',cleaning:'Cleaning Calculator',upload:'Expenses',
+  schedule:'Schedule',pnl:'P&L Summary'};
+
+// ==================== STATE ====================
+var CUR=null;
+var chefState={tab:'breakfast',services:{}};
+var cleaningState={villa:'',type:'co'};
+var CAL_API_KEY='AIzaSyBfArhqcaYyuJIxp4bfRNVd4KXEbOoPfg8';
+var CAL_ID='a9d8a635ba5f1b57274e5ed292ff8be2244b54fd8d18839c5094095e2ef6734b@group.calendar.google.com';
+var calEvents=[];
+var calLoading=false;
+var calOnline=false;
+var calTimer=null;
+
+var schedViewDate=new Date();
+var schedSelDay=null;
+var admFilter='all';
+var pnlYear=new Date().getFullYear();
+var pnlMonth=new Date().getMonth();
+
+// ==================== UTILS ====================
+function ld(k){try{return JSON.parse(localStorage.getItem('v_'+k))}catch(e){return null}}
+function sv(k,v){try{localStorage.setItem('v_'+k,JSON.stringify(v))}catch(e){alert('Storage full. Try clearing old data.')}}
+function fmt(n){return Number(n||0).toLocaleString('en-US')}
+function gid(p){return(p||'x')+'_'+Date.now()+'_'+Math.random().toString(36).substr(2,4)}
+function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function fmtDate(s){if(!s)return'';var d=new Date(s);return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear()}
+
+function canAccess(mod){return ACCESS[mod]&&ACCESS[mod][CUR.role]===1}
+function canEdit(mod){return EDITABLE[mod]&&EDITABLE[mod][CUR.role]===1}
+
+// ==================== AUTH ====================
+function doLogin(){
+  var u=document.getElementById('login-user').value.trim().toLowerCase();
+  var p=document.getElementById('login-pin').value;
+  var acc=ACCOUNTS.find(function(a){return a.u==u&&a.pin==p});
+  if(!acc){document.getElementById('login-err').style.display='block';return}
+  CUR=acc;sv('session',acc);showApp();
+}
+function doLogout(){CUR=null;localStorage.removeItem('v_session');
+  document.getElementById('app-shell').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('login-user').value='';document.getElementById('login-pin').value='';
+  document.getElementById('login-err').style.display='none';
+}
+function showApp(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app-shell').style.display='block';
+  document.getElementById('tb-user').textContent=CUR.name;
+  applyTabAccess();
+  var firstMod;
+  if(CUR.role==='viewer'){firstMod='pnl'}
+  else if(CUR.role==='staff'){firstMod='upload'}
+  else{firstMod='chef'}
+  showMod(firstMod);
+}
+function applyTabAccess(){
+  var btns=document.querySelectorAll('.tab-btn');
+  for(var i=0;i<btns.length;i++){
+    var m=btns[i].getAttribute('data-mod');
+    if(m==='pool'){btns[i].style.display='';continue}
+    btns[i].style.display=canAccess(m)?'':'none';
+  }
+}
+function showMod(m){
+  if(!canAccess(m))return;
+  var mods=['chef','cleaning','upload','schedule','pnl'];
+  for(var i=0;i<mods.length;i++){
+    var el=document.getElementById('mod-'+mods[i]);
+    if(el){el.classList.toggle('on',mods[i]===m)}
+  }
+  var btns=document.querySelectorAll('.tab-btn');
+  for(var i=0;i<btns.length;i++){btns[i].classList.toggle('on',btns[i].getAttribute('data-mod')===m)}
+  document.getElementById('tb-title').textContent=MOD_TITLES[m]||'';
+  if(m==='chef')renderChef();
+  else if(m==='cleaning')renderCleaning();
+  else if(m==='upload')renderUpload();
+  else if(m==='schedule'){if(calTimer)clearInterval(calTimer);schedFetchCal();calTimer=setInterval(function(){schedFetchCal()},300000);renderSchedule();}
+  else if(m==='pnl')renderPnl();
+}
+
+function openModal(html){
+  document.getElementById('modal-body').innerHTML=html;
+  document.getElementById('modal-bg').classList.add('on');
+}
+function closeModal(){document.getElementById('modal-bg').classList.remove('on')}
+
+// ==================== INIT ====================
+(function init(){
+  var sess=ld('session');
+  if(sess){var acc=ACCOUNTS.find(function(a){return a.u==sess.u&&a.pin==sess.pin});
+    if(acc){CUR=acc;showApp();return}}
+  document.getElementById('login-pin').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin()});
+  document.getElementById('login-user').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('login-pin').focus()});
+})();
+
+// ==================== CHEF CALCULATOR ====================
+function chefGetPrice(service,guests){
+  if(service==='breakfast'){
+    var b=CHEF_PRICING.breakfast.find(function(x){return x.g===guests});
+    return b?b.price:0;
+  }
+  if(service==='floating'){
+    return CHEF_PRICING.floating.fixedPrice;
+  }
+  if(service==='thai'){
+    var t=CHEF_PRICING.thai.find(function(x){return guests>=x.min&&guests<=x.max});
+    return t?t.price:0;
+  }
+  if(service==='bbq'){
+    var q=CHEF_PRICING.bbq.find(function(x){return guests>=x.min&&guests<=x.max});
+    return q?q.fee:0;
+  }
+  return 0;
+}
+function chefGetDefaultShares(tab){
+  var g=chefState.services[tab]?chefState.services[tab].guests:2;
+  var laborPct;
+  if(tab==='breakfast'){
+    if(g<=3)laborPct=30;else if(g<=6)laborPct=35;else if(g<=10)laborPct=38;else laborPct=42;
+    return{labor:laborPct,ingredients:28,commission:5,profit:27,buffer:100-laborPct-28-5-27};
+  }
+  if(tab==='floating'){
+    return{labor:30,ingredients:28,commission:5,profit:27,buffer:10};
+  }
+  if(tab==='thai'){
+    if(g<=3)laborPct=30;else if(g<=6)laborPct=35;else if(g<=9)laborPct=38;else laborPct=42;
+    return{labor:laborPct,ingredients:33,commission:5,profit:17,buffer:100-laborPct-33-5-17};
+  }
+  if(tab==='bbq'){
+    if(g<=3)laborPct=30;else if(g<=6)laborPct=35;else if(g<=9)laborPct=38;else laborPct=42;
+    return{labor:laborPct,ingredients:0,commission:5,profit:40,buffer:100-laborPct-0-5-40};
+  }
+  return{labor:30,ingredients:20,commission:20,profit:15,buffer:15};
+}
+function chefInitServices(){
+  var saved=ld('chef_calcs');
+  var svcs=['breakfast','floating','thai','bbq','custom'];
+  if(saved){chefState.saved=saved}
+  for(var i=0;i<svcs.length;i++){
+    if(!chefState.services[svcs[i]]){
+      var s=(chefState.saved&&chefState.saved[svcs[i]])||{};
+      var def=chefGetDefaultShares(svcs[i]);
+      chefState.services[svcs[i]]={
+        guests:s.guests||(svcs[i]==='breakfast'?2:svcs[i]==='thai'?4:svcs[i]==='bbq'?4:2),
+        ingredientCost:s.ingredientCost||0,
+        manualPrice:s.manualPrice||0,
+        shares:s.shares||{0:def.labor,1:def.ingredients,2:def.commission,3:def.profit,4:def.buffer}
+      };
+    }
+  }
+}
+function renderChef(){
+  chefInitServices();
+  var c=document.getElementById('chef-content');
+  var tabs=['breakfast','floating','thai','bbq','custom'];
+  var labels=['Breakfast','Floating Breakfast','Thai Dinner','BBQ & Grill','Custom'];
+  var h='<div class="tabs">';
+  for(var i=0;i<tabs.length;i++){h+='<button class="tab-pill'+(chefState.tab===tabs[i]?' on':'')+'" onclick="chefSetTab(\''+tabs[i]+'\')">'+labels[i]+'</button>'}
+  h+='</div>';
+  h+='<div id="chef-panel"></div>';
+  c.innerHTML=h;
+  renderChefPanel();
+}
+function chefSetTab(t){chefState.tab=t;renderChef()}
+function renderChefPanel(){
+  var s=chefState.services[chefState.tab];
+  var ed=canEdit('chef');
+  var price=chefState.tab==='custom'?s.manualPrice:chefGetPrice(chefState.tab,s.guests);
+  var profit=price-s.ingredientCost;
+  var h='<div class="card">';
+  h+='<div class="card-h-gold">'+chefState.tab.charAt(0).toUpperCase()+chefState.tab.slice(1)+'</div>';
+  if(chefState.tab==='floating'){
+    h+='<div class="note"><strong>Floating Breakfast</strong> &mdash; Fixed price ฿2,500 (2 pax only)</div>';
+  }else if(chefState.tab!=='custom'){
+    h+='<div class="counter">';
+    h+='<button class="c-btn plus" onclick="chefGuests(1)">+</button>';
+    h+='<div class="c-mid"><div class="c-label">Guests</div><div class="c-val" id="chef-gv">'+s.guests+'</div></div>';
+    if(ed)h+='<button class="c-btn minus" onclick="chefGuests(-1)">&minus;</button>';
+    else h+='<button class="c-btn minus" style="opacity:.3;pointer-events:none">&minus;</button>';
+    h+='</div>';
+  }else{
+    h+='<div class="fg2"><label>Guests</label><input class="input" type="number" value="'+s.guests+'" min="1" '+(ed?'':'readonly')+' onchange="chefSetGuests(this.value)"></div>';
+    h+='<div class="fg2"><label>Manual Price (THB)</label><input class="input" type="number" value="'+s.manualPrice+'" min="0" '+(ed?'':'readonly')+' onchange="chefSetManual(this.value)"></div>';
+  }
+  h+='</div>';
+  h+='<div class="price-display"><div class="amount">'+fmt(price)+' THB</div>';
+  h+='<div class="sub">Revenue'+(chefState.tab==='breakfast'?' ('+fmt(s.guests)+' x ฿900)':'')+(chefState.tab==='floating'?' (Fixed ฿2,500)':'')+'</div></div>';
+  if(ed){
+    h+='<div class="fg2"><label>Ingredient / Extra Costs (THB)</label>';
+    h+='<input class="input" type="number" value="'+s.ingredientCost+'" min="0" onchange="chefSetCost(this.value)"></div>';
+  }
+  h+='<div class="summary">';
+  h+='<div class="summary-row"><span>Revenue</span><span>'+fmt(price)+'</span></div>';
+  h+='<div class="summary-row"><span>Costs</span><span>&minus;'+fmt(s.ingredientCost)+'</span></div>';
+  h+='<div class="summary-row total"><span>Profit</span><span>'+fmt(profit)+'</span></div>';
+  h+='</div>';
+  h+='<div class="card"><div class="card-h-gold">5-Way Profit Split</div>';
+  var totalPct=0;for(var k in s.shares){totalPct+=s.shares[k]}
+  for(var si=0;si<SHARE_LABELS.length;si++){
+    var pct=s.shares[si]||0;
+    var share=Math.round(profit*pct/100);
+    h+='<div class="sl-row"><span class="sl-label">'+SHARE_LABELS[si]+'</span>';
+    if(ed)h+='<input class="sl-range" type="range" min="0" max="100" value="'+pct+'" oninput="chefSlider('+si+',this.value)">';
+    else h+='<div style="flex:1;height:6px;background:#e5e7eb;border-radius:3px"><div style="height:100%;width:'+pct+'%;background:var(--gold);border-radius:3px"></div></div>';
+    h+='<span class="sl-pct">'+pct+'%</span>';
+    h+='<span style="font-size:12px;font-weight:600;min-width:60px;text-align:right;color:var(--navy)">'+fmt(share)+'</span></div>';
+  }
+  if(ed)h+='<button class="btn btn-navy btn-block" style="margin-top:10px" onclick="chefSave()">Save Calculation</button>';
+  h+='</div>';
+  document.getElementById('chef-panel').innerHTML=h;
+}
+function chefGuests(d){
+  var s=chefState.services[chefState.tab];
+  if(chefState.tab==='breakfast'){s.guests=Math.max(1,Math.min(16,s.guests+d))}
+  else if(chefState.tab==='thai'){var ranges=[3,6,9,12,15];var idx=ranges.indexOf(s.guests);idx=Math.max(0,Math.min(4,idx+d));s.guests=ranges[idx]}
+  else if(chefState.tab==='bbq'){var ranges=[3,6,9,12];var idx=ranges.indexOf(s.guests);idx=Math.max(0,Math.min(3,idx+d));s.guests=ranges[idx]}
+  renderChefPanel();
+}
+function chefSetGuests(v){var s=chefState.services[chefState.tab];s.guests=Math.max(1,parseInt(v)||2);renderChefPanel()}
+function chefSetManual(v){var s=chefState.services[chefState.tab];s.manualPrice=Math.max(0,parseInt(v)||0);renderChefPanel()}
+function chefSetCost(v){var s=chefState.services[chefState.tab];s.ingredientCost=Math.max(0,parseInt(v)||0);renderChefPanel()}
+function chefSlider(idx,val){
+  var s=chefState.services[chefState.tab];val=parseInt(val);
+  s.shares[idx]=val;
+  var others=[];for(var i=0;i<5;i++){if(i!==idx)others.push(i)}
+  var othersSum=0;for(var i=0;i<others.length;i++){othersSum+=(s.shares[others[i]]||0)}
+  var remaining=100-val;
+  if(othersSum===0){var each=Math.floor(remaining/others.length);for(var i=0;i<others.length;i++){s.shares[others[i]]=each}}
+  else{for(var i=0;i<others.length;i++){s.shares[others[i]]=Math.round(remaining*(s.shares[others[i]]||0)/othersSum)}}
+  renderChefPanel();
+}
+function chefSave(){
+  var data={};for(var k in chefState.services){
+    data[k]={guests:chefState.services[k].guests,ingredientCost:chefState.services[k].ingredientCost,
+      manualPrice:chefState.services[k].manualPrice,shares:chefState.services[k].shares}}
+  sv('chef_calcs',data);alert('Saved!');
+}
+
+// ==================== CLEANING CALCULATOR ====================
+function cleanGetDefaultShares(type){
+  if(type==='co')return{labor:40,supplies:8,commission:5,profit:32,buffer:15};
+  if(type==='st')return{labor:45,supplies:5,commission:5,profit:30,buffer:15};
+  if(type==='normal')return{labor:42,supplies:6,commission:5,profit:32,buffer:15};
+  if(type==='deep')return{labor:38,supplies:12,commission:5,profit:30,buffer:15};
+  return{labor:40,supplies:8,commission:5,profit:32,buffer:15};
+}
+function cleanGetLaundryMsg(villa){
+  if(villa.id==='majesta')return'Remember: +฿300 garbage \u2014 invoice separately';
+  if(villa.id==='sunrise_hill')return'Remember: +฿300 garbage \u2014 invoice separately';
+  if(villa.group==='MPS')return'No laundry for MPS \u2014 do not add to invoice';
+  if(villa.id==='big_buddha')return'All-inclusive \u2014 laundry ฿500 already included';
+  if(villa.id==='aqua_314')return'All-inclusive \u2014 laundry ฿400 already included';
+  if(villa.id==='aqua_319_up')return'All-inclusive \u2014 laundry ฿400 already included';
+  if(villa.id==='aqua_319_down')return'All-inclusive \u2014 laundry ฿250 already included';
+  if(villa.id==='bo_phut')return'Laundry ฿500 fixed \u2014 already included in price';
+  if(villa.id==='villa_love')return'Management fee ฿1,500/month \u2014 billed end of month separately';
+  return'';
+}
+function renderCleaning(){
+  var c=document.getElementById('cleaning-content');
+  var ed=canEdit('cleaning');
+  var groups=['ADAM/KAGAMI','MPS','CHEN','STEVEN','OTHERS'];
+  var h='<div class="card"><div class="card-h-gold">Select Villa</div>';
+  h+='<div class="fg2"><label>Villa</label><select class="select" id="clean-villa" onchange="cleanSelVilla(this.value)">';
+  h+='<option value="">Choose a villa...</option>';
+  for(var gi=0;gi<groups.length;gi++){
+    h+='<optgroup label="'+groups[gi]+'">';
+    for(var i=0;i<VILLAS.length;i++){
+      if(VILLAS[i].group===groups[gi]){
+        h+='<option value="'+VILLAS[i].id+'"'+(cleaningState.villa===VILLAS[i].id?' selected':'')+'>'+VILLAS[i].name+'</option>';
+      }
+    }
+    h+='</optgroup>';
+  }
+  h+='</select></div>';
+  h+='<div class="fg2"><label>Service</label><select class="select" id="clean-type" onchange="cleanSelType(this.value)">';
+  h+='<option value="co"'+(cleaningState.type==='co'?' selected':'')+'>Checkout Clean</option>';
+  h+='<option value="st"'+(cleaningState.type==='st'?' selected':'')+'>Staying Clean</option>';
+  h+='<option value="normal"'+(cleaningState.type==='normal'?' selected':'')+'>Normal Clean</option>';
+  h+='<option value="deep"'+(cleaningState.type==='deep'?' selected':'')+'>Deep Clean</option>';
+  h+='</select></div></div>';
+  var villa=VILLAS.find(function(v){return v.id===cleaningState.villa});
+  if(villa){
+    var basePrice=villa[cleaningState.type]||villa.co;
+    var garbage=villa.garbage||0;
+    var totalPrice=basePrice+garbage;
+    var saved=ld('clean_calcs');
+    var def=cleanGetDefaultShares(cleaningState.type);
+    var vdata=(saved&&saved[villa.id]&&saved[villa.id][cleaningState.type])||{extraCost:0,shares:{0:def.labor,1:def.supplies,2:def.commission,3:def.profit,4:def.buffer}};
+    var totalCost=vdata.extraCost+garbage;
+    if(villa.laundry&&villa.laundryCost){totalCost+=villa.laundryCost}
+    var profit=totalPrice-totalCost;
+    h+='<div class="card" style="border-left:4px solid var(--gold)">';
+    h+='<div style="font-size:18px;font-weight:700;color:var(--navy)">'+villa.name+'</div>';
+    h+='<div style="font-size:12px;color:var(--muted)">'+villa.group+'</div></div>';
+    var typeLabels={co:'Checkout Clean',st:'Staying Clean',normal:'Normal Clean',deep:'Deep Clean'};
+    h+='<div class="price-display"><div class="amount">'+fmt(totalPrice)+' THB</div>';
+    h+='<div class="sub">'+(typeLabels[cleaningState.type]||'')+(garbage>0?' + '+fmt(garbage)+' garbage':'')+'</div></div>';
+    var laundryMsg=cleanGetLaundryMsg(villa);
+    if(laundryMsg)h+='<div class="note" style="background:#fffde7;border-left-color:#f9a825"><strong>'+laundryMsg+'</strong></div>';
+    if(ed){
+      h+='<div class="fg2"><label>Extra Costs (THB)</label>';
+      h+='<input class="input" type="number" value="'+vdata.extraCost+'" min="0" onchange="cleanSetCost(this.value)"></div>';
+    }
+    h+='<div class="summary">';
+    h+='<div class="summary-row"><span>Revenue</span><span>'+fmt(totalPrice)+'</span></div>';
+    h+='<div class="summary-row"><span>Costs</span><span>&minus;'+fmt(totalCost)+'</span></div>';
+    h+='<div class="summary-row total"><span>Profit</span><span>'+fmt(profit)+'</span></div></div>';
+    h+='<div class="card"><div class="card-h-gold">5-Way Profit Split</div>';
+    for(var si=0;si<SHARE_LABELS.length;si++){
+      var pct=vdata.shares[si]||0;
+      var share=Math.round(profit*pct/100);
+      h+='<div class="sl-row"><span class="sl-label">'+SHARE_LABELS[si]+'</span>';
+      if(ed)h+='<input class="sl-range" type="range" min="0" max="100" value="'+pct+'" oninput="cleanSlider('+si+',this.value)">';
+      else h+='<div style="flex:1;height:6px;background:#e5e7eb;border-radius:3px"><div style="height:100%;width:'+pct+'%;background:var(--gold);border-radius:3px"></div></div>';
+      h+='<span class="sl-pct">'+pct+'%</span>';
+      h+='<span style="font-size:12px;font-weight:600;min-width:60px;text-align:right;color:var(--navy)">'+fmt(share)+'</span></div>';
+    }
+    if(ed)h+='<button class="btn btn-navy btn-block" style="margin-top:10px" onclick="cleanSave()">Save</button>';
+    h+='</div>';
+  }else{
+    h+='<div class="empty"><div class="empty-icon">&#129696;</div><div>Select a villa to see pricing</div></div>';
+  }
+  c.innerHTML=h;
+}
+function cleanSelVilla(v){cleaningState.villa=v;renderCleaning()}
+function cleanSelType(v){cleaningState.type=v;renderCleaning()}
+function cleanSetCost(v){
+  var saved=ld('clean_calcs')||{};
+  if(!saved[cleaningState.villa])saved[cleaningState.villa]={};
+  var def=cleanGetDefaultShares(cleaningState.type);
+  var d=saved[cleaningState.villa][cleaningState.type]||{extraCost:0,shares:{0:def.labor,1:def.supplies,2:def.commission,3:def.profit,4:def.buffer}};
+  d.extraCost=Math.max(0,parseInt(v)||0);saved[cleaningState.villa][cleaningState.type]=d;sv('clean_calcs',saved);renderCleaning();
+}
+function cleanSlider(idx,val){
+  var saved=ld('clean_calcs')||{};
+  if(!saved[cleaningState.villa])saved[cleaningState.villa]={};
+  var def=cleanGetDefaultShares(cleaningState.type);
+  var d=saved[cleaningState.villa][cleaningState.type]||{extraCost:0,shares:{0:def.labor,1:def.supplies,2:def.commission,3:def.profit,4:def.buffer}};
+  val=parseInt(val);d.shares[idx]=val;
+  var others=[];for(var i=0;i<5;i++){if(i!==idx)others.push(i)}
+  var os=0;for(var i=0;i<others.length;i++){os+=(d.shares[others[i]]||0)}
+  var rem=100-val;
+  if(os===0){var each=Math.floor(rem/others.length);for(var i=0;i<others.length;i++){d.shares[others[i]]=each}}
+  else{for(var i=0;i<others.length;i++){d.shares[others[i]]=Math.round(rem*(d.shares[others[i]]||0)/os)}}
+  saved[cleaningState.villa][cleaningState.type]=d;sv('clean_calcs',saved);renderCleaning();
+}
+function cleanSave(){
+  alert('Saved!');
+}
+
+// ==================== EXPENSES (Upload + Review) ====================
+var uploadPhotoData=null;
+var expFilter='all';
+function renderUpload(){
+  var c=document.getElementById('upload-content');
+  var isStaff=CUR.role==='staff';
+  var isManager=CUR.role==='manager';
+  var isDirector=CUR.role==='director';
+  var h='';
+  // Staff: show submission form
+  if(isStaff){
+    h+='<div class="card"><div class="card-h-gold">New Expense</div>';
+    h+='<div class="fg2"><label>Photo</label>';
+    h+='<input type="file" accept="image/*" capture="environment" id="exp-photo" onchange="uploadPhoto(this)" style="font-size:13px">';
+    h+='<div id="exp-preview" style="margin-top:8px"></div></div>';
+    h+='<div class="fg2"><label>Villa</label><select class="select" id="exp-villa">';
+    h+='<option value="">Select villa...</option>';
+    for(var i=0;i<VILLAS.length;i++){h+='<option value="'+VILLAS[i].id+'">'+VILLAS[i].name+'</option>'}
+    h+='<option value="general">General / Office</option>';
+    h+='</select></div>';
+    h+='<div class="fg2"><label>Category</label><select class="select" id="exp-cat">';
+    h+='<option>Transport</option><option>Supplies</option><option>Food</option><option>Equipment</option><option>Other</option>';
+    h+='</select></div>';
+    h+='<div class="fg2"><label>Amount (THB)</label><input class="input" type="number" id="exp-amt" min="0" placeholder="0"></div>';
+    h+='<div class="fg2"><label>Notes</label><textarea class="textarea" id="exp-notes" placeholder="Brief description..."></textarea></div>';
+    h+='<button class="btn btn-navy btn-block" onclick="uploadSubmit()">Submit Expense</button></div>';
+  }
+  // Director/Manager: show review with filters
+  if(isDirector||isManager){
+    var expenses=ld('expenses')||[];
+    var filtered=expenses;
+    if(expFilter!=='all'){filtered=expenses.filter(function(e){return e.status===expFilter})}
+    h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">';
+    h+='<div class="filters">';
+    var filters=['all','pending','approved','rejected'];
+    var fLabels=['All','Pending','Approved','Rejected'];
+    for(var i=0;i<filters.length;i++){h+='<button class="filter-btn'+(expFilter===filters[i]?' on':'')+'" onclick="expSetFilter(\''+filters[i]+'\')">'+fLabels[i]+'</button>'}
+    h+='</div>';
+    h+='<button class="btn btn-sm btn-outline" onclick="expExport()">Export CSV</button></div>';
+    if(filtered.length===0){h+='<div class="empty"><div class="empty-icon">&#128203;</div><div>No expenses</div></div>'}
+    else{
+      for(var i=0;i<filtered.length;i++){var e=filtered[i];
+        h+='<div class="exp-item" onclick="expReview(\''+e.id+'\')">';
+        if(e.photo)h+='<img class="exp-thumb" src="'+e.photo+'">';
+        else h+='<div class="exp-thumb" style="display:flex;align-items:center;justify-content:center;font-size:20px">&#128247;</div>';
+        h+='<div class="exp-info"><div class="exp-villa">'+e.villaName+'</div>';
+        h+='<div class="exp-cat">'+e.cat+' &middot; by '+e.byName+'</div></div>';
+        h+='<div class="exp-amt">'+fmt(e.amt)+'</div>';
+        h+='<div><span class="badge b-'+e.status+'">'+e.status+'</span></div></div>';
+      }
+    }
+  }
+  // All roles: show own expenses list
+  h+='<div class="card"><div class="card-h-gold">'+(isStaff?'My Expenses':'All Expenses')+'</div>';
+  var expenses=ld('expenses')||[];
+  var list=isStaff?expenses.filter(function(e){return e.by===CUR.u}):expenses;
+  list=list.reverse().slice(0,20);
+  if(list.length===0){h+='<div class="empty"><div class="empty-icon">&#128203;</div><div>No expenses yet</div></div>'}
+  else{for(var i=0;i<list.length;i++){var e=list[i];
+    h+='<div class="exp-item" onclick="'+(isStaff?'uploadDetail':'expReview')+'(\''+e.id+'\')">';
+    if(e.photo)h+='<img class="exp-thumb" src="'+e.photo+'">';
+    else h+='<div class="exp-thumb" style="display:flex;align-items:center;justify-content:center;font-size:20px">&#128247;</div>';
+    h+='<div class="exp-info"><div class="exp-villa">'+e.villaName+'</div>';
+    h+='<div class="exp-cat">'+e.cat+' &middot; '+fmtDate(e.at)+'</div></div>';
+    h+='<div class="exp-amt">'+fmt(e.amt)+'</div>';
+    h+='<div><span class="badge b-'+e.status+'">'+e.status+'</span></div></div>';
+  }}
+  h+='</div>';
+  c.innerHTML=h;
+}
+function uploadPhoto(input){
+  if(!input.files||!input.files[0])return;
+  var file=input.files[0];
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var img=new Image();
+    img.onload=function(){
+      var canvas=document.createElement('canvas');
+      var MAX=800;var w=img.width,h=img.height;
+      if(w>MAX){h=h*MAX/w;w=MAX}if(h>MAX){w=w*MAX/h;h=MAX}
+      canvas.width=w;canvas.height=h;
+      var ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,w,h);
+      uploadPhotoData=canvas.toDataURL('image/jpeg',0.7);
+      document.getElementById('exp-preview').innerHTML='<img class="exp-thumb" src="'+uploadPhotoData+'" style="width:100%;max-width:300px;height:auto">';
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function uploadSubmit(){
+  var villa=document.getElementById('exp-villa').value;
+  var cat=document.getElementById('exp-cat').value;
+  var amt=parseInt(document.getElementById('exp-amt').value)||0;
+  var notes=document.getElementById('exp-notes').value.trim();
+  if(!villa){alert('Select a villa');return}
+  if(amt<=0){alert('Enter a valid amount');return}
+  var villaObj=VILLAS.find(function(v){return v.id===villa});
+  var villaName=villaObj?villaObj.name:(villa==='general'?'General / Office':villa);
+  var expenses=ld('expenses')||[];
+  expenses.push({id:gid('exp'),photo:uploadPhotoData||'',villa:villa,villaName:villaName,
+    cat:cat,amt:amt,notes:notes,status:'pending',by:CUR.u,byName:CUR.name,at:new Date().toISOString(),
+    reviewedBy:'',reviewedAt:'',reviewNotes:''});
+  sv('expenses',expenses);
+  uploadPhotoData=null;
+  renderUpload();
+}
+function uploadDetail(id){
+  var expenses=ld('expenses')||[];
+  var e=expenses.find(function(x){return x.id===id});
+  if(!e)return;
+  var h='<div class="modal-h">Expense Detail</div>';
+  if(e.photo)h+='<img src="'+e.photo+'" style="width:100%;border-radius:8px;margin-bottom:12px">';
+  h+='<div class="summary">';
+  h+='<div class="summary-row"><span>Villa</span><span>'+e.villaName+'</span></div>';
+  h+='<div class="summary-row"><span>Category</span><span>'+e.cat+'</span></div>';
+  h+='<div class="summary-row"><span>Amount</span><span>'+fmt(e.amt)+' THB</span></div>';
+  h+='<div class="summary-row"><span>Status</span><span><span class="badge b-'+e.status+'">'+e.status+'</span></span></div>';
+  h+='<div class="summary-row"><span>Submitted</span><span>'+fmtDate(e.at)+'</span></div>';
+  if(e.notes)h+='<div class="summary-row"><span>Notes</span><span>'+e.notes+'</span></div>';
+  if(e.reviewedBy)h+='<div class="summary-row"><span>Reviewed by</span><span>'+e.reviewedBy+'</span></div>';
+  if(e.reviewNotes)h+='<div class="summary-row"><span>Review notes</span><span>'+e.reviewNotes+'</span></div>';
+  h+='</div>';
+  h+='<button class="btn btn-outline btn-block" onclick="closeModal()" style="margin-top:12px">Close</button>';
+  openModal(h);
+}
+function expSetFilter(f){expFilter=f;renderUpload()}
+function expReview(id){
+  var expenses=ld('expenses')||[];
+  var e=expenses.find(function(x){return x.id===id});
+  if(!e)return;
+  var h='<div class="modal-h">Review Expense</div>';
+  if(e.photo)h+='<img src="'+e.photo+'" style="width:100%;border-radius:8px;margin-bottom:12px">';
+  h+='<div class="summary">';
+  h+='<div class="summary-row"><span>Villa</span><span>'+e.villaName+'</span></div>';
+  h+='<div class="summary-row"><span>Category</span><span>'+e.cat+'</span></div>';
+  h+='<div class="summary-row"><span>Amount</span><span>'+fmt(e.amt)+' THB</span></div>';
+  h+='<div class="summary-row"><span>Submitted by</span><span>'+e.byName+'</span></div>';
+  h+='<div class="summary-row"><span>Date</span><span>'+fmtDate(e.at)+'</span></div>';
+  if(e.notes)h+='<div class="summary-row"><span>Notes</span><span>'+e.notes+'</span></div>';
+  h+='</div>';
+  h+='<div class="fg2" style="margin-top:12px"><label>Review Notes</label>';
+  h+='<textarea class="textarea" id="exp-review-notes" placeholder="Optional notes...">'+(e.reviewNotes||'')+'</textarea></div>';
+  h+='<div style="display:flex;gap:10px;margin-top:12px">';
+  h+='<button class="btn btn-green" style="flex:1" onclick="expApprove(\''+e.id+'\')">Approve</button>';
+  h+='<button class="btn btn-red" style="flex:1" onclick="expReject(\''+e.id+'\')">Reject</button>';
+  h+='</div>';
+  h+='<button class="btn btn-outline btn-block" onclick="closeModal()" style="margin-top:10px">Close</button>';
+  openModal(h);
+}
+function expApprove(id){
+  var expenses=ld('expenses')||[];
+  var e=expenses.find(function(x){return x.id===id});
+  if(!e)return;
+  e.status='approved';e.reviewedBy=CUR.name;e.reviewedAt=new Date().toISOString();
+  var notes=document.getElementById('exp-review-notes');
+  if(notes)e.reviewNotes=notes.value;
+  sv('expenses',expenses);closeModal();renderUpload();
+}
+function expReject(id){
+  var expenses=ld('expenses')||[];
+  var e=expenses.find(function(x){return x.id===id});
+  if(!e)return;
+  e.status='rejected';e.reviewedBy=CUR.name;e.reviewedAt=new Date().toISOString();
+  var notes=document.getElementById('exp-review-notes');
+  if(notes)e.reviewNotes=notes.value;
+  sv('expenses',expenses);closeModal();renderUpload();
+}
+function expExport(){
+  var expenses=ld('expenses')||[];
+  if(expenses.length===0){alert('No data to export');return}
+  var csv='ID,Date,Villa,Category,Amount,Submitter,Status,Notes\n';
+  for(var i=0;i<expenses.length;i++){
+    var e=expenses[i];
+    csv+=e.id+','+e.at+','+e.villaName.replace(/,/g,'')+','+e.cat+','+e.amt+','+e.byName.replace(/,/g,'')+','+e.status+','+(e.notes||'').replace(/,/g,'')+'\n';
+  }
+  var blob=new Blob([csv],{type:'text/csv'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='vida_expenses_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+}
+
+// ==================== SCHEDULE ====================
+function schedGetTypeColor(title){
+  var t=title.toLowerCase();
+  if(t.indexOf('checkout')!==-1||t.indexOf('check out')!==-1)return'jt-clean-std';
+  if(t.indexOf('staying')!==-1||t.indexOf('stayover')!==-1)return'jt-clean-deep';
+  if(t.indexOf('breakfast')!==-1||t.indexOf('dinner')!==-1||t.indexOf('bbq')!==-1||t.indexOf('chef')!==-1)return'jt-chef-bbq';
+  if(t.indexOf('deep clean')!==-1)return'jt-chef-custom';
+  if(t.indexOf('pool')!==-1)return'jt-clean-move';
+  return'';
+}
+function schedFetchCal(){
+  calLoading=true;
+  var now=new Date();
+  var later=new Date();later.setDate(later.getDate()+30);
+  var url='https://www.googleapis.com/calendar/v3/calendars/'+encodeURIComponent(CAL_ID)+'/events?key='+CAL_API_KEY
+    +'&timeMin='+now.toISOString()+'&timeMax='+later.toISOString()
+    +'&singleEvents=true&orderBy=startTime';
+  fetch(url).then(function(r){
+    if(!r.ok)throw new Error('API error');
+    return r.json();
+  }).then(function(data){
+    calLoading=false;calOnline=true;
+    calEvents=(data.items||[]).map(function(ev){
+      var start=ev.start.dateTime||ev.start.date;
+      var end=ev.end.dateTime||ev.end.date;
+      var sDate=start.split('T')[0];
+      var sTime=start.indexOf('T')!==-1?start.split('T')[1].substring(0,5):'';
+      var eTime=end&&end.indexOf('T')!==-1?end.split('T')[1].substring(0,5):'';
+      return{title:ev.summary||'Untitled',date:sDate,time:sTime,endTime:eTime,desc:ev.description||'',color:schedGetTypeColor(ev.summary||'')};
+    });
+    sv('cal_events',calEvents);
+    renderSchedule();
+  }).catch(function(){
+    calLoading=false;calOnline=false;
+    calEvents=ld('cal_events')||[];
+    renderSchedule();
+  });
+}
+function schedRefresh(){
+  calEvents=[];
+  schedFetchCal();
+}
+function renderSchedule(){
+  var c=document.getElementById('schedule-content');
+  var jobs=ld('schedule')||[];
+  var allJobs=calEvents.length>0?calEvents:jobs;
+  var days=[];
+  for(var i=0;i<14;i++){var d=new Date(schedViewDate);d.setDate(d.getDate()+i);days.push(d)}
+  var h='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">';
+  h+='<button class="btn btn-sm btn-outline" onclick="schedNav(-1)">&larr;</button>';
+  h+='<span style="font-size:13px;font-weight:600">'+days[0].toLocaleDateString('en',{month:'short',day:'numeric'})+' &ndash; '+days[13].toLocaleDateString('en',{month:'short',day:'numeric',year:'numeric'})+'</span>';
+  h+='<button class="btn btn-sm btn-outline" onclick="schedNav(1)">&rarr;</button>';
+  if(CUR.role==='director'){
+    h+='<button class="btn btn-sm btn-green" onclick="schedRefresh()" style="margin-left:6px">&#8635; Refresh</button>';
+  }
+  h+='</div>';
+  // Status badge
+  if(calLoading){
+    h+='<div style="text-align:center;padding:8px;font-size:12px;color:var(--muted)">&#8987; Loading calendar...</div>';
+  }else if(calOnline){
+    h+='<div style="text-align:center;padding:4px"><span class="badge b-approved">Live</span></div>';
+  }else{
+    h+='<div style="text-align:center;padding:4px"><span class="badge b-pending">Offline</span></div>';
+  }
+  h+='<div class="sched-head">';
+  var dayNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  for(var i=0;i<days.length;i++){
+    var d=days[i];var isToday=d.toDateString()===new Date().toDateString();
+    var ds=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    h+='<div class="sched-day'+(schedSelDay===ds?' on':'')+'" onclick="schedSelDay=\''+ds+'\';renderSchedule()">';
+    h+='<div class="dn">'+dayNames[d.getDay()]+'</div><div class="dd">'+d.getDate()+'</div></div>';
+  }
+  h+='</div>';
+  if(schedSelDay){
+    var dayJobs=allJobs.filter(function(j){return j.date===schedSelDay}).sort(function(a,b){return(a.time||'').localeCompare(b.time||'')});
+    if(dayJobs.length===0){h+='<div class="empty"><div class="empty-icon">&#128197;</div><div>No jobs scheduled</div></div>'}
+    else{for(var i=0;i<dayJobs.length;i++){var j=dayJobs[i];
+      var cls=j.color||'';
+      h+='<div class="job-card '+cls+'" onclick="schedDetail('+i+')">';
+      h+='<div class="jt">'+(j.title||j.type||'').replace('-',' ')+'</div>';
+      var timeStr='';
+      if(j.time){timeStr=j.time;if(j.endTime)timeStr+=' - '+j.endTime}
+      h+='<div class="jv">'+(j.villaName||j.desc||'')+(timeStr?' &middot; '+timeStr:'')+'</div>';
+      if(j.guests)h+='<div class="jg">'+j.guests+' guests</div>';
+      h+='</div>';
+    }}
+  }else{
+    h+='<div class="empty"><div class="empty-icon">&#128197;</div><div>Select a day to view jobs</div></div>';
+  }
+  if(canEdit('schedule')){
+    h+='<button class="btn btn-navy btn-block" style="margin-top:12px" onclick="schedAdd()">+ Add Job</button>';
+  }
+  c.innerHTML=h;
+}
+function schedNav(d){schedViewDate.setDate(schedViewDate.getDate()+d*7);schedSelDay=null;renderSchedule()}
+function schedDetail(idx){
+  var allJobs=calEvents.length>0?calEvents:(ld('schedule')||[]);
+  var j=allJobs[idx];
+  if(!j)return;
+  var ed=canEdit('schedule');
+  var h='<div class="modal-h">Job Detail</div>';
+  h+='<div class="summary">';
+  h+='<div class="summary-row"><span>Title</span><span>'+(j.title||j.type||'')+'</span></div>';
+  h+='<div class="summary-row"><span>Date</span><span>'+j.date+'</span></div>';
+  if(j.time){var tStr=j.time;if(j.endTime)tStr+=' - '+j.endTime;h+='<div class="summary-row"><span>Time</span><span>'+tStr+'</span></div>'}
+  h+='<div class="summary-row"><span>Villa</span><span>'+(j.villaName||j.desc||'')+'</span></div>';
+  if(j.guests)h+='<div class="summary-row"><span>Guests</span><span>'+j.guests+'</span></div>';
+  if(j.notes)h+='<div class="summary-row"><span>Notes</span><span>'+j.notes+'</span></div>';
+  h+='<div class="summary-row"><span>Status</span><span>'+j.status+'</span></div>';
+  if(j.createdByName)h+='<div class="summary-row"><span>Created by</span><span>'+j.createdByName+'</span></div>';
+  h+='</div>';
+  h+='<button class="btn btn-outline btn-block" onclick="closeModal()" style="margin-top:10px">Close</button>';
+  openModal(h);
+}
+function schedAdd(){
+  var h='<div class="modal-h">Add Job</div>';
+  h+='<div class="fg2"><label>Date</label><input class="input" type="date" id="sj-date" value="'+today()+'"></div>';
+  h+='<div class="fg2"><label>Time</label><input class="input" type="time" id="sj-time" value="18:00"></div>';
+  h+='<div class="fg2"><label>Type</label><select class="select" id="sj-type">';
+  h+='<option value="chef-breakfast">Chef Breakfast</option><option value="chef-floating">Chef Floating Breakfast</option>';
+  h+='<option value="chef-thai">Chef Thai Dinner</option><option value="chef-bbq">Chef BBQ</option>';
+  h+='<option value="chef-custom">Chef Custom</option><option value="clean-std">Cleaning Standard</option>';
+  h+='<option value="clean-deep">Cleaning Deep Clean</option><option value="clean-move">Cleaning Move In/Out</option>';
+  h+='</select></div>';
+  h+='<div class="fg2"><label>Villa</label><select class="select" id="sj-villa">';
+  h+='<option value="">Select...</option>';
+  for(var i=0;i<VILLAS.length;i++){h+='<option value="'+VILLAS[i].id+'">'+VILLAS[i].name+'</option>'}
+  h+='</select></div>';
+  h+='<div class="fg2"><label>Guests</label><input class="input" type="number" id="sj-guests" min="1" placeholder="Optional"></div>';
+  h+='<div class="fg2"><label>Notes</label><textarea class="textarea" id="sj-notes" placeholder="Optional notes..."></textarea></div>';
+  h+='<button class="btn btn-navy btn-block" style="margin-top:12px" onclick="schedSave()">Save Job</button>';
+  h+='<button class="btn btn-outline btn-block" onclick="closeModal()" style="margin-top:10px">Cancel</button>';
+  openModal(h);
+}
+function schedSave(){
+  var date=document.getElementById('sj-date').value;
+  var time=document.getElementById('sj-time').value;
+  var type=document.getElementById('sj-type').value;
+  var villa=document.getElementById('sj-villa').value;
+  var guests=parseInt(document.getElementById('sj-guests').value)||0;
+  var notes=document.getElementById('sj-notes').value.trim();
+  if(!date||!type||!villa){alert('Fill in required fields');return}
+  var villaObj=VILLAS.find(function(v){return v.id===villa});
+  var jobs=ld('schedule')||[];
+  jobs.push({id:gid('job'),date:date,time:time,type:type,villa:villa,villaName:villaObj?villaObj.name:'',
+    guests:guests,notes:notes,status:'confirmed',createdBy:CUR.u,createdByName:CUR.name,createdAt:new Date().toISOString(),
+    title:type.replace('-',' '),color:schedGetTypeColor(type)});
+  sv('schedule',jobs);closeModal();schedSelDay=date;renderSchedule();
+}
+function schedDelete(id){
+  if(!confirm('Delete this job?'))return;
+  var jobs=ld('schedule')||[];
+  jobs=jobs.filter(function(j){return j.id!==id});
+  sv('schedule',jobs);closeModal();renderSchedule();
+}
+
+// ==================== P&L SUMMARY ====================
+function renderPnl(){
+  if(!canAccess('pnl')){document.getElementById('pnl-content').innerHTML='<div class="empty"><div class="empty-icon">&#128274;</div><div>Access denied</div></div>';return}
+  var c=document.getElementById('pnl-content');
+  var monthNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var h='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">';
+  h+='<button class="btn btn-sm btn-outline" onclick="pnlNav(-1)">&larr;</button>';
+  h+='<span style="font-size:16px;font-weight:700">'+monthNames[pnlMonth]+' '+pnlYear+'</span>';
+  h+='<button class="btn btn-sm btn-outline" onclick="pnlNav(1)">&rarr;</button></div>';
+  var data=pnlCalc();
+  h+='<div class="pnl-grid">';
+  h+='<div class="pnl-card pc-rev"><div class="pv">'+fmt(data.revenue)+'</div><div class="pl">Revenue</div></div>';
+  h+='<div class="pnl-card pc-exp"><div class="pv">'+fmt(data.expenses)+'</div><div class="pl">Expenses</div></div>';
+  h+='<div class="pnl-card pc-prof"><div class="pv">'+fmt(data.profit)+'</div><div class="pl">Profit</div></div>';
+  h+='<div class="pnl-card pc-marg"><div class="pv">'+data.margin+'%</div><div class="pl">Margin</div></div>';
+  h+='</div>';
+  if(data.weeks.length>0){
+    h+='<div class="card"><div class="card-h-gold">Weekly Breakdown</div>';
+    for(var i=0;i<data.weeks.length;i++){
+      var w=data.weeks[i];
+      var maxVal=Math.max(data.weeks[0].rev,data.weeks[0].exp,1);
+      for(var j=0;j<data.weeks.length;j++){maxVal=Math.max(maxVal,data.weeks[j].rev,data.weeks[j].exp,1)}
+      h+='<div class="chart-bar-wrap"><div class="chart-bar-label">'+w.label+'</div>';
+      h+='<div class="chart-bar-track"><div class="chart-bar-fill cbf-rev" style="width:'+Math.max(8,w.rev/maxVal*100)+'%">'+fmt(w.rev)+'</div></div>';
+      h+='<div class="chart-bar-track"><div class="chart-bar-fill cbf-exp" style="width:'+Math.max(8,w.exp/maxVal*100)+'%">'+fmt(w.exp)+'</div></div>';
+      h+='</div>';
+    }
+    h+='</div>';
+  }
+  if(Object.keys(data.byCat).length>0){
+    h+='<div class="card"><div class="card-h-gold">Expense by Category</div>';
+    var maxCat=0;for(var k in data.byCat){maxCat=Math.max(maxCat,data.byCat[k])}
+    for(var k in data.byCat){
+      h+='<div class="chart-bar-wrap"><div class="chart-bar-label">'+k+'</div>';
+      h+='<div class="chart-bar-track"><div class="chart-bar-fill cbf-exp" style="width:'+Math.max(8,data.byCat[k]/maxCat*100)+'%">'+fmt(data.byCat[k])+'</div></div></div>';
+    }
+    h+='</div>';
+  }
+  h+='<div class="card"><div class="card-h-gold">Recent Transactions</div>';
+  var expenses=ld('expenses')||[];
+  var monthExp=expenses.filter(function(e){var d=new Date(e.at);return d.getFullYear()===pnlYear&&d.getMonth()===pnlMonth});
+  if(monthExp.length===0){h+='<div class="empty">No transactions this month</div>'}
+  else{
+    var shown=monthExp.reverse().slice(0,10);
+    for(var i=0;i<shown.length;i++){var e=shown[i];
+      h+='<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f0;font-size:13px">';
+      h+='<span>'+e.villaName+' &middot; '+e.cat+'</span>';
+      h+='<span style="font-weight:700">'+fmt(e.amt)+' <span class="badge b-'+e.status+'" style="font-size:9px">'+e.status+'</span></span></div>';
+    }
+  }
+  h+='</div>';
+  c.innerHTML=h;
+}
+function pnlNav(d){pnlMonth+=d;if(pnlMonth>11){pnlMonth=0;pnlYear++}if(pnlMonth<0){pnlMonth=11;pnlYear--}renderPnl()}
+function pnlCalc(){
+  var expenses=ld('expenses')||[];
+  var chefCalcs=ld('chef_calcs')||{};
+  var cleanCalcs=ld('clean_calcs')||{};
+  var revenue=0,expenseTotal=0;
+  var weeks=[{label:'Week 1',rev:0,exp:0},{label:'Week 2',rev:0,exp:0},{label:'Week 3',rev:0,exp:0},{label:'Week 4',rev:0,exp:0}];
+  var byCat={};
+  var monthExp=expenses.filter(function(e){var d=new Date(e.at);return d.getFullYear()===pnlYear&&d.getMonth()===pnlMonth});
+  for(var i=0;i<monthExp.length;i++){
+    var e=monthExp[i];expenseTotal+=e.amt;
+    if(!byCat[e.cat])byCat[e.cat]=0;byCat[e.cat]+=e.amt;
+    var day=new Date(e.at).getDate();var wi=Math.min(3,Math.floor((day-1)/7));
+    weeks[wi].exp+=e.amt;
+  }
+  for(var svc in chefCalcs){
+    var s=chefCalcs[svc];
+    var price=chefGetPrice(svc,s.guests);
+    revenue+=price;
+    var day=new Date().getDate();var wi=Math.min(3,Math.floor((day-1)/7));
+    weeks[wi].rev+=price;
+  }
+  for(var vid in cleanCalcs){
+    var villa=VILLAS.find(function(v){return v.id===vid});
+    if(villa){revenue+=villa.co}
+  }
+  var profit=revenue-expenseTotal;
+  var margin=revenue>0?Math.round(profit/revenue*100):0;
+  return{revenue:revenue,expenses:expenseTotal,profit:profit,margin:margin,weeks:weeks,byCat:byCat};
+}
+</script>
+</body>
+</html>
