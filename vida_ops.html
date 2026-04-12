@@ -842,19 +842,7 @@ function renderSchedule(){
  h+='<div style="font-size:11px;color:#666;margin-bottom:8px">Auto-refreshes every 5 min | Google Calendar sync</div>';
  }
 
- // Filter tabs
- h+='<div class="tab-pills" style="margin-bottom:12px">';
- var types=['all','cleaning','pool','laundry','chef','maintenance','other'];
- for(var i=0;i<types.length;i++){
- var t=types[i];
- var active=schedFilter===t?'tab-pill tab-active':'tab-pill';
- var lbl=t==='all'?'All':schedTypeLabel(t);
- h+='<div class="'+active+'" onclick="schedFilter=\''+t+'\';schedRefresh()">'+lbl+'</div>';
- }
- h+='</div>';
-
- // Filter jobs
- if(schedFilter!=='all'){jobs=jobs.filter(function(j){return j.type===schedFilter})}
+ // Filter tabs removed
 
  if(jobs.length===0){
  h+='<div class="empty"><div class="empty-icon">&#128197;</div><div>No jobs scheduled</div></div>';
