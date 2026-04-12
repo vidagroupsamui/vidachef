@@ -890,17 +890,23 @@ function renderSchedule(){
  var title=(j.title||j.summary||'No title');
  var tl=title.toLowerCase();
  var borderColor='#c9a84c';
- if(tl.includes('clean')||tl.includes('checkout')||tl.includes('staying'))borderColor='#0d2744';
- else if(tl.includes('pool')||tl.includes('garden'))borderColor='#0e7490';
- else if(tl.includes('chef')||tl.includes('breakfast')||tl.includes('dinner')||tl.includes('bbq'))borderColor='#c9a84c';
- else if(tl.includes('laundry'))borderColor='#7c3aed';
- else if(tl.includes('off')||tl.includes('holiday'))borderColor='#6b7280';
- var titleColor='#1a1a2e';
- if(tl.includes('same day'))titleColor='#dc2626';
- else if(tl.includes('checkout')||tl.includes('check out'))titleColor='#16a34a';
- h+='<div style="background:#fff;border-radius:12px;box-shadow:0 1px 6px rgba(0,0,0,0.08);border-left:4px solid '+borderColor+';padding:12px 16px;margin-bottom:8px;">';
- h+='<div style="font-weight:700;font-size:16px;color:'+titleColor+';margin-bottom:4px;">'+title+'</div>';
+ var titleStyle='font-weight:700;font-size:16px;';
+ var cardBg='#fff';
+ if(tl.includes('same day')){borderColor='#dc2626';titleStyle+='color:#dc2626;';}
+ else if(tl.includes('checkout')||tl.includes('check out')){borderColor='#0d2744';titleStyle+='color:#16a34a;';}
+ else if(tl.includes('staying')){borderColor='#0d2744';titleStyle+='color:#1a1a2e;';}
+ else if(tl.includes('pool')||tl.includes('garden')){borderColor='#0e7490';titleStyle+='color:#1a1a2e;';}
+ else if(tl.includes('chef')||tl.includes('breakfast')||tl.includes('dinner')||tl.includes('bbq')){borderColor='#c9a84c';titleStyle+='color:#1a1a2e;';}
+ else if(tl.includes('laundry')){borderColor='#7c3aed';titleStyle+='color:#1a1a2e;';}
+ else if(tl.includes('off')||tl.includes('holiday')){borderColor='#6b7280';titleStyle+='color:#6b7280;font-style:italic;';cardBg='#f9fafb';}
+ else{titleStyle+='color:#1a1a2e;';}
+ h+='<div id="card-'+i+'" onclick="toggleCard('+i+')" style="cursor:pointer;background:'+cardBg+';border-radius:12px;box-shadow:0 1px 6px rgba(0,0,0,0.08);border-left:5px solid '+borderColor+';padding:12px 16px;margin-bottom:8px;">';
+ h+='<div style="'+titleStyle+'margin-bottom:4px;">'+title+'</div>';
  h+='<div style="font-size:12px;color:#888;">'+timeStr+'</div>';
+ if(j.description){
+ h+='<div style="font-size:11px;color:#dc2626;margin-top:4px;">&#128203; Tap to see notes</div>';
+ }
+ h+='<div id="notes-'+i+'" style="display:none;margin-top:8px;padding-top:8px;border-top:1px solid #f0f0f0;font-size:13px;color:#444;white-space:pre-wrap;">'+(j.description||'')+'</div>';
  h+='</div>';
  }
  }
@@ -911,6 +917,11 @@ function renderSchedule(){
  }
 
  c.innerHTML=h;
+}
+
+function toggleCard(i){
+ var n=document.getElementById('notes-'+i);
+ if(n) n.style.display=n.style.display==='none'?'block':'none';
 }
 
 function schedDetail(id){
