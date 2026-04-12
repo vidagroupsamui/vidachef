@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Vida Group Ops</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@400;700&display=swap');
 :root{
   --navy:#0d2744;--navy-l:#163a64;--navy-d:#091b30;
   --gold:#c9a84c;--gold-l:#e0c76e;--gold-dim:rgba(201,168,76,.15);--gold-bdr:rgba(201,168,76,.3);
@@ -14,7 +15,7 @@
   --sh:0 4px 16px rgba(13,39,68,.08);--sh-lg:0 8px 32px rgba(13,39,68,.12);
   --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   --serif:Georgia,'Times New Roman',serif;
-  --mm-font:'Pyidaungsu','Myanmar Text','Padauk',sans-serif;
+  --mm-font:'Noto Sans Myanmar','Pyidaungsu','Myanmar Text','Padauk',sans-serif;
   --tab-h:56px;--top-h:54px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -1068,92 +1069,6 @@ function renderPnl(){
 
   c.innerHTML=h;
 }
-
-// ==================== APP INIT ====================
-function init(){
-  var session=ld('session');
-  if(session&&session.u){
-    var acc=ACCOUNTS.find(function(a){return a.u===session.u});
-    if(acc){CUR=acc;showApp();return}
-  }
-  document.getElementById('login-screen').style.display='';
-  document.getElementById('app-shell').style.display='none';
-}
-
-function showApp(){
-  document.getElementById('login-screen').style.display='none';
-  document.getElementById('app-shell').style.display='';
-  document.getElementById('user-name').textContent=CUR.name;
-  // Show/hide tabs by role
-  var tabs=document.querySelectorAll('.nav-tab');
-  for(var i=0;i<tabs.length;i++){
-    var mod=tabs[i].getAttribute('data-mod');
-    tabs[i].style.display='';
-  }
-  // Viewer: only P&L
-  if(CUR.role==='viewer'){
-    for(var i=0;i<tabs.length;i++){
-      var mod=tabs[i].getAttribute('data-mod');
-      tabs[i].style.display=(mod==='pnl')?'':'none';
-    }
-  }
-  // Staff: only upload + schedule
-  if(CUR.role==='staff'){
-    for(var i=0;i<tabs.length;i++){
-      var mod=tabs[i].getAttribute('data-mod');
-      tabs[i].style.display=(mod==='upload'||mod==='schedule')?'':'none';
-    }
-  }
-  // Manager: all except P&L
-  if(CUR.role==='manager'){
-    for(var i=0;i<tabs.length;i++){
-      var mod=tabs[i].getAttribute('data-mod');
-      tabs[i].style.display=(mod==='pnl')?'none':'';
-    }
-  }
-  showMod('chef');
-}
-
-function showMod(mod){
-  var tabs=document.querySelectorAll('.nav-tab');
-  for(var i=0;i<tabs.length;i++){
-    tabs[i].classList.remove('nav-active');
-    if(tabs[i].getAttribute('data-mod')===mod)tabs[i].classList.add('nav-active');
-  }
-  var mods=['chef','cleaning','upload','admin','schedule','pnl'];
-  for(var i=0;i<mods.length;i++){
-    var el=document.getElementById(mods[i]+'-content');
-    if(el)el.style.display=(mods[i]===mod)?'':'none';
-  }
-  // Clear previous calendar timer
-  if(calRefreshTimer){clearInterval(calRefreshTimer);calRefreshTimer=null}
-  // Render module
-  if(mod==='chef')renderChef();
-  else if(mod==='cleaning')renderCleaning();
-  else if(mod==='upload')renderUpload();
-  else if(mod==='admin')renderUpload();
-  else if(mod==='schedule'){schedRefresh();schedFetchCal();calRefreshTimer=setInterval(function(){schedFetchCal()},300000)}
-  else if(mod==='pnl')renderPnl();
-}
-
-function logout(){
-  if(!confirm('Logout? / ထြက္မွာ ေသခ်ာလား?'))return;
-  sv('session',null);CUR=null;
-  document.getElementById('login-screen').style.display='';
-  document.getElementById('app-shell').style.display='none';
-  document.getElementById('pin-input').value='';
-}
-
-function openModal(html){
-  document.getElementById('modal-body').innerHTML=html;
-  document.getElementById('modal').style.display='';
-}
-function closeModal(){
-  document.getElementById('modal').style.display='none';
-}
-
-// Init on load
-init();
 </script>
 </body>
 </html>
