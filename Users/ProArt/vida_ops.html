@@ -446,7 +446,7 @@ function cleanGetLaundryMsg(villa){
  if(villa.id==='aqua_319_up')return'All-inclusive \u2014 laundry \u0e3f400 already included';
  if(villa.id==='aqua_319_down')return'All-inclusive \u2014 laundry \u0e3f250 already included';
  if(villa.id==='bo_phut')return'Laundry \u0e3f500 fixed \u2014 already included in price';
- if(villa.id==='villa_love')return'Management fee \u0e3f1,500/month \u2014 billed end of month separately';
+ if(villa.id==='villa_love')return'Garbage collection \u0e3f1,500/month \u2014 billed end of month separately';
  return'';
 }
 function renderCleaning(){
@@ -483,6 +483,7 @@ function renderCleaning(){
  h+='<div class="summary"><div class="summary-row"><span>Revenue</span><span>'+fmt(totalPrice)+'</span></div>';
  h+='<div class="summary-row"><span>Costs</span><span>&minus;'+fmt(totalCost)+'</span></div>';
  h+='<div class="summary-row total"><span>Profit</span><span>'+fmt(profit)+'</span></div></div>';
+ if(cleaningState.type==='deep'){
  h+='<div class="card"><div class="card-h-gold">5-Way Profit Split</div>';
  for(var si=0;si<SHARE_LABELS.length;si++){
  var pct=vdata.shares[si]||0;var share=Math.round(profit*pct/100);
@@ -494,6 +495,15 @@ function renderCleaning(){
  }
  if(ed)h+='<button class="btn btn-navy btn-block" style="margin-top:10px" onclick="cleanSave()">Save</button>';
  h+='</div>';
+ }else{
+ var commission=Math.round(totalPrice*0.10);
+ var netProfit=profit-commission;
+ h+='<div class="card"><div class="card-h-gold">Commission & Net Profit</div>';
+ h+='<div class="summary">';
+ h+='<div class="summary-row"><span>Commission (10%)</span><span>&minus;'+fmt(commission)+'</span></div>';
+ h+='<div class="summary-row total"><span>Net Profit</span><span>'+fmt(netProfit)+' THB</span></div>';
+ h+='</div></div>';
+ }
  }else{h+='<div class="empty"><div class="empty-icon">&#129696;</div><div>Select a villa to see pricing</div></div>';}
  c.innerHTML=h;
 }
@@ -776,7 +786,7 @@ function schedTypeLabel(type){
 
 function schedFetchCal(){
  if(!CAL_ID)return;
- var url='https://www.googleapis.com/calendar/v3/calendars/'+encodeURIComponent(CAL_ID)+'/events?key=AIzaSyBNLgmEtEJcsKEOGKcD0J8XvZmVqJmGqQo&singleEvents=true&orderBy=startTime&timeMin='+new Date().toISOString().slice(0,10)+'T00:00:00Z&maxResults=50';
+ var url='https://www.googleapis.com/calendar/v3/calendars/'+encodeURIComponent(CAL_ID)+'/events?key=AIzaSyBfArhqcaYyuJIxp4bfRNVd4KXEbOoPfg8&singleEvents=true&orderBy=startTime&timeMin='+new Date().toISOString().slice(0,10)+'T00:00:00Z&maxResults=50';
  console.log('[Calendar] Fetching:',url);
  fetch(url,{headers:{'Accept':'application/json'}})
  .then(function(r){
