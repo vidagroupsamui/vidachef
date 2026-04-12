@@ -483,6 +483,7 @@ function renderCleaning(){
  h+='<div class="summary"><div class="summary-row"><span>Revenue</span><span>'+fmt(totalPrice)+'</span></div>';
  h+='<div class="summary-row"><span>Costs</span><span>&minus;'+fmt(totalCost)+'</span></div>';
  h+='<div class="summary-row total"><span>Profit</span><span>'+fmt(profit)+'</span></div></div>';
+ if(cleaningState.type==='deep'){
  h+='<div class="card"><div class="card-h-gold">5-Way Profit Split</div>';
  for(var si=0;si<SHARE_LABELS.length;si++){
  var pct=vdata.shares[si]||0;var share=Math.round(profit*pct/100);
@@ -494,6 +495,15 @@ function renderCleaning(){
  }
  if(ed)h+='<button class="btn btn-navy btn-block" style="margin-top:10px" onclick="cleanSave()">Save</button>';
  h+='</div>';
+ }else{
+ var commission=Math.round(totalPrice*0.10);
+ var netProfit=profit-commission;
+ h+='<div class="card"><div class="card-h-gold">Commission & Net Profit</div>';
+ h+='<div class="summary">';
+ h+='<div class="summary-row"><span>Commission (10%)</span><span>&minus;'+fmt(commission)+'</span></div>';
+ h+='<div class="summary-row total"><span>Net Profit</span><span>'+fmt(netProfit)+' THB</span></div>';
+ h+='</div></div>';
+ }
  }else{h+='<div class="empty"><div class="empty-icon">&#129696;</div><div>Select a villa to see pricing</div></div>';}
  c.innerHTML=h;
 }
