@@ -691,13 +691,13 @@ function expSubmit(){
  var villa='';var villaName='';var vehicle='';var vehicleName='';var laundryShop='';var monthVal='';
  if(expShowVilla(catId)){
  villa=document.getElementById('exp-villa').value;
- if(!villa){alert('Select villa");return}
+ if(!villa){alert('Select villa');return}
  var vObj=VILLAS.find(function(v){return v.id===villa});
  villaName=vObj?vObj.name:(villa==='general'?'General / Office':villa);
  }
  if(expShowVehicle(catId)){
  vehicle=document.getElementById('exp-vehicle').value;
- if(!vehicle){alert('Select vehicle");return}
+ if(!vehicle){alert('Select vehicle');return}
  var vhObj=VEHICLES.find(function(v){return v.id===vehicle});
  vehicleName=vhObj?vhObj.label:vehicle;
  }
