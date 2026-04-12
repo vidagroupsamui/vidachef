@@ -856,20 +856,19 @@ function renderSchedule(){
  var dateStr=d.toDateString();
  if(dateStr!==curDate){
  curDate=dateStr;
- h+='<div style="font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.05em;margin:16px 0 8px">'+dayNames[d.getDay()]+' '+d.getDate()+' '+mmNames[d.getMonth()]+'</div>';
+ h+='<div style="font-size:11px;font-weight:600;color:#c9a84c;letter-spacing:1px;text-transform:uppercase;margin:16px 0 8px;">'+dayNames[d.getDay()]+' '+d.getDate()+' '+mmNames[d.getMonth()]+'</div>';
  }
- var title=(j.title||j.villa||'Untitled').toLowerCase();
- var color;
- if(/clean|checkout|staying/.test(title))color='#0d2744';
- else if(/pool|garden/.test(title))color='#0e7490';
- else if(/chef|breakfast|dinner|bbq/.test(title))color='#c9a84c';
- else if(/laundry/.test(title))color='#7c3aed';
- else if(/off|holiday/.test(title))color='#6b7280';
- else color='#c9a84c';
- var time=d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
- h+='<div style="background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.08);border-left:4px solid '+color+';padding:12px 16px;margin-bottom:8px;cursor:pointer" onclick="schedDetail(\''+j.id+'\')">';
- h+='<div style="font-size:16px;font-weight:700;color:var(--navy)">'+(j.title||j.villa||'Untitled')+'</div>';
- h+='<div style="font-size:12px;color:#9ca3af;margin-top:2px">'+time+'</div>';
+ var timeStr=d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+ var borderColor='#c9a84c';
+ var t=(j.title||j.summary||'').toLowerCase();
+ if(t.includes('clean')||t.includes('checkout')||t.includes('staying'))borderColor='#0d2744';
+ else if(t.includes('pool')||t.includes('garden'))borderColor='#0e7490';
+ else if(t.includes('chef')||t.includes('breakfast')||t.includes('dinner')||t.includes('bbq'))borderColor='#c9a84c';
+ else if(t.includes('laundry'))borderColor='#7c3aed';
+ else if(t.includes('off')||t.includes('holiday'))borderColor='#6b7280';
+ h+='<div style="background:#fff;border-radius:12px;box-shadow:0 1px 6px rgba(0,0,0,0.08);border-left:4px solid '+borderColor+';padding:12px 16px;margin-bottom:8px;">';
+ h+='<div style="font-weight:700;font-size:16px;color:#1a1a2e;margin-bottom:4px;">'+(j.title||j.summary||'No title')+'</div>';
+ h+='<div style="font-size:12px;color:#888;">'+timeStr+'</div>';
  h+='</div>';
  }
  }
