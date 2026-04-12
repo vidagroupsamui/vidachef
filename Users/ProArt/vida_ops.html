@@ -266,7 +266,7 @@ var VEHICLES=[
 ];
 var CUR=null;
 var chefState={tab:'breakfast',services:{}};
-var cleaningState={villa:'',type:'co'};
+var cleaningState={villa:'',type:'co',mode:'regular',manualName:'',manualPrice:''};
 var CAL_API_KEY='AIzaSyBfArhqcaYyuJIxp4bfRNVd4KXEbOoPfg8';
 var CAL_ID='a9b8a635ba5f1b57274e5ed292ff8be2244b54fd8d18839c5094095e2ef6734b@group.calendar.google.com';
 var calEvents=[];var calLoading=false;var calOnline=false;var calTimer=null;
@@ -451,8 +451,14 @@ function cleanGetLaundryMsg(villa){
 }
 function renderCleaning(){
  var c=document.getElementById('cleaning-content');var ed=canEdit('cleaning');
+ var h='<div class="card"><div class="card-h-gold">Job Type</div>';
+ h+='<div class="fg2"><select class="select" id="clean-mode" onchange="cleanSetMode(this.value)">';
+ h+='<option value="regular"'+(cleaningState.mode==='regular'?' selected':'')+'>Regular Clean</option>';
+ h+='<option value="deep"'+(cleaningState.mode==='deep'?' selected':'')+'>Deep Clean</option>';
+ h+='</select></div></div>';
+ if(cleaningState.mode==='regular'){
  var groups=['ADAM/KAGAMI','MPS','CHEN','STEVEN','OTHERS'];
- var h='<div class="card"><div class="card-h-gold">Select Villa</div>';
+ h+='<div class="card"><div class="card-h-gold">Select Villa</div>';
  h+='<div class="fg2"><label>Villa</label><select class="select" id="clean-villa" onchange="cleanSelVilla(this.value)">';
  h+='<option value="">Choose a villa...</option>';
  for(var gi=0;gi<groups.length;gi++){
@@ -465,7 +471,6 @@ function renderCleaning(){
  h+='<option value="co"'+(cleaningState.type==='co'?' selected':'')+'>Checkout Clean</option>';
  h+='<option value="st"'+(cleaningState.type==='st'?' selected':'')+'>Staying Clean</option>';
  h+='<option value="normal"'+(cleaningState.type==='normal'?' selected':'')+'>Normal Clean</option>';
- h+='<option value="deep"'+(cleaningState.type==='deep'?' selected':'')+'>Deep Clean</option>';
  h+='</select></div></div>';
  var villa=VILLAS.find(function(v){return v.id===cleaningState.villa});
  if(villa){
@@ -475,7 +480,7 @@ function renderCleaning(){
  var totalCost=vdata.extraCost+garbage;if(villa.laundry&&villa.laundryCost){totalCost+=villa.laundryCost}
  var profit=totalPrice-totalCost;
  h+='<div class="card" style="border-left:4px solid var(--gold)"><div style="font-size:18px;font-weight:700;color:var(--navy)">'+villa.name+'</div><div style="font-size:12px;color:var(--muted)">'+villa.group+'</div></div>';
- var typeLabels={co:'Checkout Clean',st:'Staying Clean',normal:'Normal Clean',deep:'Deep Clean'};
+ var typeLabels={co:'Checkout Clean',st:'Staying Clean',normal:'Normal Clean'};
  h+='<div class="price-display"><div class="amount">'+fmt(totalPrice)+' THB</div><div class="sub">'+(typeLabels[cleaningState.type]||'')+(garbage>0?' + '+fmt(garbage)+' garbage':'')+'</div></div>';
  var laundryMsg=cleanGetLaundryMsg(villa);
  if(laundryMsg)h+='<div class="note" style="background:#fffde7;border-left-color:#f9a825"><strong>'+laundryMsg+'</strong></div>';
@@ -483,19 +488,6 @@ function renderCleaning(){
  h+='<div class="summary"><div class="summary-row"><span>Revenue</span><span>'+fmt(totalPrice)+'</span></div>';
  h+='<div class="summary-row"><span>Costs</span><span>&minus;'+fmt(totalCost)+'</span></div>';
  h+='<div class="summary-row total"><span>Profit</span><span>'+fmt(profit)+'</span></div></div>';
- if(cleaningState.type==='deep'){
- h+='<div class="card"><div class="card-h-gold">5-Way Profit Split</div>';
- for(var si=0;si<SHARE_LABELS.length;si++){
- var pct=vdata.shares[si]||0;var share=Math.round(profit*pct/100);
- h+='<div class="sl-row"><span class="sl-label">'+SHARE_LABELS[si]+'</span>';
- if(ed)h+='<input class="sl-range" type="range" min="0" max="100" value="'+pct+'" oninput="cleanSlider('+si+',this.value)">';
- else h+='<div style="flex:1;height:6px;background:#e5e7eb;border-radius:3px"><div style="height:100%;width:'+pct+'%;background:var(--gold);border-radius:3px"></div></div>';
- h+='<span class="sl-pct">'+pct+'%</span>';
- h+='<span style="font-size:12px;font-weight:600;min-width:60px;text-align:right;color:var(--navy)">'+fmt(share)+'</span></div>';
- }
- if(ed)h+='<button class="btn btn-navy btn-block" style="margin-top:10px" onclick="cleanSave()">Save</button>';
- h+='</div>';
- }else{
  var commission=Math.round(totalPrice*0.10);
  var netProfit=profit-commission;
  h+='<div class="card"><div class="card-h-gold">Commission & Net Profit</div>';
@@ -503,10 +495,46 @@ function renderCleaning(){
  h+='<div class="summary-row"><span>Commission (10%)</span><span>&minus;'+fmt(commission)+'</span></div>';
  h+='<div class="summary-row total"><span>Net Profit</span><span>'+fmt(netProfit)+' THB</span></div>';
  h+='</div></div>';
- }
  }else{h+='<div class="empty"><div class="empty-icon">&#129696;</div><div>Select a villa to see pricing</div></div>';}
+ }else{
+ h+='<div class="card"><div class="card-h-gold">Deep Clean</div>';
+ h+='<div class="fg2"><label>Villa</label><select class="select" id="clean-villa" onchange="cleanSelVilla(this.value)">';
+ h+='<option value="">Choose a villa...</option>';
+ for(var gi=0;gi<groups.length;gi++){
+ h+='<optgroup label="'+groups[gi]+'">';
+ for(var i=0;i<VILLAS.length;i++){if(VILLAS[i].group===groups[gi]){h+='<option value="'+VILLAS[i].id+'"'+(cleaningState.villa===VILLAS[i].id?' selected':'')+'>'+VILLAS[i].name+'</option>'}}
+ h+='</optgroup>';
+ }
+ h+='</select></div>';
+ h+='<div class="fg2"><label>Or type villa name</label><input class="input" type="text" id="clean-manual-name" value="'+(cleaningState.manualName||'')+'" placeholder="e.g. Villa Paradise" oninput="cleanSetManualName(this.value)"></div>';
+ h+='<div class="fg2"><label>Price (THB)</label><input class="input" type="number" id="clean-manual-price" value="'+(cleaningState.manualPrice||'')+'" min="0" placeholder="Enter deep clean price" oninput="cleanSetManualPrice(this.value)"></div>';
+ h+='</div>';
+ var displayName=cleaningState.manualName||'';
+ var villaObj=VILLAS.find(function(v){return v.id===cleaningState.villa});
+ if(villaObj&&!cleaningState.manualName)displayName=villaObj.name;
+ var price=parseInt(cleaningState.manualPrice)||0;
+ if(price>0){
+ var commission=Math.round(price*0.10);
+ var labor=Math.round(price*0.40);
+ var companyProfit=Math.round(price*0.50);
+ h+='<div class="card" style="border-left:4px solid var(--gold)"><div style="font-size:18px;font-weight:700;color:var(--navy)">'+(displayName||'Deep Clean')+'</div></div>';
+ h+='<div class="price-display"><div class="amount">'+fmt(price)+' THB</div><div class="sub">Deep Clean</div></div>';
+ h+='<div class="summary"><div class="summary-row"><span>Revenue</span><span>'+fmt(price)+'</span></div>';
+ h+='<div class="summary-row total"><span>Profit</span><span>'+fmt(price)+'</span></div></div>';
+ h+='<div class="card"><div class="card-h-gold">Profit Split</div>';
+ h+='<div class="summary">';
+ h+='<div class="summary-row"><span>Labor</span><span>'+fmt(labor)+' (40%)</span></div>';
+ h+='<div class="summary-row"><span>Commission (10%)</span><span>&minus;'+fmt(commission)+'</span></div>';
+ h+='<div class="summary-row"><span>Company Profit</span><span>'+fmt(companyProfit)+' (50%)</span></div>';
+ h+='<div class="summary-row total"><span>Total</span><span>'+fmt(labor+commission+companyProfit)+'</span></div>';
+ h+='</div></div>';
+ }
+ }
  c.innerHTML=h;
 }
+function cleanSetMode(v){cleaningState.mode=v;renderCleaning()}
+function cleanSetManualName(v){cleaningState.manualName=v;renderCleaning()}
+function cleanSetManualPrice(v){cleaningState.manualPrice=v;renderCleaning()}
 function cleanSelVilla(v){cleaningState.villa=v;renderCleaning()}
 function cleanSelType(v){cleaningState.type=v;renderCleaning()}
 function cleanSetCost(v){
