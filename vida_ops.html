@@ -5,76 +5,74 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Vida Group Ops</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@400;700&display=swap');
 :root{
-  --navy:#0d2744;--navy-l:#163a64;--navy-d:#091b30;
-  --gold:#c9a84c;--gold-l:#e0c76e;--gold-dim:rgba(201,168,76,.15);--gold-bdr:rgba(201,168,76,.3);
-  --white:#fff;--bg:#f4f1eb;--card:#fff;--text:#1a1a2e;--muted:#6b7280;--text-l:#9ca3af;
-  --green:#16a34a;--green-bg:#dcfce7;--red:#dc2626;--red-bg:#fee2e2;--orange:#ea580c;--orange-bg:#fff7ed;--blue:#2563eb;--blue-bg:#dbeafe;
-  --r:12px;--r-sm:8px;--r-lg:16px;
-  --sh:0 4px 16px rgba(13,39,68,.08);--sh-lg:0 8px 32px rgba(13,39,68,.12);
-  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-  --serif:Georgia,'Times New Roman',serif;
-  --mm-font:'Noto Sans Myanmar','Pyidaungsu','Myanmar Text','Padauk',sans-serif;
-  --tab-h:56px;--top-h:54px;
+ --navy:#0d2744;--navy-l:#163a64;--navy-d:#091b30;
+ --gold:#c9a84c;--gold-l:#e0c76e;--gold-dim:rgba(201,168,76,.15);--gold-bdr:rgba(201,168,76,.3);
+ --white:#fff;--bg:#f4f1eb;--card:#fff;--text:#1a1a2e;--muted:#6b7280;--text-l:#9ca3af;
+ --green:#16a34a;--green-bg:#dcfce7;--red:#dc2626;--red-bg:#fee2e2;--orange:#ea580c;--orange-bg:#fff7ed;--blue:#2563eb;--blue-bg:#dbeafe;
+ --r:12px;--r-sm:8px;--r-lg:16px;
+ --sh:0 4px 16px rgba(13,39,68,.08);--sh-lg:0 8px 32px rgba(13,39,68,.12);
+ --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+ --serif:Georgia,'Times New Roman',serif;
+ --tab-h:56px;--top-h:54px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.5;
-  -webkit-font-smoothing:antialiased;touch-action:manipulation;overflow:hidden;height:100vh}
+ -webkit-font-smoothing:antialiased;touch-action:manipulation;overflow:hidden;height:100vh}
 button,a{touch-action:manipulation;cursor:pointer;-webkit-tap-highlight-color:transparent}
 input,select,textarea{font-family:var(--sans);font-size:16px;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-.mm{font-family:var(--mm-font)}
+
 #login-screen{position:fixed;inset:0;background:var(--navy);display:flex;flex-direction:column;
-  align-items:center;justify-content:center;z-index:200;padding:20px}
+ align-items:center;justify-content:center;z-index:200;padding:20px}
 .login-card{background:var(--navy-l);border:2px solid var(--gold-bdr);border-radius:var(--r-lg);
-  padding:32px 24px;width:100%;max-width:320px;text-align:center;box-shadow:var(--sh-lg)}
+ padding:32px 24px;width:100%;max-width:320px;text-align:center;box-shadow:var(--sh-lg)}
 .login-brand{font-family:var(--serif);font-size:28px;font-weight:700;color:#fff;margin-bottom:4px}
 .login-brand em{color:var(--gold);font-style:italic}
 .login-sub{font-size:13px;color:rgba(255,255,255,.5);margin-bottom:24px}
 .login-field{text-align:left;margin-bottom:16px}
 .login-field label{display:block;font-size:12px;color:rgba(255,255,255,.6);margin-bottom:4px;font-weight:500}
 .login-field input{width:100%;padding:12px;background:rgba(255,255,255,.08);border:1px solid var(--gold-bdr);
-  border-radius:var(--r-sm);color:#fff;font-size:18px;text-align:center;letter-spacing:4px}
+ border-radius:var(--r-sm);color:#fff;font-size:18px;text-align:center;letter-spacing:4px}
 .login-field input:focus{outline:none;border-color:var(--gold)}
 .login-btn{width:100%;padding:14px;background:var(--gold);color:var(--navy);border:none;border-radius:var(--r-sm);
-  font-size:16px;font-weight:700;cursor:pointer;margin-top:8px}
+ font-size:16px;font-weight:700;cursor:pointer;margin-top:8px}
 .login-btn:active{background:var(--gold-l)}
 .login-err{color:#f87171;font-size:13px;margin-top:12px;display:none}
 #topbar{position:fixed;top:0;left:0;right:0;height:var(--top-h);background:var(--navy);
-  display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:100;
-  border-bottom:2px solid var(--gold)}
+ display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:100;
+ border-bottom:2px solid var(--gold)}
 .tb-brand{font-family:var(--serif);font-size:18px;font-weight:700;color:#fff;white-space:nowrap}
 .tb-brand em{color:var(--gold);font-style:italic}
 .tb-title{color:var(--gold);font-size:14px;font-weight:600;letter-spacing:.04em}
 .tb-right{display:flex;align-items:center;gap:8px}
 .tb-user{font-size:12px;color:rgba(255,255,255,.7)}
 .tb-btn{padding:6px 12px;background:transparent;border:1px solid var(--gold-bdr);border-radius:var(--r-sm);
-  color:var(--gold);font-size:12px;font-weight:600;cursor:pointer}
+ color:var(--gold);font-size:12px;font-weight:600;cursor:pointer}
 .tb-btn:active{background:var(--gold-dim)}
 #content{position:fixed;top:var(--top-h);left:0;right:0;bottom:var(--tab-h);overflow-y:auto;
-  -webkit-overflow-scrolling:touch;padding:16px}
+ -webkit-overflow-scrolling:touch;padding:16px}
 #bottom-tabs{position:fixed;bottom:0;left:0;right:0;height:var(--tab-h);background:var(--navy);
-  display:flex;align-items:center;justify-content:space-around;z-index:100;
-  border-top:2px solid var(--gold-bdr);padding-bottom:env(safe-area-inset-bottom)}
+ display:flex;align-items:center;justify-content:space-around;z-index:100;
+ border-top:2px solid var(--gold-bdr);padding-bottom:env(safe-area-inset-bottom)}
 .tab-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;
-  background:none;border:none;color:rgba(255,255,255,.5);font-size:10px;padding:4px 8px;
-  cursor:pointer;transition:color .15s;min-width:0;flex:1}
+ background:none;border:none;color:rgba(255,255,255,.5);font-size:10px;padding:4px 8px;
+ cursor:pointer;transition:color .15s;min-width:0;flex:1}
 .tab-btn.on{color:var(--gold)}
 .tab-icon{font-size:20px;line-height:1.2}
 .module{display:none}.module.on{display:block}
 .container{max-width:600px;margin:0 auto}
 .card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:16px;margin-bottom:16px}
 .card-h-gold{font-family:var(--serif);font-size:16px;font-weight:700;color:var(--gold);
-  margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--gold-bdr)}
+ margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--gold-bdr)}
 .fg2{margin-bottom:12px}
 .fg2 label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:4px}
 .input,.select,.textarea{width:100%;padding:10px 12px;border:1.5px solid #e5e7eb;border-radius:var(--r-sm);
-  background:#fff;color:var(--text);transition:border-color .15s}
+ background:#fff;color:var(--text);transition:border-color .15s}
 .input:focus,.select:focus,.textarea:focus{outline:none;border-color:var(--gold)}
 .textarea{min-height:60px;resize:vertical}
 .btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 20px;border-radius:var(--r-sm);
-  font-size:14px;font-weight:600;border:none;cursor:pointer;transition:all .15s;text-align:center}
+ font-size:14px;font-weight:600;border:none;cursor:pointer;transition:all .15s;text-align:center}
 .btn:active{transform:scale(.97)}
 .btn-navy{background:var(--navy);color:var(--gold)}
 .btn-gold{background:var(--gold);color:var(--navy)}
@@ -85,11 +83,11 @@ input,select,textarea{font-family:var(--sans);font-size:16px;touch-action:manipu
 .btn-block{width:100%;display:block}
 .tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
 .tab-pill{padding:8px 16px;background:var(--card);border:1.5px solid #e5e7eb;border-radius:20px;
-  font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .15s}
+ font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .15s}
 .tab-pill.on{background:var(--navy);color:var(--gold);border-color:var(--navy)}
 .counter{display:flex;align-items:center;justify-content:center;gap:16px;margin:12px 0}
 .c-btn{width:48px;height:48px;border-radius:50%;border:2px solid var(--gold-bdr);background:var(--card);
-  font-size:24px;font-weight:700;color:var(--navy);cursor:pointer;display:flex;align-items:center;justify-content:center}
+ font-size:24px;font-weight:700;color:var(--navy);cursor:pointer;display:flex;align-items:center;justify-content:center}
 .c-btn:active{background:var(--gold-dim)}
 .c-mid{text-align:center}
 .c-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
@@ -108,7 +106,7 @@ input,select,textarea{font-family:var(--sans);font-size:16px;touch-action:manipu
 .empty{text-align:center;padding:40px 20px;color:var(--muted)}
 .empty-icon{font-size:48px;margin-bottom:8px;opacity:.5}
 .exp-item{display:flex;align-items:center;gap:12px;padding:12px;background:var(--card);
-  border-radius:var(--r-sm);box-shadow:var(--sh);margin-bottom:8px;cursor:pointer;transition:box-shadow .15s}
+ border-radius:var(--r-sm);box-shadow:var(--sh);margin-bottom:8px;cursor:pointer;transition:box-shadow .15s}
 .exp-item:active{box-shadow:var(--sh-lg)}
 .exp-thumb{width:48px;height:48px;border-radius:6px;object-fit:cover;flex-shrink:0;background:#f3f4f6}
 .exp-info{flex:1;min-width:0}
@@ -119,7 +117,7 @@ input,select,textarea{font-family:var(--sans);font-size:16px;touch-action:manipu
 .b-approved{background:var(--green-bg);color:var(--green)}
 .sched-head{display:flex;gap:4px;overflow-x:auto;padding-bottom:8px;margin-bottom:12px;-webkit-overflow-scrolling:touch}
 .sched-day{flex:0 0 auto;width:44px;text-align:center;padding:8px 4px;border-radius:var(--r-sm);
-  background:var(--card);cursor:pointer;border:2px solid transparent}
+ background:var(--card);cursor:pointer;border:2px solid transparent}
 .sched-day.on{border-color:var(--gold);background:var(--gold-dim)}
 .dn{font-size:10px;color:var(--muted);text-transform:uppercase}
 .dd{font-size:18px;font-weight:700;color:var(--navy)}
@@ -152,119 +150,119 @@ input,select,textarea{font-family:var(--sans);font-size:16px;touch-action:manipu
 <body>
 
 <div id="login-screen">
-  <div class="login-card">
-    <div class="login-brand">Vida <em>Ops</em></div>
-    <div class="login-sub">Internal Operations &mdash; Samui</div>
-    <div class="login-field">
-      <label>Username</label>
-      <input id="login-user" type="text" placeholder="username" autocomplete="off" style="letter-spacing:1px;text-align:left">
-    </div>
-    <div class="login-field">
-      <label>PIN</label>
-      <input id="login-pin" type="password" placeholder="&bull;&bull;&bull;&bull;" maxlength="6" inputmode="numeric">
-    </div>
-    <button class="login-btn" onclick="doLogin()">Login</button>
-    <div class="login-err" id="login-err">Invalid username or PIN</div>
-  </div>
+ <div class="login-card">
+ <div class="login-brand">Vida <em>Ops</em></div>
+ <div class="login-sub">Internal Operations &mdash; Samui</div>
+ <div class="login-field">
+ <label>Username</label>
+ <input id="login-user" type="text" placeholder="username" autocomplete="off" style="letter-spacing:1px;text-align:left">
+ </div>
+ <div class="login-field">
+ <label>PIN</label>
+ <input id="login-pin" type="password" placeholder="&bull;&bull;&bull;&bull;" maxlength="6" inputmode="numeric">
+ </div>
+ <button class="login-btn" onclick="doLogin()">Login</button>
+ <div class="login-err" id="login-err">Invalid username or PIN</div>
+ </div>
 </div>
 
 <div id="app-shell" style="display:none">
-  <header id="topbar">
-    <div class="tb-brand">Vida <em>Ops</em></div>
-    <div class="tb-title" id="tb-title">Chef Calculator</div>
-    <div class="tb-right">
-      <span class="tb-user" id="tb-user"></span>
-      <button class="tb-btn" onclick="doLogout()" id="logout-btn">Logout / ထြက္မည္</button>
-    </div>
-  </header>
-  <main id="content">
-    <div id="mod-chef" class="module"><div class="container" id="chef-content"></div></div>
-    <div id="mod-cleaning" class="module"><div class="container" id="cleaning-content"></div></div>
-    <div id="mod-upload" class="module"><div class="container" id="upload-content"></div></div>
-    <div id="mod-schedule" class="module"><div class="container" id="schedule-content"></div></div>
-    <div id="mod-pnl" class="module"><div class="container" id="pnl-content"></div></div>
-  </main>
-  <nav id="bottom-tabs">
-    <button class="tab-btn" data-mod="chef" onclick="showMod('chef')"><span class="tab-icon">&#127859;</span><span>Chef / ခ်က္ျပဳတ္</span></button>
-    <button class="tab-btn" data-mod="cleaning" onclick="showMod('cleaning')"><span class="tab-icon">&#129696;</span><span>Cleaning / သန္႔ရွင္းေရး</span></button>
-    <button class="tab-btn" data-mod="upload" onclick="showMod('upload')"><span class="tab-icon">&#128203;</span><span>Expenses / ကုန္က်စရိတ္</span></button>
-    <button class="tab-btn" data-mod="schedule" onclick="showMod('schedule')"><span class="tab-icon">&#128197;</span><span>Schedule / အခ်ိန္ဇယား</span></button>
-    <button class="tab-btn" data-mod="pnl" onclick="showMod('pnl')"><span class="tab-icon">&#128200;</span><span>P&L / အျမတ္အစြန္း</span></button>
-    <button class="tab-btn" data-mod="pool" onclick="return false" style="opacity:.3;pointer-events:none"><span class="tab-icon">&#127946;</span><span>Pool</span></button>
-  </nav>
+ <header id="topbar">
+ <div class="tb-brand">Vida <em>Ops</em></div>
+ <div class="tb-title" id="tb-title">Chef Calculator</div>
+ <div class="tb-right">
+ <span class="tb-user" id="tb-user"></span>
+ <button class="tb-btn" onclick="doLogout()" id="logout-btn">Logout</button>
+ </div>
+ </header>
+ <main id="content">
+ <div id="mod-chef" class="module"><div class="container" id="chef-content"></div></div>
+ <div id="mod-cleaning" class="module"><div class="container" id="cleaning-content"></div></div>
+ <div id="mod-upload" class="module"><div class="container" id="upload-content"></div></div>
+ <div id="mod-schedule" class="module"><div class="container" id="schedule-content"></div></div>
+ <div id="mod-pnl" class="module"><div class="container" id="pnl-content"></div></div>
+ </main>
+ <nav id="bottom-tabs">
+ <button class="tab-btn" data-mod="chef" onclick="showMod('chef')"><span class="tab-icon">&#127859;</span><span>Chef</span></button>
+ <button class="tab-btn" data-mod="cleaning" onclick="showMod('cleaning')"><span class="tab-icon">&#129696;</span><span>Cleaning</span></button>
+ <button class="tab-btn" data-mod="upload" onclick="showMod('upload')"><span class="tab-icon">&#128203;</span><span>Expenses</span></button>
+ <button class="tab-btn" data-mod="schedule" onclick="showMod('schedule')"><span class="tab-icon">&#128197;</span><span>Schedule</span></button>
+ <button class="tab-btn" data-mod="pnl" onclick="showMod('pnl')"><span class="tab-icon">&#128200;</span><span>P&L</span></button>
+ <button class="tab-btn" data-mod="pool" onclick="return false" style="opacity:.3;pointer-events:none"><span class="tab-icon">&#127946;</span><span>Pool</span></button>
+ </nav>
 </div>
 
 <div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeModal()">
-  <div class="modal" style="position:relative" id="modal-body"></div>
+ <div class="modal" style="position:relative" id="modal-body"></div>
 </div>
 
 <script>
 var ACCOUNTS=[
-  {u:'phyo',     pin:'1234',role:'director',name:'Phyo'},
-  {u:'thuhu',    pin:'1112',role:'director',name:'Thuhu'},
-  {u:'director1',pin:'1001',role:'director',name:'Director 1'},
-  {u:'phetop',   pin:'1113',role:'viewer',  name:'Phetop'},
-  {u:'hanwin',   pin:'2221',role:'manager', name:'Han Win'},
-  {u:'ngwezin',  pin:'3331',role:'staff',   name:'Ngwe Zin'},
-  {u:'kohein',   pin:'3332',role:'staff',   name:'Ko Hein'},
-  {u:'aungaung', pin:'3333',role:'staff',   name:'Aung Aung'},
-  {u:'thuzar',   pin:'3334',role:'staff',   name:'Thu Zar'}
+ {u:'phyo', pin:'1234',role:'director',name:'Phyo'},
+ {u:'thuhu', pin:'1112',role:'director',name:'Thuhu'},
+ {u:'director1',pin:'1001',role:'director',name:'Director 1'},
+ {u:'phetop', pin:'1113',role:'viewer', name:'Phetop'},
+ {u:'hanwin', pin:'2221',role:'manager', name:'Han Win'},
+ {u:'ngwezin', pin:'3331',role:'staff', name:'Ngwe Zin'},
+ {u:'kohein', pin:'3332',role:'staff', name:'Ko Hein'},
+ {u:'aungaung', pin:'3333',role:'staff', name:'Aung Aung'},
+ {u:'thuzar', pin:'3334',role:'staff', name:'Thu Zar'}
 ];
 var CHEF_PRICING={breakfast:[],floating:[],thai:[
-  {min:1,max:3,price:3450},{min:4,max:6,price:5384},{min:7,max:9,price:8801},
-  {min:10,max:12,price:12151},{min:13,max:15,price:17468}
+ {min:1,max:3,price:3450},{min:4,max:6,price:5384},{min:7,max:9,price:8801},
+ {min:10,max:12,price:12151},{min:13,max:15,price:17468}
 ],bbq:[
-  {min:1,max:3,fee:2500},{min:4,max:6,fee:3500},{min:7,max:9,fee:4750},{min:10,max:12,fee:6500}
+ {min:1,max:3,fee:2500},{min:4,max:6,fee:3500},{min:7,max:9,fee:4750},{min:10,max:12,fee:6500}
 ]};
 for(var i=1;i<=16;i++){CHEF_PRICING.breakfast.push({g:i,price:i*900})}
 CHEF_PRICING.floating={fixedPrice:2500,guests:2};
 var VILLAS=[
-  {id:'villa_love',name:'Villa Love',group:'ADAM/KAGAMI',co:1500,st:1500,garbage:0,laundry:false},
-  {id:'majesta',name:'Majesta',group:'ADAM/KAGAMI',co:1500,st:1500,garbage:300,laundry:false},
-  {id:'n1',name:'N1',group:'ADAM/KAGAMI',co:1500,st:1500,garbage:0,laundry:false},
-  {id:'n2',name:'N2',group:'ADAM/KAGAMI',co:1500,st:1500,garbage:0,laundry:false},
-  {id:'n3',name:'N3',group:'ADAM/KAGAMI',co:1500,st:1500,garbage:0,laundry:false},
-  {id:'j3',name:'J3',group:'ADAM/KAGAMI',co:2000,st:2000,garbage:0,laundry:false},
-  {id:'sunrise_hill',name:'Sunrise Hill',group:'ADAM/KAGAMI',co:1700,st:1700,garbage:300,laundry:false},
-  {id:'villa_anna',name:'Villa Anna',group:'MPS',co:1300,st:1300,garbage:0,laundry:false},
-  {id:'villa_diana',name:'Villa Diana',group:'MPS',co:1300,st:1300,garbage:0,laundry:false},
-  {id:'villa_yoco',name:'Villa Yoco',group:'MPS',co:1500,st:1500,garbage:0,laundry:false},
-  {id:'big_buddha',name:'Big Buddha',group:'CHEN',co:1500,st:1500,garbage:0,laundry:true,laundryCost:500,cleanCost:1000},
-  {id:'aqua_314',name:'Aqua 314',group:'CHEN',co:1600,st:1600,garbage:0,laundry:true,laundryCost:400,cleanCost:1200},
-  {id:'aqua_319_up',name:'Aqua 319 upstairs',group:'CHEN',co:1600,st:1600,garbage:0,laundry:true,laundryCost:400,cleanCost:1200},
-  {id:'aqua_319_down',name:'Aqua 319 downstairs',group:'CHEN',co:1000,st:1000,garbage:0,laundry:true,laundryCost:250,cleanCost:750},
-  {id:'chacha',name:'Chacha',group:'STEVEN',co:1500,st:1500,garbage:0,laundry:false},
-  {id:'julia',name:'Julia',group:'STEVEN',co:1500,st:1500,garbage:0,laundry:false},
-  {id:'lulu',name:'Lulu',group:'OTHERS',co:2000,st:2000,garbage:0,laundry:false},
-  {id:'nicolas_1',name:'Nicolas 1',group:'OTHERS',co:750,st:250,garbage:0,laundry:false},
-  {id:'nicolas_2',name:'Nicolas 2',group:'OTHERS',co:750,st:250,garbage:0,laundry:false},
-  {id:'bo_phut',name:'Bo Phut',group:'OTHERS',co:1500,st:1500,garbage:0,laundry:true,laundryCost:500,cleanCost:1000},
-  {id:'sandra',name:'Sandra',group:'OTHERS',co:1500,st:1500,garbage:0,laundry:false},
-  {id:'sandra_airbnb',name:'Sandra Airbnb',group:'OTHERS',co:1800,st:1800,garbage:0,laundry:false}
+ {id:'villa_love',name:'Villa Love',group:'ADAM/KAGAMI',co:1500,st:1500,garbage:0,laundry:false},
+ {id:'majesta',name:'Majesta',group:'ADAM/KAGAMI',co:1500,st:1500,garbage:300,laundry:false},
+ {id:'n1',name:'N1',group:'ADAM/KAGAMI',co:1500,st:1500,garbage:0,laundry:false},
+ {id:'n2',name:'N2',group:'ADAM/KAGAMI',co:1500,st:1500,garbage:0,laundry:false},
+ {id:'n3',name:'N3',group:'ADAM/KAGAMI',co:1500,st:1500,garbage:0,laundry:false},
+ {id:'j3',name:'J3',group:'ADAM/KAGAMI',co:2000,st:2000,garbage:0,laundry:false},
+ {id:'sunrise_hill',name:'Sunrise Hill',group:'ADAM/KAGAMI',co:1700,st:1700,garbage:300,laundry:false},
+ {id:'villa_anna',name:'Villa Anna',group:'MPS',co:1300,st:1300,garbage:0,laundry:false},
+ {id:'villa_diana',name:'Villa Diana',group:'MPS',co:1300,st:1300,garbage:0,laundry:false},
+ {id:'villa_yoco',name:'Villa Yoco',group:'MPS',co:1500,st:1500,garbage:0,laundry:false},
+ {id:'big_buddha',name:'Big Buddha',group:'CHEN',co:1500,st:1500,garbage:0,laundry:true,laundryCost:500,cleanCost:1000},
+ {id:'aqua_314',name:'Aqua 314',group:'CHEN',co:1600,st:1600,garbage:0,laundry:true,laundryCost:400,cleanCost:1200},
+ {id:'aqua_319_up',name:'Aqua 319 upstairs',group:'CHEN',co:1600,st:1600,garbage:0,laundry:true,laundryCost:400,cleanCost:1200},
+ {id:'aqua_319_down',name:'Aqua 319 downstairs',group:'CHEN',co:1000,st:1000,garbage:0,laundry:true,laundryCost:250,cleanCost:750},
+ {id:'chacha',name:'Chacha',group:'STEVEN',co:1500,st:1500,garbage:0,laundry:false},
+ {id:'julia',name:'Julia',group:'STEVEN',co:1500,st:1500,garbage:0,laundry:false},
+ {id:'lulu',name:'Lulu',group:'OTHERS',co:2000,st:2000,garbage:0,laundry:false},
+ {id:'nicolas_1',name:'Nicolas 1',group:'OTHERS',co:750,st:250,garbage:0,laundry:false},
+ {id:'nicolas_2',name:'Nicolas 2',group:'OTHERS',co:750,st:250,garbage:0,laundry:false},
+ {id:'bo_phut',name:'Bo Phut',group:'OTHERS',co:1500,st:1500,garbage:0,laundry:true,laundryCost:500,cleanCost:1000},
+ {id:'sandra',name:'Sandra',group:'OTHERS',co:1500,st:1500,garbage:0,laundry:false},
+ {id:'sandra_airbnb',name:'Sandra Airbnb',group:'OTHERS',co:1800,st:1800,garbage:0,laundry:false}
 ];
-var SHARE_LABELS=['Labor / လုပ္အား','Ingredients / ပါ၀င္ပစၥည္း','Commission / ေကာ္မရွင္','Company Profit / ကုမၸဏီ အျမတ္','Buffer / ဘတ္ဖာ'];
-var MOD_TITLES={chef:'Chef Calculator',cleaning:'Cleaning Calculator',upload:'Expenses / ကုန္က်စရိတ္',schedule:'Schedule / အခ်ိန္ဇယား',pnl:'P&L Summary'};
+var SHARE_LABELS=['Labor','Ingredients','Commission','Company Profit','Buffer'];
+var MOD_TITLES={chef:'Chef Calculator',cleaning:'Cleaning Calculator',upload:'Expenses',schedule:'Schedule',pnl:'P&L Summary'};
 var ACCESS={chef:{director:1,viewer:0,manager:1,staff:0},cleaning:{director:1,viewer:0,manager:1,staff:0},upload:{director:1,viewer:0,manager:1,staff:1},schedule:{director:1,viewer:0,manager:1,staff:1},pnl:{director:1,viewer:1,manager:0,staff:0}};
 var EDITABLE={chef:{director:1,viewer:0,manager:1,staff:0},cleaning:{director:1,viewer:0,manager:1,staff:0},upload:{director:1,viewer:0,manager:1,staff:1},schedule:{director:1,viewer:0,manager:1,staff:1},pnl:{director:1,viewer:0,manager:0,staff:0}};
 var EXP_CATS=[
-  {id:'fuel',label:'Fuel / Gasoline / ဆီဖိုး'},
-  {id:'cleaning_supplies',label:'Cleaning Supplies / သန္႔ရွင္းေရးပစၥည္း'},
-  {id:'pcl_laundry',label:'PCL Laundry / PCL အဝတ္ေလွ်ာ္'},
-  {id:'other_laundry',label:'Other Laundry Shop / အျခားအဝတ္ေလွ်ာ္ဆိုင္'},
-  {id:'equipment',label:'Equipment & Tools / ကိရိယာပစၥည္း'},
-  {id:'staff_meals',label:'Staff Meals & Drinks / စားေသာက္ဖိုး'},
-  {id:'electricity',label:'Electricity / PEA / မီးဖိုး'},
-  {id:'accountant_fee',label:'Accountant Fee / စာရင္းကိုင္ေၾကး'},
-  {id:'office_general',label:'Office & General / ရံုးဖိုး'},
-  {id:'repairs',label:'Repairs & Maintenance / ျပဳျပင္ထိန္းသိမ္းဖိုး'},
-  {id:'other',label:'Other / အျခား'}
+ {id:'fuel',label:'Fuel / Gasoline'},
+ {id:'cleaning_supplies',label:'Cleaning Supplies'},
+ {id:'pcl_laundry',label:'PCL Laundry'},
+ {id:'other_laundry',label:'Other Laundry Shop'},
+ {id:'equipment',label:'Equipment & Tools'},
+ {id:'staff_meals',label:'Staff Meals & Drinks'},
+ {id:'electricity',label:'Electricity / PEA'},
+ {id:'accountant_fee',label:'Accountant Fee'},
+ {id:'office_general',label:'Office & General'},
+ {id:'repairs',label:'Repairs & Maintenance'},
+ {id:'other',label:'Other'}
 ];
 var VEHICLES=[
-  {id:'click160_4770',label:'Click 160 \u2014 4770'},
-  {id:'click160_286',label:'Click 160 \u2014 286'},
-  {id:'wave110i',label:'Honda Wave 110i'},
-  {id:'ford_ranger',label:'Ford Ranger \u2014 6007'},
-  {id:'other_vehicle',label:'Other / အျခား'}
+ {id:'click160_4770',label:'Click 160 \u2014 4770'},
+ {id:'click160_286',label:'Click 160 \u2014 286'},
+ {id:'wave110i',label:'Honda Wave 110i'},
+ {id:'ford_ranger',label:'Ford Ranger \u2014 6007'},
+ {id:'other_vehicle',label:'Other'}
 ];
 var CUR=null;
 var chefState={tab:'breakfast',services:{}};
@@ -287,480 +285,480 @@ function canAccess(mod){return ACCESS[mod]&&ACCESS[mod][CUR.role]===1}
 function canEdit(mod){return EDITABLE[mod]&&EDITABLE[mod][CUR.role]===1}
 
 function doLogin(){
-  var u=document.getElementById('login-user').value.trim().toLowerCase();
-  var p=document.getElementById('login-pin').value;
-  var acc=ACCOUNTS.find(function(a){return a.u==u&&a.pin==p});
-  if(!acc){document.getElementById('login-err').style.display='block';return}
-  CUR=acc;sv('session',acc);showApp();
+ var u=document.getElementById('login-user').value.trim().toLowerCase();
+ var p=document.getElementById('login-pin').value;
+ var acc=ACCOUNTS.find(function(a){return a.u==u&&a.pin==p});
+ if(!acc){document.getElementById('login-err').style.display='block';return}
+ CUR=acc;sv('session',acc);showApp();
 }
 function doLogout(){CUR=null;localStorage.removeItem('v_session');
-  document.getElementById('app-shell').style.display='none';
-  document.getElementById('login-screen').style.display='flex';
-  document.getElementById('login-user').value='';document.getElementById('login-pin').value='';
-  document.getElementById('login-err').style.display='none';
+ document.getElementById('app-shell').style.display='none';
+ document.getElementById('login-screen').style.display='flex';
+ document.getElementById('login-user').value='';document.getElementById('login-pin').value='';
+ document.getElementById('login-err').style.display='none';
 }
 function showApp(){
-  document.getElementById('login-screen').style.display='none';
-  document.getElementById('app-shell').style.display='block';
-  document.getElementById('tb-user').textContent=CUR.name;
-  applyTabAccess();
-  var firstMod=CUR.role==='viewer'?'pnl':CUR.role==='staff'?'upload':'chef';
-  showMod(firstMod);
+ document.getElementById('login-screen').style.display='none';
+ document.getElementById('app-shell').style.display='block';
+ document.getElementById('tb-user').textContent=CUR.name;
+ applyTabAccess();
+ var firstMod=CUR.role==='viewer'?'pnl':CUR.role==='staff'?'upload':'chef';
+ showMod(firstMod);
 }
 function applyTabAccess(){
-  var btns=document.querySelectorAll('.tab-btn');
-  for(var i=0;i<btns.length;i++){var m=btns[i].getAttribute('data-mod');if(m==='pool'){btns[i].style.display='';continue}btns[i].style.display=canAccess(m)?'':'none';}
+ var btns=document.querySelectorAll('.tab-btn');
+ for(var i=0;i<btns.length;i++){var m=btns[i].getAttribute('data-mod');if(m==='pool'){btns[i].style.display='';continue}btns[i].style.display=canAccess(m)?'':'none';}
 }
 function showMod(m){
-  if(!canAccess(m))return;
-  var mods=['chef','cleaning','upload','schedule','pnl'];
-  for(var i=0;i<mods.length;i++){var el=document.getElementById('mod-'+mods[i]);if(el){el.classList.toggle('on',mods[i]===m)}}
-  var btns=document.querySelectorAll('.tab-btn');
-  for(var i=0;i<btns.length;i++){btns[i].classList.toggle('on',btns[i].getAttribute('data-mod')===m)}
-  document.getElementById('tb-title').textContent=MOD_TITLES[m]||'';
-  if(m==='chef')renderChef();
-  else if(m==='cleaning')renderCleaning();
-  else if(m==='upload')renderUpload();
-  else if(m==='schedule'){if(calTimer)clearInterval(calTimer);schedFetchCal();calTimer=setInterval(function(){schedFetchCal()},300000);renderSchedule();}
-  else if(m==='pnl')renderPnl();
+ if(!canAccess(m))return;
+ var mods=['chef','cleaning','upload','schedule','pnl'];
+ for(var i=0;i<mods.length;i++){var el=document.getElementById('mod-'+mods[i]);if(el){el.classList.toggle('on',mods[i]===m)}}
+ var btns=document.querySelectorAll('.tab-btn');
+ for(var i=0;i<btns.length;i++){btns[i].classList.toggle('on',btns[i].getAttribute('data-mod')===m)}
+ document.getElementById('tb-title').textContent=MOD_TITLES[m]||'';
+ if(m==='chef')renderChef();
+ else if(m==='cleaning')renderCleaning();
+ else if(m==='upload')renderUpload();
+ else if(m==='schedule'){if(calTimer)clearInterval(calTimer);schedFetchCal();calTimer=setInterval(function(){schedFetchCal()},300000);renderSchedule();}
+ else if(m==='pnl')renderPnl();
 }
 function openModal(html){document.getElementById('modal-body').innerHTML=html;document.getElementById('modal-bg').classList.add('on')}
 function closeModal(){document.getElementById('modal-bg').classList.remove('on')}
 (function init(){
-  var sess=ld('session');
-  if(sess){var acc=ACCOUNTS.find(function(a){return a.u==sess.u&&a.pin==sess.pin});if(acc){CUR=acc;showApp();return}}
-  document.getElementById('login-pin').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin()});
-  document.getElementById('login-user').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('login-pin').focus()});
+ var sess=ld('session');
+ if(sess){var acc=ACCOUNTS.find(function(a){return a.u==sess.u&&a.pin==sess.pin});if(acc){CUR=acc;showApp();return}}
+ document.getElementById('login-pin').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin()});
+ document.getElementById('login-user').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('login-pin').focus()});
 })();
 // ==================== CHEF CALCULATOR ====================
 function chefGetPrice(service,guests){
-  if(service==='breakfast'){var b=CHEF_PRICING.breakfast.find(function(x){return x.g===guests});return b?b.price:0}
-  if(service==='floating'){return CHEF_PRICING.floating.fixedPrice}
-  if(service==='thai'){var t=CHEF_PRICING.thai.find(function(x){return guests>=x.min&&guests<=x.max});return t?t.price:0}
-  if(service==='bbq'){var q=CHEF_PRICING.bbq.find(function(x){return guests>=x.min&&guests<=x.max});return q?q.fee:0}
-  return 0;
+ if(service==='breakfast'){var b=CHEF_PRICING.breakfast.find(function(x){return x.g===guests});return b?b.price:0}
+ if(service==='floating'){return CHEF_PRICING.floating.fixedPrice}
+ if(service==='thai'){var t=CHEF_PRICING.thai.find(function(x){return guests>=x.min&&guests<=x.max});return t?t.price:0}
+ if(service==='bbq'){var q=CHEF_PRICING.bbq.find(function(x){return guests>=x.min&&guests<=x.max});return q?q.fee:0}
+ return 0;
 }
 function chefGetDefaultShares(tab){
-  var g=chefState.services[tab]?chefState.services[tab].guests:2;var laborPct;
-  if(tab==='breakfast'){if(g<=3)laborPct=30;else if(g<=6)laborPct=35;else if(g<=10)laborPct=38;else laborPct=42;return{labor:laborPct,ingredients:28,commission:5,profit:27,buffer:100-laborPct-28-5-27}}
-  if(tab==='floating'){return{labor:30,ingredients:28,commission:5,profit:27,buffer:10}}
-  if(tab==='thai'){if(g<=3)laborPct=30;else if(g<=6)laborPct=35;else if(g<=9)laborPct=38;else laborPct=42;return{labor:laborPct,ingredients:33,commission:5,profit:17,buffer:100-laborPct-33-5-17}}
-  if(tab==='bbq'){if(g<=3)laborPct=30;else if(g<=6)laborPct=35;else if(g<=9)laborPct=38;else laborPct=42;return{labor:laborPct,ingredients:0,commission:5,profit:40,buffer:100-laborPct-0-5-40}}
-  return{labor:30,ingredients:20,commission:20,profit:15,buffer:15};
+ var g=chefState.services[tab]?chefState.services[tab].guests:2;var laborPct;
+ if(tab==='breakfast'){if(g<=3)laborPct=30;else if(g<=6)laborPct=35;else if(g<=10)laborPct=38;else laborPct=42;return{labor:laborPct,ingredients:28,commission:5,profit:27,buffer:100-laborPct-28-5-27}}
+ if(tab==='floating'){return{labor:30,ingredients:28,commission:5,profit:27,buffer:10}}
+ if(tab==='thai'){if(g<=3)laborPct=30;else if(g<=6)laborPct=35;else if(g<=9)laborPct=38;else laborPct=42;return{labor:laborPct,ingredients:33,commission:5,profit:17,buffer:100-laborPct-33-5-17}}
+ if(tab==='bbq'){if(g<=3)laborPct=30;else if(g<=6)laborPct=35;else if(g<=9)laborPct=38;else laborPct=42;return{labor:laborPct,ingredients:0,commission:5,profit:40,buffer:100-laborPct-0-5-40}}
+ return{labor:30,ingredients:20,commission:20,profit:15,buffer:15};
 }
 function chefInitServices(){
-  var saved=ld('chef_calcs');var svcs=['breakfast','floating','thai','bbq','custom'];
-  if(saved){chefState.saved=saved}
-  for(var i=0;i<svcs.length;i++){
-    if(!chefState.services[svcs[i]]){
-      var s=(chefState.saved&&chefState.saved[svcs[i]])||{};var def=chefGetDefaultShares(svcs[i]);
-      chefState.services[svcs[i]]={guests:s.guests||(svcs[i]==='breakfast'?2:svcs[i]==='thai'?4:svcs[i]==='bbq'?4:2),ingredientCost:s.ingredientCost||0,manualPrice:s.manualPrice||0,shares:s.shares||{0:def.labor,1:def.ingredients,2:def.commission,3:def.profit,4:def.buffer}};
-    }
-  }
+ var saved=ld('chef_calcs');var svcs=['breakfast','floating','thai','bbq','custom'];
+ if(saved){chefState.saved=saved}
+ for(var i=0;i<svcs.length;i++){
+ if(!chefState.services[svcs[i]]){
+ var s=(chefState.saved&&chefState.saved[svcs[i]])||{};var def=chefGetDefaultShares(svcs[i]);
+ chefState.services[svcs[i]]={guests:s.guests||(svcs[i]==='breakfast'?2:svcs[i]==='thai'?4:svcs[i]==='bbq'?4:2),ingredientCost:s.ingredientCost||0,manualPrice:s.manualPrice||0,shares:s.shares||{0:def.labor,1:def.ingredients,2:def.commission,3:def.profit,4:def.buffer}};
+ }
+ }
 }
 function renderChef(){
-  chefInitServices();var c=document.getElementById('chef-content');
-  var tabs=['breakfast','floating','thai','bbq','custom'];
-  var labels=['Breakfast / နံနက်စာ','Floating / ရေပေါ်နံနက်စာ','Thai Dinner / ထိုင်းညစာ','BBQ & Grill','Custom / အထူး'];
-  var h='<div class="tabs">';
-  for(var i=0;i<tabs.length;i++){h+='<button class="tab-pill'+(chefState.tab===tabs[i]?' on':'')+'" onclick="chefSetTab(\''+tabs[i]+'\')">'+labels[i]+'</button>'}
-  h+='</div><div id="chef-panel"></div>';c.innerHTML=h;renderChefPanel();
+ chefInitServices();var c=document.getElementById('chef-content');
+ var tabs=['breakfast','floating','thai','bbq','custom'];
+ var labels=['Breakfast','Floating Breakfast','Thai Dinner','BBQ & Grill','Custom'];
+ var h='<div class="tabs">';
+ for(var i=0;i<tabs.length;i++){h+='<button class="tab-pill'+(chefState.tab===tabs[i]?' on':'')+'" onclick="chefSetTab(\''+tabs[i]+'\')">'+labels[i]+'</button>'}
+ h+='</div><div id="chef-panel"></div>';c.innerHTML=h;renderChefPanel();
 }
 function chefSetTab(t){chefState.tab=t;renderChef()}
 function renderChefPanel(){
-  var s=chefState.services[chefState.tab];var ed=canEdit('chef');
-  var price=chefState.tab==='custom'?s.manualPrice:chefGetPrice(chefState.tab,s.guests);
-  var profit=price-s.ingredientCost;
-  var h='<div class="card"><div class="card-h-gold">'+chefState.tab.charAt(0).toUpperCase()+chefState.tab.slice(1)+'</div>';
-  if(chefState.tab==='floating'){
-    h+='<div class="note"><strong>Floating Breakfast</strong> &mdash; Fixed price \u0e3f2,500 (2 pax only)</div>';
-  }else if(chefState.tab!=='custom'){
-    h+='<div class="counter">';
-    h+='<button class="c-btn plus" onclick="chefGuests(1)">+</button>';
-    h+='<div class="c-mid"><div class="c-label">Guests / ဧည့်သည်</div><div class="c-val" id="chef-gv">'+s.guests+'</div></div>';
-    if(ed)h+='<button class="c-btn minus" onclick="chefGuests(-1)">&minus;</button>';
-    else h+='<button class="c-btn minus" style="opacity:.3;pointer-events:none">&minus;</button>';
-    h+='</div>';
-  }else{
-    h+='<div class="fg2"><label>Guests / ဧည့်သည်</label><input class="input" type="number" value="'+s.guests+'" min="1" '+(ed?'':'readonly')+' onchange="chefSetGuests(this.value)"></div>';
-    h+='<div class="fg2"><label>Manual Price (THB) / လက်ဖြတ်ဈေး</label><input class="input" type="number" value="'+s.manualPrice+'" min="0" '+(ed?'':'readonly')+' onchange="chefSetManual(this.value)"></div>';
-  }
-  h+='</div>';
-  h+='<div class="price-display"><div class="amount">'+fmt(price)+' THB</div>';
-  h+='<div class="sub">Revenue / ဝင်ငွေ'+(chefState.tab==='breakfast'?' ('+fmt(s.guests)+' x \u0e3f900)':'')+(chefState.tab==='floating'?' (Fixed \u0e3f2,500)':'')+'</div></div>';
-  if(ed){h+='<div class="fg2"><label>Ingredient / Extra Costs (THB) / ပါဝင်ပစ္စည်းကုန်</label><input class="input" type="number" value="'+s.ingredientCost+'" min="0" onchange="chefSetCost(this.value)"></div>';}
-  h+='<div class="summary">';
-  h+='<div class="summary-row"><span>Revenue / ဝင်ငွေ</span><span>'+fmt(price)+'</span></div>';
-  h+='<div class="summary-row"><span>Costs / ကုန်ကျ</span><span>&minus;'+fmt(s.ingredientCost)+'</span></div>';
-  h+='<div class="summary-row total"><span>Profit / အမြတ်</span><span>'+fmt(profit)+'</span></div></div>';
-  h+='<div class="card"><div class="card-h-gold">5-Way Profit Split / အမြတ်ခွဲဝေမှု</div>';
-  var totalPct=0;for(var k in s.shares){totalPct+=s.shares[k]}
-  for(var si=0;si<SHARE_LABELS.length;si++){
-    var pct=s.shares[si]||0;var share=Math.round(profit*pct/100);
-    h+='<div class="sl-row"><span class="sl-label">'+SHARE_LABELS[si]+'</span>';
-    if(ed)h+='<input class="sl-range" type="range" min="0" max="100" value="'+pct+'" oninput="chefSlider('+si+',this.value)">';
-    else h+='<div style="flex:1;height:6px;background:#e5e7eb;border-radius:3px"><div style="height:100%;width:'+pct+'%;background:var(--gold);border-radius:3px"></div></div>';
-    h+='<span class="sl-pct">'+pct+'%</span>';
-    h+='<span style="font-size:12px;font-weight:600;min-width:60px;text-align:right;color:var(--navy)">'+fmt(share)+'</span></div>';
-  }
-  if(ed)h+='<button class="btn btn-navy btn-block" style="margin-top:10px" onclick="chefSave()">Save Calculation / သိမ်းမည်</button>';
-  h+='</div>';
-  document.getElementById('chef-panel').innerHTML=h;
+ var s=chefState.services[chefState.tab];var ed=canEdit('chef');
+ var price=chefState.tab==='custom'?s.manualPrice:chefGetPrice(chefState.tab,s.guests);
+ var profit=price-s.ingredientCost;
+ var h='<div class="card"><div class="card-h-gold">'+chefState.tab.charAt(0).toUpperCase()+chefState.tab.slice(1)+'</div>';
+ if(chefState.tab==='floating'){
+ h+='<div class="note"><strong>Floating Breakfast</strong> &mdash; Fixed price \u0e3f2,500 (2 pax only)</div>';
+ }else if(chefState.tab!=='custom'){
+ h+='<div class="counter">';
+ h+='<button class="c-btn plus" onclick="chefGuests(1)">+</button>';
+ h+='<div class="c-mid"><div class="c-label">Guests</div><div class="c-val" id="chef-gv">'+s.guests+'</div></div>';
+ if(ed)h+='<button class="c-btn minus" onclick="chefGuests(-1)">&minus;</button>';
+ else h+='<button class="c-btn minus" style="opacity:.3;pointer-events:none">&minus;</button>';
+ h+='</div>';
+ }else{
+ h+='<div class="fg2"><label>Guests</label><input class="input" type="number" value="'+s.guests+'" min="1" '+(ed?'':'readonly')+' onchange="chefSetGuests(this.value)"></div>';
+ h+='<div class="fg2"><label>Manual Price (THB)</label><input class="input" type="number" value="'+s.manualPrice+'" min="0" '+(ed?'':'readonly')+' onchange="chefSetManual(this.value)"></div>';
+ }
+ h+='</div>';
+ h+='<div class="price-display"><div class="amount">'+fmt(price)+' THB</div>';
+ h+='<div class="sub">Revenue'+(chefState.tab==='breakfast'?' ('+fmt(s.guests)+' x \u0e3f900)':'')+(chefState.tab==='floating'?' (Fixed \u0e3f2,500)':'')+'</div></div>';
+ if(ed){h+='<div class="fg2"><label>Ingredient / Extra Costs (THB)</label><input class="input" type="number" value="'+s.ingredientCost+'" min="0" onchange="chefSetCost(this.value)"></div>';}
+ h+='<div class="summary">';
+ h+='<div class="summary-row"><span>Revenue</span><span>'+fmt(price)+'</span></div>';
+ h+='<div class="summary-row"><span>Costs</span><span>&minus;'+fmt(s.ingredientCost)+'</span></div>';
+ h+='<div class="summary-row total"><span>Profit</span><span>'+fmt(profit)+'</span></div></div>';
+ h+='<div class="card"><div class="card-h-gold">5-Way Profit Split</div>';
+ var totalPct=0;for(var k in s.shares){totalPct+=s.shares[k]}
+ for(var si=0;si<SHARE_LABELS.length;si++){
+ var pct=s.shares[si]||0;var share=Math.round(profit*pct/100);
+ h+='<div class="sl-row"><span class="sl-label">'+SHARE_LABELS[si]+'</span>';
+ if(ed)h+='<input class="sl-range" type="range" min="0" max="100" value="'+pct+'" oninput="chefSlider('+si+',this.value)">';
+ else h+='<div style="flex:1;height:6px;background:#e5e7eb;border-radius:3px"><div style="height:100%;width:'+pct+'%;background:var(--gold);border-radius:3px"></div></div>';
+ h+='<span class="sl-pct">'+pct+'%</span>';
+ h+='<span style="font-size:12px;font-weight:600;min-width:60px;text-align:right;color:var(--navy)">'+fmt(share)+'</span></div>';
+ }
+ if(ed)h+='<button class="btn btn-navy btn-block" style="margin-top:10px" onclick="chefSave()">Save</button>';
+ h+='</div>';
+ document.getElementById('chef-panel').innerHTML=h;
 }
 function chefGuests(d){
-  var s=chefState.services[chefState.tab];
-  if(chefState.tab==='breakfast'){s.guests=Math.max(1,Math.min(16,s.guests+d))}
-  else if(chefState.tab==='thai'){var ranges=[3,6,9,12,15];var idx=ranges.indexOf(s.guests);idx=Math.max(0,Math.min(4,idx+d));s.guests=ranges[idx]}
-  else if(chefState.tab==='bbq'){var ranges=[3,6,9,12];var idx=ranges.indexOf(s.guests);idx=Math.max(0,Math.min(3,idx+d));s.guests=ranges[idx]}
-  renderChefPanel();
+ var s=chefState.services[chefState.tab];
+ if(chefState.tab==='breakfast'){s.guests=Math.max(1,Math.min(16,s.guests+d))}
+ else if(chefState.tab==='thai'){var ranges=[3,6,9,12,15];var idx=ranges.indexOf(s.guests);idx=Math.max(0,Math.min(4,idx+d));s.guests=ranges[idx]}
+ else if(chefState.tab==='bbq'){var ranges=[3,6,9,12];var idx=ranges.indexOf(s.guests);idx=Math.max(0,Math.min(3,idx+d));s.guests=ranges[idx]}
+ renderChefPanel();
 }
 function chefSetGuests(v){var s=chefState.services[chefState.tab];s.guests=Math.max(1,parseInt(v)||2);renderChefPanel()}
 function chefSetManual(v){var s=chefState.services[chefState.tab];s.manualPrice=Math.max(0,parseInt(v)||0);renderChefPanel()}
 function chefSetCost(v){var s=chefState.services[chefState.tab];s.ingredientCost=Math.max(0,parseInt(v)||0);renderChefPanel()}
 function chefSlider(idx,val){
-  var s=chefState.services[chefState.tab];val=parseInt(val);s.shares[idx]=val;
-  var others=[];for(var i=0;i<5;i++){if(i!==idx)others.push(i)}
-  var othersSum=0;for(var i=0;i<others.length;i++){othersSum+=(s.shares[others[i]]||0)}
-  var remaining=100-val;
-  if(othersSum===0){var each=Math.floor(remaining/others.length);for(var i=0;i<others.length;i++){s.shares[others[i]]=each}}
-  else{for(var i=0;i<others.length;i++){s.shares[others[i]]=Math.round(remaining*(s.shares[others[i]]||0)/othersSum)}}
-  renderChefPanel();
+ var s=chefState.services[chefState.tab];val=parseInt(val);s.shares[idx]=val;
+ var others=[];for(var i=0;i<5;i++){if(i!==idx)others.push(i)}
+ var othersSum=0;for(var i=0;i<others.length;i++){othersSum+=(s.shares[others[i]]||0)}
+ var remaining=100-val;
+ if(othersSum===0){var each=Math.floor(remaining/others.length);for(var i=0;i<others.length;i++){s.shares[others[i]]=each}}
+ else{for(var i=0;i<others.length;i++){s.shares[others[i]]=Math.round(remaining*(s.shares[others[i]]||0)/othersSum)}}
+ renderChefPanel();
 }
 function chefSave(){
-  var data={};for(var k in chefState.services){data[k]={guests:chefState.services[k].guests,ingredientCost:chefState.services[k].ingredientCost,manualPrice:chefState.services[k].manualPrice,shares:chefState.services[k].shares}}
-  sv('chef_calcs',data);alert('Saved! / သိမ်းဆည်းပြီး!');
+ var data={};for(var k in chefState.services){data[k]={guests:chefState.services[k].guests,ingredientCost:chefState.services[k].ingredientCost,manualPrice:chefState.services[k].manualPrice,shares:chefState.services[k].shares}}
+ sv('chef_calcs',data);alert('Saved!');
 }
 
 // ==================== CLEANING CALCULATOR ====================
 function cleanGetDefaultShares(type){
-  if(type==='co')return{labor:40,supplies:8,commission:5,profit:32,buffer:15};
-  if(type==='st')return{labor:45,supplies:5,commission:5,profit:30,buffer:15};
-  if(type==='normal')return{labor:42,supplies:6,commission:5,profit:32,buffer:15};
-  if(type==='deep')return{labor:38,supplies:12,commission:5,profit:30,buffer:15};
-  return{labor:40,supplies:8,commission:5,profit:32,buffer:15};
+ if(type==='co')return{labor:40,supplies:8,commission:5,profit:32,buffer:15};
+ if(type==='st')return{labor:45,supplies:5,commission:5,profit:30,buffer:15};
+ if(type==='normal')return{labor:42,supplies:6,commission:5,profit:32,buffer:15};
+ if(type==='deep')return{labor:38,supplies:12,commission:5,profit:30,buffer:15};
+ return{labor:40,supplies:8,commission:5,profit:32,buffer:15};
 }
 function cleanGetLaundryMsg(villa){
-  if(villa.id==='majesta')return'Remember: +\u0e3f300 garbage \u2014 invoice separately';
-  if(villa.id==='sunrise_hill')return'Remember: +\u0e3f300 garbage \u2014 invoice separately';
-  if(villa.group==='MPS')return'No laundry for MPS \u2014 do not add to invoice';
-  if(villa.id==='big_buddha')return'All-inclusive \u2014 laundry \u0e3f500 already included';
-  if(villa.id==='aqua_314')return'All-inclusive \u2014 laundry \u0e3f400 already included';
-  if(villa.id==='aqua_319_up')return'All-inclusive \u2014 laundry \u0e3f400 already included';
-  if(villa.id==='aqua_319_down')return'All-inclusive \u2014 laundry \u0e3f250 already included';
-  if(villa.id==='bo_phut')return'Laundry \u0e3f500 fixed \u2014 already included in price';
-  if(villa.id==='villa_love')return'Management fee \u0e3f1,500/month \u2014 billed end of month separately';
-  return'';
+ if(villa.id==='majesta')return'Remember: +\u0e3f300 garbage \u2014 invoice separately';
+ if(villa.id==='sunrise_hill')return'Remember: +\u0e3f300 garbage \u2014 invoice separately';
+ if(villa.group==='MPS')return'No laundry for MPS \u2014 do not add to invoice';
+ if(villa.id==='big_buddha')return'All-inclusive \u2014 laundry \u0e3f500 already included';
+ if(villa.id==='aqua_314')return'All-inclusive \u2014 laundry \u0e3f400 already included';
+ if(villa.id==='aqua_319_up')return'All-inclusive \u2014 laundry \u0e3f400 already included';
+ if(villa.id==='aqua_319_down')return'All-inclusive \u2014 laundry \u0e3f250 already included';
+ if(villa.id==='bo_phut')return'Laundry \u0e3f500 fixed \u2014 already included in price';
+ if(villa.id==='villa_love')return'Management fee \u0e3f1,500/month \u2014 billed end of month separately';
+ return'';
 }
 function renderCleaning(){
-  var c=document.getElementById('cleaning-content');var ed=canEdit('cleaning');
-  var groups=['ADAM/KAGAMI','MPS','CHEN','STEVEN','OTHERS'];
-  var h='<div class="card"><div class="card-h-gold">Select Villa / ဗီလာရွေးပါ</div>';
-  h+='<div class="fg2"><label>Villa / ဗီလာ</label><select class="select" id="clean-villa" onchange="cleanSelVilla(this.value)">';
-  h+='<option value="">Choose a villa...</option>';
-  for(var gi=0;gi<groups.length;gi++){
-    h+='<optgroup label="'+groups[gi]+'">';
-    for(var i=0;i<VILLAS.length;i++){if(VILLAS[i].group===groups[gi]){h+='<option value="'+VILLAS[i].id+'"'+(cleaningState.villa===VILLAS[i].id?' selected':'')+'>'+VILLAS[i].name+'</option>'}}
-    h+='</optgroup>';
-  }
-  h+='</select></div>';
-  h+='<div class="fg2"><label>Service / ဝန်ဆောင်မှု</label><select class="select" id="clean-type" onchange="cleanSelType(this.value)">';
-  h+='<option value="co"'+(cleaningState.type==='co'?' selected':'')+'>Checkout Clean / ချက်အောက်တ် သန့်ရှင်းရေး</option>';
-  h+='<option value="st"'+(cleaningState.type==='st'?' selected':'')+'>Staying Clean / နေထိုင်စဉ် သန့်ရှင်းရေး</option>';
-  h+='<option value="normal"'+(cleaningState.type==='normal'?' selected':'')+'>Normal Clean / ပုံမှန် သန့်ရှင်းရေး</option>';
-  h+='<option value="deep"'+(cleaningState.type==='deep'?' selected':'')+'>Deep Clean / အနက်ရှိုင်း သန့်ရှင်းရေး</option>';
-  h+='</select></div></div>';
-  var villa=VILLAS.find(function(v){return v.id===cleaningState.villa});
-  if(villa){
-    var basePrice=villa[cleaningState.type]||villa.co;var garbage=villa.garbage||0;var totalPrice=basePrice+garbage;
-    var saved=ld('clean_calcs');var def=cleanGetDefaultShares(cleaningState.type);
-    var vdata=(saved&&saved[villa.id]&&saved[villa.id][cleaningState.type])||{extraCost:0,shares:{0:def.labor,1:def.supplies,2:def.commission,3:def.profit,4:def.buffer}};
-    var totalCost=vdata.extraCost+garbage;if(villa.laundry&&villa.laundryCost){totalCost+=villa.laundryCost}
-    var profit=totalPrice-totalCost;
-    h+='<div class="card" style="border-left:4px solid var(--gold)"><div style="font-size:18px;font-weight:700;color:var(--navy)">'+villa.name+'</div><div style="font-size:12px;color:var(--muted)">'+villa.group+'</div></div>';
-    var typeLabels={co:'Checkout Clean',st:'Staying Clean',normal:'Normal Clean',deep:'Deep Clean'};
-    h+='<div class="price-display"><div class="amount">'+fmt(totalPrice)+' THB</div><div class="sub">'+(typeLabels[cleaningState.type]||'')+(garbage>0?' + '+fmt(garbage)+' garbage':'')+'</div></div>';
-    var laundryMsg=cleanGetLaundryMsg(villa);
-    if(laundryMsg)h+='<div class="note" style="background:#fffde7;border-left-color:#f9a825"><strong>'+laundryMsg+'</strong></div>';
-    if(ed){h+='<div class="fg2"><label>Extra Costs (THB) / အပိုကုန်</label><input class="input" type="number" value="'+vdata.extraCost+'" min="0" onchange="cleanSetCost(this.value)"></div>';}
-    h+='<div class="summary"><div class="summary-row"><span>Revenue / ဝင်ငွေ</span><span>'+fmt(totalPrice)+'</span></div>';
-    h+='<div class="summary-row"><span>Costs / ကုန်ကျ</span><span>&minus;'+fmt(totalCost)+'</span></div>';
-    h+='<div class="summary-row total"><span>Profit / အမြတ်</span><span>'+fmt(profit)+'</span></div></div>';
-    h+='<div class="card"><div class="card-h-gold">5-Way Profit Split / အမြတ်ခွဲဝေမှု</div>';
-    for(var si=0;si<SHARE_LABELS.length;si++){
-      var pct=vdata.shares[si]||0;var share=Math.round(profit*pct/100);
-      h+='<div class="sl-row"><span class="sl-label">'+SHARE_LABELS[si]+'</span>';
-      if(ed)h+='<input class="sl-range" type="range" min="0" max="100" value="'+pct+'" oninput="cleanSlider('+si+',this.value)">';
-      else h+='<div style="flex:1;height:6px;background:#e5e7eb;border-radius:3px"><div style="height:100%;width:'+pct+'%;background:var(--gold);border-radius:3px"></div></div>';
-      h+='<span class="sl-pct">'+pct+'%</span>';
-      h+='<span style="font-size:12px;font-weight:600;min-width:60px;text-align:right;color:var(--navy)">'+fmt(share)+'</span></div>';
-    }
-    if(ed)h+='<button class="btn btn-navy btn-block" style="margin-top:10px" onclick="cleanSave()">Save / သိမ်းမည်</button>';
-    h+='</div>';
-  }else{h+='<div class="empty"><div class="empty-icon">&#129696;</div><div>Select a villa to see pricing / ဗီလာရွေးပါ</div></div>';}
-  c.innerHTML=h;
+ var c=document.getElementById('cleaning-content');var ed=canEdit('cleaning');
+ var groups=['ADAM/KAGAMI','MPS','CHEN','STEVEN','OTHERS'];
+ var h='<div class="card"><div class="card-h-gold">Select Villa</div>';
+ h+='<div class="fg2"><label>Villa</label><select class="select" id="clean-villa" onchange="cleanSelVilla(this.value)">';
+ h+='<option value="">Choose a villa...</option>';
+ for(var gi=0;gi<groups.length;gi++){
+ h+='<optgroup label="'+groups[gi]+'">';
+ for(var i=0;i<VILLAS.length;i++){if(VILLAS[i].group===groups[gi]){h+='<option value="'+VILLAS[i].id+'"'+(cleaningState.villa===VILLAS[i].id?' selected':'')+'>'+VILLAS[i].name+'</option>'}}
+ h+='</optgroup>';
+ }
+ h+='</select></div>';
+ h+='<div class="fg2"><label>Service Type</label><select class="select" id="clean-type" onchange="cleanSelType(this.value)">';
+ h+='<option value="co"'+(cleaningState.type==='co'?' selected':'')+'>Checkout Clean</option>';
+ h+='<option value="st"'+(cleaningState.type==='st'?' selected':'')+'>Staying Clean</option>';
+ h+='<option value="normal"'+(cleaningState.type==='normal'?' selected':'')+'>Normal Clean</option>';
+ h+='<option value="deep"'+(cleaningState.type==='deep'?' selected':'')+'>Deep Clean</option>';
+ h+='</select></div></div>';
+ var villa=VILLAS.find(function(v){return v.id===cleaningState.villa});
+ if(villa){
+ var basePrice=villa[cleaningState.type]||villa.co;var garbage=villa.garbage||0;var totalPrice=basePrice+garbage;
+ var saved=ld('clean_calcs');var def=cleanGetDefaultShares(cleaningState.type);
+ var vdata=(saved&&saved[villa.id]&&saved[villa.id][cleaningState.type])||{extraCost:0,shares:{0:def.labor,1:def.supplies,2:def.commission,3:def.profit,4:def.buffer}};
+ var totalCost=vdata.extraCost+garbage;if(villa.laundry&&villa.laundryCost){totalCost+=villa.laundryCost}
+ var profit=totalPrice-totalCost;
+ h+='<div class="card" style="border-left:4px solid var(--gold)"><div style="font-size:18px;font-weight:700;color:var(--navy)">'+villa.name+'</div><div style="font-size:12px;color:var(--muted)">'+villa.group+'</div></div>';
+ var typeLabels={co:'Checkout Clean',st:'Staying Clean',normal:'Normal Clean',deep:'Deep Clean'};
+ h+='<div class="price-display"><div class="amount">'+fmt(totalPrice)+' THB</div><div class="sub">'+(typeLabels[cleaningState.type]||'')+(garbage>0?' + '+fmt(garbage)+' garbage':'')+'</div></div>';
+ var laundryMsg=cleanGetLaundryMsg(villa);
+ if(laundryMsg)h+='<div class="note" style="background:#fffde7;border-left-color:#f9a825"><strong>'+laundryMsg+'</strong></div>';
+ if(ed){h+='<div class="fg2"><label>Extra Costs (THB)</label><input class="input" type="number" value="'+vdata.extraCost+'" min="0" onchange="cleanSetCost(this.value)"></div>';}
+ h+='<div class="summary"><div class="summary-row"><span>Revenue</span><span>'+fmt(totalPrice)+'</span></div>';
+ h+='<div class="summary-row"><span>Costs</span><span>&minus;'+fmt(totalCost)+'</span></div>';
+ h+='<div class="summary-row total"><span>Profit</span><span>'+fmt(profit)+'</span></div></div>';
+ h+='<div class="card"><div class="card-h-gold">5-Way Profit Split</div>';
+ for(var si=0;si<SHARE_LABELS.length;si++){
+ var pct=vdata.shares[si]||0;var share=Math.round(profit*pct/100);
+ h+='<div class="sl-row"><span class="sl-label">'+SHARE_LABELS[si]+'</span>';
+ if(ed)h+='<input class="sl-range" type="range" min="0" max="100" value="'+pct+'" oninput="cleanSlider('+si+',this.value)">';
+ else h+='<div style="flex:1;height:6px;background:#e5e7eb;border-radius:3px"><div style="height:100%;width:'+pct+'%;background:var(--gold);border-radius:3px"></div></div>';
+ h+='<span class="sl-pct">'+pct+'%</span>';
+ h+='<span style="font-size:12px;font-weight:600;min-width:60px;text-align:right;color:var(--navy)">'+fmt(share)+'</span></div>';
+ }
+ if(ed)h+='<button class="btn btn-navy btn-block" style="margin-top:10px" onclick="cleanSave()">Save</button>';
+ h+='</div>';
+ }else{h+='<div class="empty"><div class="empty-icon">&#129696;</div><div>Select a villa to see pricing</div></div>';}
+ c.innerHTML=h;
 }
 function cleanSelVilla(v){cleaningState.villa=v;renderCleaning()}
 function cleanSelType(v){cleaningState.type=v;renderCleaning()}
 function cleanSetCost(v){
-  var saved=ld('clean_calcs')||{};if(!saved[cleaningState.villa])saved[cleaningState.villa]={};
-  var def=cleanGetDefaultShares(cleaningState.type);
-  var d=saved[cleaningState.villa][cleaningState.type]||{extraCost:0,shares:{0:def.labor,1:def.supplies,2:def.commission,3:def.profit,4:def.buffer}};
-  d.extraCost=Math.max(0,parseInt(v)||0);saved[cleaningState.villa][cleaningState.type]=d;sv('clean_calcs',saved);renderCleaning();
+ var saved=ld('clean_calcs')||{};if(!saved[cleaningState.villa])saved[cleaningState.villa]={};
+ var def=cleanGetDefaultShares(cleaningState.type);
+ var d=saved[cleaningState.villa][cleaningState.type]||{extraCost:0,shares:{0:def.labor,1:def.supplies,2:def.commission,3:def.profit,4:def.buffer}};
+ d.extraCost=Math.max(0,parseInt(v)||0);saved[cleaningState.villa][cleaningState.type]=d;sv('clean_calcs',saved);renderCleaning();
 }
 function cleanSlider(idx,val){
-  var saved=ld('clean_calcs')||{};if(!saved[cleaningState.villa])saved[cleaningState.villa]={};
-  var def=cleanGetDefaultShares(cleaningState.type);
-  var d=saved[cleaningState.villa][cleaningState.type]||{extraCost:0,shares:{0:def.labor,1:def.supplies,2:def.commission,3:def.profit,4:def.buffer}};
-  val=parseInt(val);d.shares[idx]=val;
-  var others=[];for(var i=0;i<5;i++){if(i!==idx)others.push(i)}
-  var os=0;for(var i=0;i<others.length;i++){os+=(d.shares[others[i]]||0)}
-  var rem=100-val;
-  if(os===0){var each=Math.floor(rem/others.length);for(var i=0;i<others.length;i++){d.shares[others[i]]=each}}
-  else{for(var i=0;i<others.length;i++){d.shares[others[i]]=Math.round(rem*(d.shares[others[i]]||0)/os)}}
-  saved[cleaningState.villa][cleaningState.type]=d;sv('clean_calcs',saved);renderCleaning();
+ var saved=ld('clean_calcs')||{};if(!saved[cleaningState.villa])saved[cleaningState.villa]={};
+ var def=cleanGetDefaultShares(cleaningState.type);
+ var d=saved[cleaningState.villa][cleaningState.type]||{extraCost:0,shares:{0:def.labor,1:def.supplies,2:def.commission,3:def.profit,4:def.buffer}};
+ val=parseInt(val);d.shares[idx]=val;
+ var others=[];for(var i=0;i<5;i++){if(i!==idx)others.push(i)}
+ var os=0;for(var i=0;i<others.length;i++){os+=(d.shares[others[i]]||0)}
+ var rem=100-val;
+ if(os===0){var each=Math.floor(rem/others.length);for(var i=0;i<others.length;i++){d.shares[others[i]]=each}}
+ else{for(var i=0;i<others.length;i++){d.shares[others[i]]=Math.round(rem*(d.shares[others[i]]||0)/os)}}
+ saved[cleaningState.villa][cleaningState.type]=d;sv('clean_calcs',saved);renderCleaning();
 }
-function cleanSave(){alert('Saved! / သိမ်းဆည်းပြီး!');}
+function cleanSave(){alert('Saved!');}
 // ==================== EXPENSES (Unified Self-Service) ====================
 function expCatLabel(catId){
-  var c=EXP_CATS.find(function(x){return x.id===catId});
-  return c?c.label:catId;
+ var c=EXP_CATS.find(function(x){return x.id===catId});
+ return c?c.label:catId;
 }
 function expVehicleLabel(vid){
-  var v=VEHICLES.find(function(x){return x.id===vid});
-  return v?v.label:vid;
+ var v=VEHICLES.find(function(x){return x.id===vid});
+ return v?v.label:vid;
 }
 function expShowVilla(catId){
-  if(catId==='fuel')return false;
-  if(catId==='pcl_laundry')return false;
-  if(catId==='accountant_fee')return false;
-  return true;
+ if(catId==='fuel')return false;
+ if(catId==='pcl_laundry')return false;
+ if(catId==='accountant_fee')return false;
+ return true;
 }
 function expShowVehicle(catId){return catId==='fuel'}
 function expShowLaundryShop(catId){return catId==='other_laundry'}
 function expShowMonth(catId){return catId==='pcl_laundry'}
 
 function renderUpload(){
-  var c=document.getElementById('upload-content');
-  var isStaff=CUR.role==='staff';
-  var isManager=CUR.role==='manager';
-  var isDirector=CUR.role==='director';
-  var h='';
+ var c=document.getElementById('upload-content');
+ var isStaff=CUR.role==='staff';
+ var isManager=CUR.role==='manager';
+ var isDirector=CUR.role==='director';
+ var h='';
 
-  // === SUBMISSION FORM (all roles) ===
-  h+='<div class="card"><div class="card-h-gold">New Expense / ကုန္က်စရိတ္ အသစ္</div>';
-  h+='<div class="fg2"><label>Date / ရက္စြဲ</label><input class="input" type="date" id="exp-date" value="'+today()+'"></div>';
-  h+='<div class="fg2"><label>Category / အမ်ိဳးအစား</label><select class="select" id="exp-cat" onchange="expCatChange()">';
-  h+='<option value="">Select category / အမ်ိဳးအစားေရြးပါ</option>';
-  for(var i=0;i<EXP_CATS.length;i++){
-    h+='<option value="'+EXP_CATS[i].id+'">'+EXP_CATS[i].label+'</option>';
-  }
-  h+='</select></div>';
+ // === SUBMISSION FORM (all roles) ===
+ h+='<div class="card"><div class="card-h-gold">New Expense</div>';
+ h+='<div class="fg2"><label>Date</label><input class="input" type="date" id="exp-date" value="'+today()+'"></div>';
+ h+='<div class="fg2"><label>Category</label><select class="select" id="exp-cat" onchange="expCatChange()">';
+ h+='<option value="">Select category</option>';
+ for(var i=0;i<EXP_CATS.length;i++){
+ h+='<option value="'+EXP_CATS[i].id+'">'+EXP_CATS[i].label+'</option>';
+ }
+ h+='</select></div>';
 
-  // Villa dropdown
-  h+='<div class="fg2" id="exp-villa-row" style="display:none"><label>Villa / ဗီလာ</label><select class="select" id="exp-villa">';
-  h+='<option value="">Select villa / ဗီလာေရြးပါ</option>';
-  for(var i=0;i<VILLAS.length;i++){h+='<option value="'+VILLAS[i].id+'">'+VILLAS[i].name+'</option>'}
-  h+='<option value="general">General / Office / ရံုး</option>';
-  h+='</select></div>';
+ // Villa dropdown
+ h+='<div class="fg2" id="exp-villa-row" style="display:none"><label>Villa</label><select class="select" id="exp-villa">';
+ h+='<option value="">Select villa</option>';
+ for(var i=0;i<VILLAS.length;i++){h+='<option value="'+VILLAS[i].id+'">'+VILLAS[i].name+'</option>'}
+ h+='<option value="general">General / Office</option>';
+ h+='</select></div>';
 
-  // Vehicle dropdown (fuel only)
-  h+='<div class="fg2" id="exp-vehicle-row" style="display:none"><label>Vehicle / ယာဥ္</label><select class="select" id="exp-vehicle">';
-  h+='<option value="">Select vehicle / ယာဥ္ေရြးပါ</option>';
-  for(var i=0;i<VEHICLES.length;i++){h+='<option value="'+VEHICLES[i].id+'">'+VEHICLES[i].label+'</option>'}
-  h+='</select></div>';
+ // Vehicle dropdown (fuel only)
+ h+='<div class="fg2" id="exp-vehicle-row" style="display:none"><label>Vehicle</label><select class="select" id="exp-vehicle">';
+ h+='<option value="">Select vehicle</option>';
+ for(var i=0;i<VEHICLES.length;i++){h+='<option value="'+VEHICLES[i].id+'">'+VEHICLES[i].label+'</option>'}
+ h+='</select></div>';
 
-  // Laundry shop name
-  h+='<div class="fg2" id="exp-laundry-row" style="display:none"><label>Laundry Shop / အ၀တ္ေလွ်ာ္ဆိုင္</label><input class="input" type="text" id="exp-laundry-shop" placeholder="Shop name / ဆိုင္နာမည္"></div>';
+ // Laundry shop name
+ h+='<div class="fg2" id="exp-laundry-row" style="display:none"><label>Laundry Shop</label><input class="input" type="text" id="exp-laundry-shop" placeholder="Shop name"></div>';
 
-  // Month selector (pcl_laundry)
-  h+='<div class="fg2" id="exp-month-row" style="display:none"><label>Month / လ</label><input class="input" type="month" id="exp-month" value="'+new Date().toISOString().slice(0,7)+'"></div>';
+ // Month selector (pcl_laundry)
+ h+='<div class="fg2" id="exp-month-row" style="display:none"><label>Month</label><input class="input" type="month" id="exp-month" value="'+new Date().toISOString().slice(0,7)+'"></div>';
 
-  h+='<div class="fg2"><label>Amount / ပမာဏ (ဘတ္)</label><input class="input" type="number" id="exp-amt" min="0" placeholder="0"></div>';
-  h+='<div class="fg2"><label>Photo / ဓာတ္ပံု</label>';
-  h+='<input type="file" accept="image/*" capture="environment" id="exp-photo" onchange="uploadPhoto(this)" style="font-size:13px">';
-  h+='<div id="exp-preview" style="margin-top:8px"></div></div>';
-  h+='<div class="fg2"><label>Notes / မွတ္ခ်က္</label><textarea class="textarea" id="exp-notes" placeholder="Brief description..."></textarea></div>';
-  h+='<button class="btn btn-gold btn-block" onclick="expSubmit()" style="font-size:16px;padding:14px">Submit / တင္သြင္းမည္</button>';
-  h+='<div id="exp-success" style="display:none;text-align:center;padding:12px;background:#dcfce7;border-radius:8px;color:#16a34a;font-weight:600;font-size:14px;margin-top:8px"></div>';
-  h+='</div>';
+ h+='<div class="fg2"><label>Amount (THB)</label><input class="input" type="number" id="exp-amt" min="0" placeholder="0"></div>';
+ h+='<div class="fg2"><label>Photo</label>';
+ h+='<input type="file" accept="image/*" capture="environment" id="exp-photo" onchange="uploadPhoto(this)" style="font-size:13px">';
+ h+='<div id="exp-preview" style="margin-top:8px"></div></div>';
+ h+='<div class="fg2"><label>Notes</label><textarea class="textarea" id="exp-notes" placeholder="Brief description..."></textarea></div>';
+ h+='<button class="btn btn-gold btn-block" onclick="expSubmit()" style="font-size:16px;padding:14px">Submit</button>';
+ h+='<div id="exp-success" style="display:none;text-align:center;padding:12px;background:#dcfce7;border-radius:8px;color:#16a34a;font-weight:600;font-size:14px;margin-top:8px"></div>';
+ h+='</div>';
 
-  // === EXPENSE LIST ===
-  var expenses=ld('expenses')||[];
+ // === EXPENSE LIST ===
+ var expenses=ld('expenses')||[];
 
-  // Director filters
-  if(isDirector){
-    h+='<div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0 8px;flex-wrap:wrap;gap:8px">';
-    h+='<div style="font-size:14px;font-weight:600;color:var(--navy)">All Expenses / ကုန္က်စရိတ္ အားလံုး</div>';
-    h+='<button class="btn btn-sm btn-outline" onclick="expExport()">Export CSV / CSV တင္ပို႔</button></div>';
-    h+='<div class="filters" style="margin-bottom:8px">';
-    h+='<select class="select" style="font-size:12px;padding:4px 8px;margin-right:4px;width:auto" onchange="expFilterCat=this.value;renderUpload()">';
-    h+='<option value="all">All / အားလံုး</option>';
-    for(var i=0;i<EXP_CATS.length;i++){
-      h+='<option value="'+EXP_CATS[i].id+'"'+(expFilterCat===EXP_CATS[i].id?' selected':'')+'>'+EXP_CATS[i].label+'</option>';
-    }
-    h+='</select>';
-    h+='<select class="select" style="font-size:12px;padding:4px 8px;margin-right:4px;width:auto" onchange="expFilterVilla=this.value;renderUpload()">';
-    h+='<option value="all">All Villas</option>';
-    for(var i=0;i<VILLAS.length;i++){
-      h+='<option value="'+VILLAS[i].id+'"'+(expFilterVilla===VILLAS[i].id?' selected':'')+'>'+VILLAS[i].name+'</option>';
-    }
-    h+='</select>';
-    var staffAccounts=ACCOUNTS.filter(function(a){return a.role==='staff'});
-    h+='<select class="select" style="font-size:12px;padding:4px 8px;width:auto" onchange="expFilterStaff=this.value;renderUpload()">';
-    h+='<option value="all">All Staff</option>';
-    for(var i=0;i<staffAccounts.length;i++){
-      h+='<option value="'+staffAccounts[i].u+'"'+(expFilterStaff===staffAccounts[i].u?' selected':'')+'>'+staffAccounts[i].name+'</option>';
-    }
-    h+='</select></div>';
-  }
+ // Director filters
+ if(isDirector){
+ h+='<div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0 8px;flex-wrap:wrap;gap:8px">';
+ h+='<div style="font-size:14px;font-weight:600;color:var(--navy)">All Expenses</div>';
+ h+='<button class="btn btn-sm btn-outline" onclick="expExport()">Export CSV</button></div>';
+ h+='<div class="filters" style="margin-bottom:8px">';
+ h+='<select class="select" style="font-size:12px;padding:4px 8px;margin-right:4px;width:auto" onchange="expFilterCat=this.value;renderUpload()">';
+ h+='<option value="all">All</option>';
+ for(var i=0;i<EXP_CATS.length;i++){
+ h+='<option value="'+EXP_CATS[i].id+'"'+(expFilterCat===EXP_CATS[i].id?' selected':'')+'>'+EXP_CATS[i].label+'</option>';
+ }
+ h+='</select>';
+ h+='<select class="select" style="font-size:12px;padding:4px 8px;margin-right:4px;width:auto" onchange="expFilterVilla=this.value;renderUpload()">';
+ h+='<option value="all">All Villas</option>';
+ for(var i=0;i<VILLAS.length;i++){
+ h+='<option value="'+VILLAS[i].id+'"'+(expFilterVilla===VILLAS[i].id?' selected':'')+'>'+VILLAS[i].name+'</option>';
+ }
+ h+='</select>';
+ var staffAccounts=ACCOUNTS.filter(function(a){return a.role==='staff'});
+ h+='<select class="select" style="font-size:12px;padding:4px 8px;width:auto" onchange="expFilterStaff=this.value;renderUpload()">';
+ h+='<option value="all">All Staff</option>';
+ for(var i=0;i<staffAccounts.length;i++){
+ h+='<option value="'+staffAccounts[i].u+'"'+(expFilterStaff===staffAccounts[i].u?' selected':'')+'>'+staffAccounts[i].name+'</option>';
+ }
+ h+='</select></div>';
+ }
 
-  if(isManager){
-    h+='<div style="font-size:14px;font-weight:600;color:var(--navy);margin:12px 0 8px">All Expenses / ကုန္က်စရိတ္ အားလံုး</div>';
-  }
+ if(isManager){
+ h+='<div style="font-size:14px;font-weight:600;color:var(--navy);margin:12px 0 8px">All Expenses</div>';
+ }
 
-  // Filter expenses
-  var filtered=expenses;
-  if(isStaff){filtered=filtered.filter(function(e){return e.by===CUR.u})}
-  if(expFilterCat!=='all'){filtered=filtered.filter(function(e){return e.cat===expFilterCat})}
-  if(expFilterVilla!=='all'){filtered=filtered.filter(function(e){return e.villa===expFilterVilla})}
-  if(expFilterStaff!=='all'){filtered=filtered.filter(function(e){return e.by===expFilterStaff})}
+ // Filter expenses
+ var filtered=expenses;
+ if(isStaff){filtered=filtered.filter(function(e){return e.by===CUR.u})}
+ if(expFilterCat!=='all'){filtered=filtered.filter(function(e){return e.cat===expFilterCat})}
+ if(expFilterVilla!=='all'){filtered=filtered.filter(function(e){return e.villa===expFilterVilla})}
+ if(expFilterStaff!=='all'){filtered=filtered.filter(function(e){return e.by===expFilterStaff})}
 
-  if(filtered.length===0){
-    h+='<div class="empty"><div class="empty-icon">&#128203;</div><div>No expenses yet / မွတ္တမ္းမရွိေသးပါ</div></div>';
-  }else{
-    var list=filtered.slice().reverse();
-    for(var i=0;i<list.length;i++){
-      var e=list[i];
-      var catLbl=expCatLabel(e.cat);
-      h+='<div class="exp-item" onclick="expDetail(\''+e.id+'\')">';
-      if(e.photo)h+='<img class="exp-thumb" src="'+e.photo+'">';
-      else h+='<div class="exp-thumb" style="display:flex;align-items:center;justify-content:center;font-size:20px">&#128247;</div>';
-      var subInfo=catLbl;
-      if(e.villaName)subInfo+=' \u00b7 '+e.villaName;
-      if(e.vehicle)subInfo+=' \u00b7 '+expVehicleLabel(e.vehicle);
-      if(isDirector||isManager)subInfo+=' \u00b7 '+e.byName;
-      h+='<div class="exp-info"><div class="exp-villa">'+(e.villaName||e.vehicleName||'General')+'</div>';
-      h+='<div class="exp-cat">'+subInfo+' \u00b7 '+fmtDate(e.at)+'</div></div>';
-      h+='<div class="exp-amt">'+fmt(e.amt)+'</div>';
-      var canDelete=(isDirector)||(isStaff&&e.by===CUR.u);
-      if(canDelete){
-        h+='<button class="btn btn-sm btn-red" style="padding:2px 8px;font-size:11px;min-width:auto" onclick="event.stopPropagation();expDelete(\''+e.id+'\')">&#10005;</button>';
-      }
-      h+='</div>';
-    }
-  }
-  c.innerHTML=h;
+ if(filtered.length===0){
+ h+='<div class="empty"><div class="empty-icon">&#128203;</div><div>No expenses yet</div></div>';
+ }else{
+ var list=filtered.slice().reverse();
+ for(var i=0;i<list.length;i++){
+ var e=list[i];
+ var catLbl=expCatLabel(e.cat);
+ h+='<div class="exp-item" onclick="expDetail(\''+e.id+'\')">';
+ if(e.photo)h+='<img class="exp-thumb" src="'+e.photo+'">';
+ else h+='<div class="exp-thumb" style="display:flex;align-items:center;justify-content:center;font-size:20px">&#128247;</div>';
+ var subInfo=catLbl;
+ if(e.villaName)subInfo+=' \u00b7 '+e.villaName;
+ if(e.vehicle)subInfo+=' \u00b7 '+expVehicleLabel(e.vehicle);
+ if(isDirector||isManager)subInfo+=' \u00b7 '+e.byName;
+ h+='<div class="exp-info"><div class="exp-villa">'+(e.villaName||e.vehicleName||'General')+'</div>';
+ h+='<div class="exp-cat">'+subInfo+' \u00b7 '+fmtDate(e.at)+'</div></div>';
+ h+='<div class="exp-amt">'+fmt(e.amt)+'</div>';
+ var canDelete=(isDirector)||(isStaff&&e.by===CUR.u);
+ if(canDelete){
+ h+='<button class="btn btn-sm btn-red" style="padding:2px 8px;font-size:11px;min-width:auto" onclick="event.stopPropagation();expDelete(\''+e.id+'\')">&#10005;</button>';
+ }
+ h+='</div>';
+ }
+ }
+ c.innerHTML=h;
 }
 
 function expCatChange(){
-  var catId=document.getElementById('exp-cat').value;
-  var vr=document.getElementById('exp-villa-row');if(vr)vr.style.display=expShowVilla(catId)?'':'none';
-  var vehr=document.getElementById('exp-vehicle-row');if(vehr)vehr.style.display=expShowVehicle(catId)?'':'none';
-  var lr=document.getElementById('exp-laundry-row');if(lr)lr.style.display=expShowLaundryShop(catId)?'':'none';
-  var mr=document.getElementById('exp-month-row');if(mr)mr.style.display=expShowMonth(catId)?'':'none';
-  if(catId==='other_laundry'){
-    var vs=document.getElementById('exp-villa');
-    if(vs){vs.onchange=function(){var si=document.getElementById('exp-laundry-shop');if(si&&vs.value==='sunrise_hill'){si.value='Lamai Laundry'}else if(si){si.value=''}}}
-  }
+ var catId=document.getElementById('exp-cat').value;
+ var vr=document.getElementById('exp-villa-row');if(vr)vr.style.display=expShowVilla(catId)?'':'none';
+ var vehr=document.getElementById('exp-vehicle-row');if(vehr)vehr.style.display=expShowVehicle(catId)?'':'none';
+ var lr=document.getElementById('exp-laundry-row');if(lr)lr.style.display=expShowLaundryShop(catId)?'':'none';
+ var mr=document.getElementById('exp-month-row');if(mr)mr.style.display=expShowMonth(catId)?'':'none';
+ if(catId==='other_laundry'){
+ var vs=document.getElementById('exp-villa');
+ if(vs){vs.onchange=function(){var si=document.getElementById('exp-laundry-shop');if(si&&vs.value==='sunrise_hill'){si.value='Lamai Laundry'}else if(si){si.value=''}}}
+ }
 }
 
 function uploadPhoto(input){
-  if(!input.files||!input.files[0])return;
-  var reader=new FileReader();
-  reader.onload=function(e){
-    var img=new Image();
-    img.onload=function(){
-      var canvas=document.createElement('canvas');
-      var MAX=800;var w=img.width,h=img.height;
-      if(w>MAX){h=h*MAX/w;w=MAX}if(h>MAX){w=w*MAX/h;h=MAX}
-      canvas.width=w;canvas.height=h;
-      var ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,w,h);
-      uploadPhotoData=canvas.toDataURL('image/jpeg',0.7);
-      document.getElementById('exp-preview').innerHTML='<img class="exp-thumb" src="'+uploadPhotoData+'" style="width:100%;max-width:300px;height:auto">';
-    };
-    img.src=e.target.result;
-  };
-  reader.readAsDataURL(input.files[0]);
+ if(!input.files||!input.files[0])return;
+ var reader=new FileReader();
+ reader.onload=function(e){
+ var img=new Image();
+ img.onload=function(){
+ var canvas=document.createElement('canvas');
+ var MAX=800;var w=img.width,h=img.height;
+ if(w>MAX){h=h*MAX/w;w=MAX}if(h>MAX){w=w*MAX/h;h=MAX}
+ canvas.width=w;canvas.height=h;
+ var ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,w,h);
+ uploadPhotoData=canvas.toDataURL('image/jpeg',0.7);
+ document.getElementById('exp-preview').innerHTML='<img class="exp-thumb" src="'+uploadPhotoData+'" style="width:100%;max-width:300px;height:auto">';
+ };
+ img.src=e.target.result;
+ };
+ reader.readAsDataURL(input.files[0]);
 }
 
 function expSubmit(){
-  var catId=document.getElementById('exp-cat').value;
-  var amt=parseInt(document.getElementById('exp-amt').value)||0;
-  var notes=document.getElementById('exp-notes').value.trim();
-  var expDate=document.getElementById('exp-date').value;
-  if(!catId){alert('Select category / အမ်ိဳးအစားေရြးပါ');return}
-  if(amt<=0){alert('Enter valid amount / မွန္ကန္ေသာ ပမာဏ ထည့္ပါ');return}
-  var villa='';var villaName='';var vehicle='';var vehicleName='';var laundryShop='';var monthVal='';
-  if(expShowVilla(catId)){
-    villa=document.getElementById('exp-villa').value;
-    if(!villa){alert('Select villa / ဗီလာေရြးပါ');return}
-    var vObj=VILLAS.find(function(v){return v.id===villa});
-    villaName=vObj?vObj.name:(villa==='general'?'General / Office':villa);
-  }
-  if(expShowVehicle(catId)){
-    vehicle=document.getElementById('exp-vehicle').value;
-    if(!vehicle){alert('Select vehicle / ယာဥ္ေရြးပါ');return}
-    var vhObj=VEHICLES.find(function(v){return v.id===vehicle});
-    vehicleName=vhObj?vhObj.label:vehicle;
-  }
-  if(expShowLaundryShop(catId)){laundryShop=document.getElementById('exp-laundry-shop').value.trim()}
-  if(expShowMonth(catId)){monthVal=document.getElementById('exp-month').value}
-  var expenses=ld('expenses')||[];
-  expenses.push({id:gid('exp'),photo:uploadPhotoData||'',villa:villa,villaName:villaName,vehicle:vehicle,vehicleName:vehicleName,laundryShop:laundryShop,month:monthVal,cat:catId,amt:amt,notes:notes,status:'approved',by:CUR.u,byName:CUR.name,at:expDate?new Date(expDate).toISOString():new Date().toISOString(),submittedAt:new Date().toISOString()});
-  sv('expenses',expenses);
-  uploadPhotoData=null;
-  var sEl=document.getElementById('exp-success');
-  if(sEl){sEl.textContent='\u1000\u103b\u102d\u102f\u1019\u103c\u1014\u103a\u1038\u1000\u103d\u102d\u102f\u1037\u101b\u1031\u1038\u1019\u103c\u1014\u103a\u1019\u103b\u102c\u1038\u1015\u103c\u102e\u1015\u103c\u1014\u103a\u101b\u103e\u102d\u1019\u103c\u102e\u1015\u103c\u1014\u103a\u1015\u103c\u102f\u1036 \u2713';sEl.style.display='block'}
-  if(expSuccessTimer)clearTimeout(expSuccessTimer);
-  expSuccessTimer=setTimeout(function(){
-    var ids=['exp-cat','exp-amt','exp-notes','exp-villa','exp-vehicle','exp-laundry-shop'];
-    for(var i=0;i<ids.length;i++){var el=document.getElementById(ids[i]);if(el)el.value=''}
-    var pv=document.getElementById('exp-preview');if(pv)pv.innerHTML='';
-    var s2=document.getElementById('exp-success');if(s2)s2.style.display='none';
-    var rows=['exp-villa-row','exp-vehicle-row','exp-laundry-row','exp-month-row'];
-    for(var i=0;i<rows.length;i++){var el=document.getElementById(rows[i]);if(el)el.style.display='none'}
-  },2000);
+ var catId=document.getElementById('exp-cat').value;
+ var amt=parseInt(document.getElementById('exp-amt').value)||0;
+ var notes=document.getElementById('exp-notes').value.trim();
+ var expDate=document.getElementById('exp-date').value;
+ if(!catId){alert('Select category');return}
+ if(amt<=0){alert('Enter valid amount');return}
+ var villa='';var villaName='';var vehicle='';var vehicleName='';var laundryShop='';var monthVal='';
+ if(expShowVilla(catId)){
+ villa=document.getElementById('exp-villa').value;
+ if(!villa){alert('Select villa");return}
+ var vObj=VILLAS.find(function(v){return v.id===villa});
+ villaName=vObj?vObj.name:(villa==='general'?'General / Office':villa);
+ }
+ if(expShowVehicle(catId)){
+ vehicle=document.getElementById('exp-vehicle').value;
+ if(!vehicle){alert('Select vehicle");return}
+ var vhObj=VEHICLES.find(function(v){return v.id===vehicle});
+ vehicleName=vhObj?vhObj.label:vehicle;
+ }
+ if(expShowLaundryShop(catId)){laundryShop=document.getElementById('exp-laundry-shop').value.trim()}
+ if(expShowMonth(catId)){monthVal=document.getElementById('exp-month').value}
+ var expenses=ld('expenses')||[];
+ expenses.push({id:gid('exp'),photo:uploadPhotoData||'',villa:villa,villaName:villaName,vehicle:vehicle,vehicleName:vehicleName,laundryShop:laundryShop,month:monthVal,cat:catId,amt:amt,notes:notes,status:'approved',by:CUR.u,byName:CUR.name,at:expDate?new Date(expDate).toISOString():new Date().toISOString(),submittedAt:new Date().toISOString()});
+ sv('expenses',expenses);
+ uploadPhotoData=null;
+ var sEl=document.getElementById('exp-success');
+ if(sEl){sEl.textContent='Success \u2713';sEl.style.display='block'}
+ if(expSuccessTimer)clearTimeout(expSuccessTimer);
+ expSuccessTimer=setTimeout(function(){
+ var ids=['exp-cat','exp-amt','exp-notes','exp-villa','exp-vehicle','exp-laundry-shop'];
+ for(var i=0;i<ids.length;i++){var el=document.getElementById(ids[i]);if(el)el.value=''}
+ var pv=document.getElementById('exp-preview');if(pv)pv.innerHTML='';
+ var s2=document.getElementById('exp-success');if(s2)s2.style.display='none';
+ var rows=['exp-villa-row','exp-vehicle-row','exp-laundry-row','exp-month-row'];
+ for(var i=0;i<rows.length;i++){var el=document.getElementById(rows[i]);if(el)el.style.display='none'}
+ },2000);
 }
 
 function expDetail(id){
-  var expenses=ld('expenses')||[];
-  var e=expenses.find(function(x){return x.id===id});
-  if(!e)return;
-  var h='<div class="modal-h">Expense Detail / ကုန္က်စရိတ္ အေသးစိတ္</div>';
-  if(e.photo)h+='<img src="'+e.photo+'" style="width:100%;border-radius:8px;margin-bottom:12px">';
-  h+='<div class="summary">';
-  if(e.villaName)h+='<div class="summary-row"><span>Villa / ဗီလာ</span><span>'+e.villaName+'</span></div>';
-  h+='<div class="summary-row"><span>Category / အမ်ိဳးအစား</span><span>'+expCatLabel(e.cat)+'</span></div>';
-  h+='<div class="summary-row"><span>Amount / ပမာဏ</span><span>'+fmt(e.amt)+' THB</span></div>';
-  if(e.vehicle)h+='<div class="summary-row"><span>Vehicle / ယာဥ္</span><span>'+expVehicleLabel(e.vehicle)+'</span></div>';
-  if(e.laundryShop)h+='<div class="summary-row"><span>Laundry Shop / အ၀တ္ေလွ်ာ္ဆိုင္</span><span>'+e.laundryShop+'</span></div>';
-  if(e.month)h+='<div class="summary-row"><span>Month / လ</span><span>'+e.month+'</span></div>';
-  h+='<div class="summary-row"><span>Date / ရက္စြဲ</span><span>'+fmtDate(e.at)+'</span></div>';
-  if(e.notes)h+='<div class="summary-row"><span>Notes / မွတ္ခ်က္</span><span>'+e.notes+'</span></div>';
-  h+='<div class="summary-row"><span>Submitted by / တင္သြင္းသူ</span><span>'+e.byName+'</span></div>';
-  h+='</div>';
-  h+='<button class="btn btn-outline btn-block" onclick="closeModal()" style="margin-top:12px">Close / ပိတ္ရန္</button>';
-  openModal(h);
+ var expenses=ld('expenses')||[];
+ var e=expenses.find(function(x){return x.id===id});
+ if(!e)return;
+ var h='<div class="modal-h">Expense Detail</div>';
+ if(e.photo)h+='<img src="'+e.photo+'" style="width:100%;border-radius:8px;margin-bottom:12px">';
+ h+='<div class="summary">';
+ if(e.villaName)h+='<div class="summary-row"><span>Villa</span><span>'+e.villaName+'</span></div>';
+ h+='<div class="summary-row"><span>Category</span><span>'+expCatLabel(e.cat)+'</span></div>';
+ h+='<div class="summary-row"><span>Amount</span><span>'+fmt(e.amt)+' THB</span></div>';
+ if(e.vehicle)h+='<div class="summary-row"><span>Vehicle</span><span>'+expVehicleLabel(e.vehicle)+'</span></div>';
+ if(e.laundryShop)h+='<div class="summary-row"><span>Laundry Shop</span><span>'+e.laundryShop+'</span></div>';
+ if(e.month)h+='<div class="summary-row"><span>Month</span><span>'+e.month+'</span></div>';
+ h+='<div class="summary-row"><span>Date</span><span>'+fmtDate(e.at)+'</span></div>';
+ if(e.notes)h+='<div class="summary-row"><span>Notes</span><span>'+e.notes+'</span></div>';
+ h+='<div class="summary-row"><span>Submitted by</span><span>'+e.byName+'</span></div>';
+ h+='</div>';
+ h+='<button class="btn btn-outline btn-block" onclick="closeModal()" style="margin-top:12px">Close</button>';
+ openModal(h);
 }
 
 function expDelete(id){
-  if(!confirm('Delete this expense? / ဤကုန္က်စရိတ္ကို ဖ်က္မွာ ေသခ်ာလား?'))return;
-  var expenses=ld('expenses')||[];
-  expenses=expenses.filter(function(e){return e.id!==id});
-  sv('expenses',expenses);renderUpload();
+ if(!confirm('Delete this expense?'))return;
+ var expenses=ld('expenses')||[];
+ expenses=expenses.filter(function(e){return e.id!==id});
+ sv('expenses',expenses);renderUpload();
 }
 
 function expExport(){
-  var expenses=ld('expenses')||[];
-  if(expenses.length===0){alert('No data to export');return}
-  var csv='Date,Staff,Villa,Vehicle,Category,Amount,Notes\n';
-  for(var i=0;i<expenses.length;i++){
-    var e=expenses[i];
-    csv+=fmtDate(e.at)+','+e.byName+','+(e.villaName||'').replace(/,/g,'')+','+(e.vehicleName||'').replace(/,/g,'')+','+expCatLabel(e.cat)+','+e.amt+','+(e.notes||'').replace(/,/g,'')+'\n';
-  }
-  var blob=new Blob([csv],{type:'text/csv'});
-  var a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  a.download='vida_expenses_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+ var expenses=ld('expenses')||[];
+ if(expenses.length===0){alert('No data to export');return}
+ var csv='Date,Staff,Villa,Vehicle,Category,Amount,Notes\n';
+ for(var i=0;i<expenses.length;i++){
+ var e=expenses[i];
+ csv+=fmtDate(e.at)+','+e.byName+','+(e.villaName||'').replace(/,/g,'')+','+(e.vehicleName||'').replace(/,/g,'')+','+expCatLabel(e.cat)+','+e.amt+','+(e.notes||'').replace(/,/g,'')+'\n';
+ }
+ var blob=new Blob([csv],{type:'text/csv'});
+ var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+ a.download='vida_expenses_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
 }
 
 // ==================== SCHEDULE ====================
@@ -768,306 +766,306 @@ var schedFilter='all';
 var calRefreshTimer=null;
 
 function schedGetTypeColor(type){
-  var m={'cleaning':'#22c55e','pool':'#3b82f6','laundry':'#a855f7','chef':'#f59e0b','maintenance':'#ef4444','other':'#6b7280'};
-  return m[type]||'#6b7280';
+ var m={'cleaning':'#22c55e','pool':'#3b82f6','laundry':'#a855f7','chef':'#f59e0b','maintenance':'#ef4444','other':'#6b7280'};
+ return m[type]||'#6b7280';
 }
 function schedTypeLabel(type){
-  var m={cleaning:'Cleaning / သန္႔ရွင္းေရး',pool:'Pool / ေရကူးကန္',laundry:'Laundry / အ၀တ္ေလွ်ာ္',chef:'Chef / ခ်က္ျပဳတ္',maintenance:'Maintenance / ျပဳျပင္',other:'Other / အျခား'};
-  return m[type]||type;
+ var m={cleaning:'Cleaning',pool:'Pool',laundry:'Laundry',chef:'Chef',maintenance:'Maintenance',other:'Other'};
+ return m[type]||type;
 }
 
 function schedFetchCal(){
-  if(!CAL_ID)return;
-  var url='https://www.googleapis.com/calendar/v3/calendars/'+encodeURIComponent(CAL_ID)+'/events?key=AIzaSyBNLgmEtEJcsKEOGKcD0J8XvZmVqJmGqQo&singleEvents=true&orderBy=startTime&timeMin='+new Date().toISOString().slice(0,10)+'T00:00:00Z&maxResults=50';
-  console.log('[Calendar] Fetching:',url);
-  fetch(url,{headers:{'Accept':'application/json'}})
-  .then(function(r){
-    console.log('[Calendar] Status:',r.status);
-    if(!r.ok)throw new Error('HTTP '+r.status+' '+r.statusText);
-    return r.json();
-  })
-  .then(function(data){
-    console.log('[Calendar] Got',data.items?data.items.length:0,'events');
-    if(data.items&&data.items.length>0){
-      var events=data.items.map(function(ev){
-        return {id:'cal_'+ev.id,title:ev.summary,start:ev.start.dateTime||ev.start.date,type:'other',notes:ev.description||'',source:'google'};
-      });
-      var local=ld('cal_events')||[];
-      var merged=local.concat(events);
-      var seen={};var unique=[];
-      for(var i=0;i<merged.length;i++){if(!seen[merged[i].id]){seen[merged[i].id]=true;unique.push(merged[i])}}
-      sv('cal_events',unique);
-      schedRefresh();
-    }
-  })
-  .catch(function(err){
-    console.error('[Calendar] Fetch failed:',err.message);
-    console.error('[Calendar] URL was:',url);
-  });
+ if(!CAL_ID)return;
+ var url='https://www.googleapis.com/calendar/v3/calendars/'+encodeURIComponent(CAL_ID)+'/events?key=AIzaSyBNLgmEtEJcsKEOGKcD0J8XvZmVqJmGqQo&singleEvents=true&orderBy=startTime&timeMin='+new Date().toISOString().slice(0,10)+'T00:00:00Z&maxResults=50';
+ console.log('[Calendar] Fetching:',url);
+ fetch(url,{headers:{'Accept':'application/json'}})
+ .then(function(r){
+ console.log('[Calendar] Status:',r.status);
+ if(!r.ok)throw new Error('HTTP '+r.status+' '+r.statusText);
+ return r.json();
+ })
+ .then(function(data){
+ console.log('[Calendar] Got',data.items?data.items.length:0,'events');
+ if(data.items&&data.items.length>0){
+ var events=data.items.map(function(ev){
+ return {id:'cal_'+ev.id,title:ev.summary,start:ev.start.dateTime||ev.start.date,type:'other',notes:ev.description||'',source:'google'};
+ });
+ var local=ld('cal_events')||[];
+ var merged=local.concat(events);
+ var seen={};var unique=[];
+ for(var i=0;i<merged.length;i++){if(!seen[merged[i].id]){seen[merged[i].id]=true;unique.push(merged[i])}}
+ sv('cal_events',unique);
+ schedRefresh();
+ }
+ })
+ .catch(function(err){
+ console.error('[Calendar] Fetch failed:',err.message);
+ console.error('[Calendar] URL was:',url);
+ });
 }
 
 function schedRefresh(){
-  var all=ld('cal_events')||[];
-  var local=ld('schedule')||[];
-  var today=new Date();today.setHours(0,0,0,0);
-  var end=new Date(today);end.setDate(end.getDate()+14);
-  var filtered=all.filter(function(e){
-    var d=new Date(e.start);return d>=today&&d<=end;
-  }).concat(local.filter(function(e){
-    var d=new Date(e.start);return d>=today&&d<=end;
-  }));
-  filtered.sort(function(a,b){return new Date(a.start)-new Date(b.start)});
-  sv('_sched_view',filtered);
-  renderSchedule();
+ var all=ld('cal_events')||[];
+ var local=ld('schedule')||[];
+ var today=new Date();today.setHours(0,0,0,0);
+ var end=new Date(today);end.setDate(end.getDate()+14);
+ var filtered=all.filter(function(e){
+ var d=new Date(e.start);return d>=today&&d<=end;
+ }).concat(local.filter(function(e){
+ var d=new Date(e.start);return d>=today&&d<=end;
+ }));
+ filtered.sort(function(a,b){return new Date(a.start)-new Date(b.start)});
+ sv('_sched_view',filtered);
+ renderSchedule();
 }
 
 function renderSchedule(){
-  var c=document.getElementById('schedule-content');
-  if(!c)return;
-  var jobs=ld('_sched_view')||[];
-  var isStaff=CUR.role==='staff';
-  var isDirector=CUR.role==='director';
-  var h='';
+ var c=document.getElementById('schedule-content');
+ if(!c)return;
+ var jobs=ld('_sched_view')||[];
+ var isStaff=CUR.role==='staff';
+ var isDirector=CUR.role==='director';
+ var h='';
 
-  // Auto-refresh info (director only)
-  if(isDirector){
-    h+='<div style="font-size:11px;color:#666;margin-bottom:8px">Auto-refreshes every 5 min | Google Calendar sync</div>';
-  }
+ // Auto-refresh info (director only)
+ if(isDirector){
+ h+='<div style="font-size:11px;color:#666;margin-bottom:8px">Auto-refreshes every 5 min | Google Calendar sync</div>';
+ }
 
-  // Filter tabs
-  h+='<div class="tab-pills" style="margin-bottom:12px">';
-  var types=['all','cleaning','pool','laundry','chef','maintenance','other'];
-  for(var i=0;i<types.length;i++){
-    var t=types[i];
-    var active=schedFilter===t?'tab-pill tab-active':'tab-pill';
-    var lbl=t==='all'?'All / အားလံုး':schedTypeLabel(t);
-    h+='<div class="'+active+'" onclick="schedFilter=\''+t+'\';schedRefresh()">'+lbl+'</div>';
-  }
-  h+='</div>';
+ // Filter tabs
+ h+='<div class="tab-pills" style="margin-bottom:12px">';
+ var types=['all','cleaning','pool','laundry','chef','maintenance','other'];
+ for(var i=0;i<types.length;i++){
+ var t=types[i];
+ var active=schedFilter===t?'tab-pill tab-active':'tab-pill';
+ var lbl=t==='all'?'All':schedTypeLabel(t);
+ h+='<div class="'+active+'" onclick="schedFilter=\''+t+'\';schedRefresh()">'+lbl+'</div>';
+ }
+ h+='</div>';
 
-  // Filter jobs
-  if(schedFilter!=='all'){jobs=jobs.filter(function(j){return j.type===schedFilter})}
+ // Filter jobs
+ if(schedFilter!=='all'){jobs=jobs.filter(function(j){return j.type===schedFilter})}
 
-  if(jobs.length===0){
-    h+='<div class="empty"><div class="empty-icon">&#128197;</div><div>No jobs scheduled / အလုပ္ မရွိေသးပါ</div></div>';
-  }else{
-    var curDate='';
-    for(var i=0;i<jobs.length;i++){
-      var j=jobs[i];
-      var d=new Date(j.start);
-      var dateStr=d.toDateString();
-      if(dateStr!==curDate){
-        curDate=dateStr;
-        var dayNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-        var mmNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-        h+='<div class="day-header">'+dayNames[d.getDay()]+', '+mmNames[d.getMonth()]+' '+d.getDate()+'</div>';
-      }
-      var color=schedGetTypeColor(j.type);
-      var time=d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-      h+='<div class="job-card" style="border-left:4px solid '+color+'" onclick="schedDetail(\''+j.id+'\')">';
-      h+='<div class="job-type" style="background:'+color+'">'+schedTypeLabel(j.type)+'</div>';
-      h+='<div class="job-info"><div class="job-title">'+(j.title||j.villa||'Untitled')+'</div>';
-      h+='<div class="job-time">'+time;
-      if(j.villa)h+=' &middot; '+j.villa;
-      if(j.source==='google')h+=' &middot; <span style="color:#666">Google Calendar</span>';
-      h+='</div></div>';
-      if(isDirector||(!isStaff&&j.by===CUR.u)){
-        h+='<button class="btn btn-sm btn-red" style="padding:2px 8px;font-size:11px" onclick="event.stopPropagation();schedDelete(\''+j.id+'\')">&#10005;</button>';
-      }
-      h+='</div>';
-    }
-  }
+ if(jobs.length===0){
+ h+='<div class="empty"><div class="empty-icon">&#128197;</div><div>No jobs scheduled</div></div>';
+ }else{
+ var curDate='';
+ for(var i=0;i<jobs.length;i++){
+ var j=jobs[i];
+ var d=new Date(j.start);
+ var dateStr=d.toDateString();
+ if(dateStr!==curDate){
+ curDate=dateStr;
+ var dayNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+ var mmNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+ h+='<div class="day-header">'+dayNames[d.getDay()]+', '+mmNames[d.getMonth()]+' '+d.getDate()+'</div>';
+ }
+ var color=schedGetTypeColor(j.type);
+ var time=d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+ h+='<div class="job-card" style="border-left:4px solid '+color+'" onclick="schedDetail(\''+j.id+'\')">';
+ h+='<div class="job-type" style="background:'+color+'">'+schedTypeLabel(j.type)+'</div>';
+ h+='<div class="job-info"><div class="job-title">'+(j.title||j.villa||'Untitled')+'</div>';
+ h+='<div class="job-time">'+time;
+ if(j.villa)h+=' &middot; '+j.villa;
+ if(j.source==='google')h+=' &middot; <span style="color:#666">Google Calendar</span>';
+ h+='</div></div>';
+ if(isDirector||(!isStaff&&j.by===CUR.u)){
+ h+='<button class="btn btn-sm btn-red" style="padding:2px 8px;font-size:11px" onclick="event.stopPropagation();schedDelete(\''+j.id+'\')">&#10005;</button>';
+ }
+ h+='</div>';
+ }
+ }
 
-  // Add button (not for staff)
-  if(!isStaff){
-    h+='<button class="btn btn-gold btn-block" onclick="schedAdd()" style="margin-top:12px;font-size:15px;padding:12px">+ Add Job / အလုပ္ ထည့္</button>';
-  }
+ // Add button (not for staff)
+ if(!isStaff){
+ h+='<button class="btn btn-gold btn-block" onclick="schedAdd()" style="margin-top:12px;font-size:15px;padding:12px">+ Add Job</button>';
+ }
 
-  c.innerHTML=h;
+ c.innerHTML=h;
 }
 
 function schedDetail(id){
-  var jobs=ld('_sched_view')||[];
-  var j=jobs.find(function(x){return x.id===id});
-  if(!j)return;
-  var d=new Date(j.start);
-  var h='<div class="modal-h">Job Detail / အလုပ္ အေသးစိတ္</div>';
-  h+='<div class="summary">';
-  h+='<div class="summary-row"><span>Type / အမ်ိဳးအစား</span><span>'+schedTypeLabel(j.type)+'</span></div>';
-  h+='<div class="summary-row"><span>Title / ေခါင္းစဥ္</span><span>'+(j.title||'-')+'</span></div>';
-  if(j.villa)h+='<div class="summary-row"><span>Villa / ဗီလာ</span><span>'+j.villa+'</span></div>';
-  h+='<div class="summary-row"><span>Date / ရက္စြဲ</span><span>'+d.toLocaleDateString()+'</span></div>';
-  h+='<div class="summary-row"><span>Time / အခ်ိန္</span><span>'+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+'</span></div>';
-  if(j.notes)h+='<div class="summary-row"><span>Notes / မွတ္ခ်က္</span><span>'+j.notes+'</span></div>';
-  if(j.byName)h+='<div class="summary-row"><span>Created by / ဖန္တီးသူ</span><span>'+j.byName+'</span></div>';
-  if(j.source==='google')h+='<div class="summary-row"><span>Source</span><span>Google Calendar</span></div>';
-  h+='</div>';
-  h+='<button class="btn btn-outline btn-block" onclick="closeModal()" style="margin-top:12px">Close / ပိတ္ရန္</button>';
-  openModal(h);
+ var jobs=ld('_sched_view')||[];
+ var j=jobs.find(function(x){return x.id===id});
+ if(!j)return;
+ var d=new Date(j.start);
+ var h='<div class="modal-h">Job Detail</div>';
+ h+='<div class="summary">';
+ h+='<div class="summary-row"><span>Type</span><span>'+schedTypeLabel(j.type)+'</span></div>';
+ h+='<div class="summary-row"><span>Title</span><span>'+(j.title||'-')+'</span></div>';
+ if(j.villa)h+='<div class="summary-row"><span>Villa</span><span>'+j.villa+'</span></div>';
+ h+='<div class="summary-row"><span>Date</span><span>'+d.toLocaleDateString()+'</span></div>';
+ h+='<div class="summary-row"><span>Time</span><span>'+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+'</span></div>';
+ if(j.notes)h+='<div class="summary-row"><span>Notes</span><span>'+j.notes+'</span></div>';
+ if(j.byName)h+='<div class="summary-row"><span>Created by</span><span>'+j.byName+'</span></div>';
+ if(j.source==='google')h+='<div class="summary-row"><span>Source</span><span>Google Calendar</span></div>';
+ h+='</div>';
+ h+='<button class="btn btn-outline btn-block" onclick="closeModal()" style="margin-top:12px">Close</button>';
+ openModal(h);
 }
 
 function schedAdd(){
-  var h='<div class="modal-h">Add Job / အလုပ္ အသစ္</div>';
-  h+='<div class="fg2"><label>Title / ေခါင္းစဥ္</label><input class="input" type="text" id="sched-title" placeholder="Job title"></div>';
-  h+='<div class="fg2"><label>Type / အမ်ိဳးအစား</label><select class="select" id="sched-type">';
-  h+='<option value="cleaning">Cleaning / သန္႔ရွင္းေရး</option>';
-  h+='<option value="pool">Pool / ေရကူးကန္</option>';
-  h+='<option value="laundry">Laundry / အ၀တ္ေလွ်ာ္</option>';
-  h+='<option value="chef">Chef / ခ်က္ျပဳတ္</option>';
-  h+='<option value="maintenance">Maintenance / ျပဳျပင္</option>';
-  h+='<option value="other">Other / အျခား</option>';
-  h+='</select></div>';
-  h+='<div class="fg2"><label>Villa / ဗီလာ</label><select class="select" id="sched-villa">';
-  h+='<option value="">Select villa</option>';
-  for(var i=0;i<VILLAS.length;i++){h+='<option value="'+VILLAS[i].name+'">'+VILLAS[i].name+'</option>'}
-  h+='<option value="general">General / Office</option>';
-  h+='</select></div>';
-  h+='<div class="fg2"><label>Date / ရက္စြဲ</label><input class="input" type="date" id="sched-date" value="'+today()+'"></div>';
-  h+='<div class="fg2"><label>Time / အခ်ိန္</label><input class="input" type="time" id="sched-time" value="09:00"></div>';
-  h+='<div class="fg2"><label>Notes / မွတ္ခ်က္</label><textarea class="textarea" id="sched-notes" placeholder="Details..."></textarea></div>';
-  h+='<button class="btn btn-gold btn-block" onclick="schedSave()">Save / သိမ္းမည္</button>';
-  h+='<button class="btn btn-outline btn-block" onclick="closeModal()" style="margin-top:8px">Cancel / ပယ္ဖ်က္</button>';
-  openModal(h);
+ var h='<div class="modal-h">Add Job</div>';
+ h+='<div class="fg2"><label>Title</label><input class="input" type="text" id="sched-title" placeholder="Job title"></div>';
+ h+='<div class="fg2"><label>Type</label><select class="select" id="sched-type">';
+ h+='<option value="cleaning">Cleaning</option>';
+ h+='<option value="pool">Pool</option>';
+ h+='<option value="laundry">Laundry</option>';
+ h+='<option value="chef">Chef</option>';
+ h+='<option value="maintenance">Maintenance</option>';
+ h+='<option value="other">Other</option>';
+ h+='</select></div>';
+ h+='<div class="fg2"><label>Villa</label><select class="select" id="sched-villa">';
+ h+='<option value="">Select villa</option>';
+ for(var i=0;i<VILLAS.length;i++){h+='<option value="'+VILLAS[i].name+'">'+VILLAS[i].name+'</option>'}
+ h+='<option value="general">General / Office</option>';
+ h+='</select></div>';
+ h+='<div class="fg2"><label>Date</label><input class="input" type="date" id="sched-date" value="'+today()+'"></div>';
+ h+='<div class="fg2"><label>Time</label><input class="input" type="time" id="sched-time" value="09:00"></div>';
+ h+='<div class="fg2"><label>Notes</label><textarea class="textarea" id="sched-notes" placeholder="Details..."></textarea></div>';
+ h+='<button class="btn btn-gold btn-block" onclick="schedSave()">Save</button>';
+ h+='<button class="btn btn-outline btn-block" onclick="closeModal()" style="margin-top:8px">Cancel</button>';
+ openModal(h);
 }
 
 function schedSave(){
-  var title=document.getElementById('sched-title').value.trim();
-  var type=document.getElementById('sched-type').value;
-  var villa=document.getElementById('sched-villa').value;
-  var date=document.getElementById('sched-date').value;
-  var time=document.getElementById('sched-time').value;
-  var notes=document.getElementById('sched-notes').value.trim();
-  if(!title){alert('Enter title / ေခါင္းစဥ္ ထည့္ပါ');return}
-  var start=new Date(date+'T'+time);
-  var jobs=ld('schedule')||[];
-  jobs.push({id:gid('job'),title:title,type:type,villa:villa,start:start.toISOString(),notes:notes,by:CUR.u,byName:CUR.name,source:'local'});
-  sv('schedule',jobs);
-  closeModal();schedRefresh();
+ var title=document.getElementById('sched-title').value.trim();
+ var type=document.getElementById('sched-type').value;
+ var villa=document.getElementById('sched-villa').value;
+ var date=document.getElementById('sched-date').value;
+ var time=document.getElementById('sched-time').value;
+ var notes=document.getElementById('sched-notes').value.trim();
+ if(!title){alert('Enter title');return}
+ var start=new Date(date+'T'+time);
+ var jobs=ld('schedule')||[];
+ jobs.push({id:gid('job'),title:title,type:type,villa:villa,start:start.toISOString(),notes:notes,by:CUR.u,byName:CUR.name,source:'local'});
+ sv('schedule',jobs);
+ closeModal();schedRefresh();
 }
 
 function schedDelete(id){
-  if(!confirm('Delete this job? / ဤအလုပ္ကို ဖ်က္မွာ ေသခ်ာလား?'))return;
-  var jobs=ld('schedule')||[];
-  jobs=jobs.filter(function(j){return j.id!==id});
-  sv('schedule',jobs);schedRefresh();
+ if(!confirm('Delete this job?'))return;
+ var jobs=ld('schedule')||[];
+ jobs=jobs.filter(function(j){return j.id!==id});
+ sv('schedule',jobs);schedRefresh();
 }
 
 // ==================== P&L SUMMARY ====================
 var pnlMonth=new Date().toISOString().slice(0,7);
 
 function renderPnl(){
-  var c=document.getElementById('pnl-content');
-  if(!c)return;
-  var isViewer=CUR.role==='viewer';
-  var isDirector=CUR.role==='director';
+ var c=document.getElementById('pnl-content');
+ if(!c)return;
+ var isViewer=CUR.role==='viewer';
+ var isDirector=CUR.role==='director';
 
-  // Month selector
-  var h='<div class="card"><div class="card-h-gold">P&L Summary / အျမတ္/အရႈံး အက်ဥ္းခ်ဳပ္</div>';
-  h+='<div class="fg2"><label>Month / လ</label><input class="input" type="month" id="pnl-month" value="'+pnlMonth+'" onchange="pnlMonth=this.value;renderPnl()"></div>';
-  h+='</div>';
+ // Month selector
+ var h='<div class="card"><div class="card-h-gold">P&L Summary</div>';
+ h+='<div class="fg2"><label>Month</label><input class="input" type="month" id="pnl-month" value="'+pnlMonth+'" onchange="pnlMonth=this.value;renderPnl()"></div>';
+ h+='</div>';
 
-  // Calculate totals for selected month
-  var expenses=ld('expenses')||[];
-  var chefCalcs=ld('chef_calcs')||[];
-  var cleanCalcs=ld('clean_calcs')||[];
+ // Calculate totals for selected month
+ var expenses=ld('expenses')||[];
+ var chefCalcs=ld('chef_calcs')||[];
+ var cleanCalcs=ld('clean_calcs')||[];
 
-  var monthExp=expenses.filter(function(e){return e.at&&e.at.slice(0,7)===pnlMonth});
-  var monthChef=chefCalcs.filter(function(c){return c.date&&c.date.slice(0,7)===pnlMonth});
-  var monthClean=cleanCalcs.filter(function(c){return c.date&&c.date.slice(0,7)===pnlMonth});
+ var monthExp=expenses.filter(function(e){return e.at&&e.at.slice(0,7)===pnlMonth});
+ var monthChef=chefCalcs.filter(function(c){return c.date&&c.date.slice(0,7)===pnlMonth});
+ var monthClean=cleanCalcs.filter(function(c){return c.date&&c.date.slice(0,7)===pnlMonth});
 
-  var totalExp=0;for(var i=0;i<monthExp.length;i++){totalExp+=monthExp[i].amt}
-  var totalChef=0;for(var i=0;i<monthChef.length;i++){totalChef+=monthChef[i].company||0}
-  var totalClean=0;for(var i=0;i<monthClean.length;i++){totalClean+=monthClean[i].company||0}
-  var revenue=totalChef+totalClean;
-  var profit=revenue-totalExp;
+ var totalExp=0;for(var i=0;i<monthExp.length;i++){totalExp+=monthExp[i].amt}
+ var totalChef=0;for(var i=0;i<monthChef.length;i++){totalChef+=monthChef[i].company||0}
+ var totalClean=0;for(var i=0;i<monthClean.length;i++){totalClean+=monthClean[i].company||0}
+ var revenue=totalChef+totalClean;
+ var profit=revenue-totalExp;
 
-  // Summary cards
-  h+='<div class="card"><div class="summary">';
-  h+='<div class="summary-row"><span>Revenue / ၀င္ေငြ</span><span style="color:#16a34a;font-weight:600">'+fmt(revenue)+' THB</span></div>';
-  h+='<div class="summary-row"><span>Expenses / ထြက္ေငြ</span><span style="color:#dc2626;font-weight:600">'+fmt(totalExp)+' THB</span></div>';
-  h+='<div class="summary-row"><span>Profit / အျမတ္</span><span style="color:'+(profit>=0?'#16a34a':'#dc2626')+';font-weight:700;font-size:16px">'+fmt(profit)+' THB</span></div>';
-  h+='</div></div>';
+ // Summary cards
+ h+='<div class="card"><div class="summary">';
+ h+='<div class="summary-row"><span>Revenue</span><span style="color:#16a34a;font-weight:600">'+fmt(revenue)+' THB</span></div>';
+ h+='<div class="summary-row"><span>Expenses</span><span style="color:#dc2626;font-weight:600">'+fmt(totalExp)+' THB</span></div>';
+ h+='<div class="summary-row"><span>Profit</span><span style="color:'+(profit>=0?'#16a34a':'#dc2626')+';font-weight:700;font-size:16px">'+fmt(profit)+' THB</span></div>';
+ h+='</div></div>';
 
-  // Revenue breakdown
-  h+='<div class="card"><div class="card-h">Revenue Breakdown / ၀င္ေငြ အေသးစိတ္</div>';
-  h+='<div class="summary">';
-  h+='<div class="summary-row"><span>Chef Profit / ခ်က္ျပဳတ္ အျမတ္</span><span>'+fmt(totalChef)+' THB</span></div>';
-  h+='<div class="summary-row"><span>Cleaning Profit / သန္႔ရွင္းေရး အျမတ္</span><span>'+fmt(totalClean)+' THB</span></div>';
-  h+='</div></div>';
+ // Revenue breakdown
+ h+='<div class="card"><div class="card-h">Revenue Breakdown</div>';
+ h+='<div class="summary">';
+ h+='<div class="summary-row"><span>Chef Profit</span><span>'+fmt(totalChef)+' THB</span></div>';
+ h+='<div class="summary-row"><span>Cleaning Profit</span><span>'+fmt(totalClean)+' THB</span></div>';
+ h+='</div></div>';
 
-  // Expense categories
-  h+='<div class="card"><div class="card-h">Expense Categories / ကုန္က်စရိတ္ အမ်ိဳးအစား</div>';
-  var catTotals={};
-  for(var i=0;i<monthExp.length;i++){
-    var cat=monthExp[i].cat;
-    catTotals[cat]=(catTotals[cat]||0)+monthExp[i].amt;
-  }
-  var maxCat=0;var cats=Object.keys(catTotals);
-  for(var i=0;i<cats.length;i++){if(catTotals[cats[i]]>maxCat)maxCat=catTotals[cats[i]]}
-  if(cats.length===0){
-    h+='<div class="empty" style="padding:12px">No expenses this month</div>';
-  }else{
-    for(var i=0;i<cats.length;i++){
-      var cat=cats[i];
-      var pct=maxCat>0?(catTotals[cat]/maxCat*100):0;
-      h+='<div style="margin-bottom:8px">';
-      h+='<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:2px">';
-      h+='<span>'+expCatLabel(cat)+'</span><span style="font-weight:600">'+fmt(catTotals[cat])+' THB</span></div>';
-      h+='<div style="height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden">';
-      h+='<div style="height:100%;width:'+pct+'%;background:var(--gold);border-radius:4px"></div></div></div>';
-    }
-  }
-  h+='</div>';
+ // Expense categories
+ h+='<div class="card"><div class="card-h">Expense Categories</div>';
+ var catTotals={};
+ for(var i=0;i<monthExp.length;i++){
+ var cat=monthExp[i].cat;
+ catTotals[cat]=(catTotals[cat]||0)+monthExp[i].amt;
+ }
+ var maxCat=0;var cats=Object.keys(catTotals);
+ for(var i=0;i<cats.length;i++){if(catTotals[cats[i]]>maxCat)maxCat=catTotals[cats[i]]}
+ if(cats.length===0){
+ h+='<div class="empty" style="padding:12px">No expenses this month</div>';
+ }else{
+ for(var i=0;i<cats.length;i++){
+ var cat=cats[i];
+ var pct=maxCat>0?(catTotals[cat]/maxCat*100):0;
+ h+='<div style="margin-bottom:8px">';
+ h+='<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:2px">';
+ h+='<span>'+expCatLabel(cat)+'</span><span style="font-weight:600">'+fmt(catTotals[cat])+' THB</span></div>';
+ h+='<div style="height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden">';
+ h+='<div style="height:100%;width:'+pct+'%;background:var(--gold);border-radius:4px"></div></div></div>';
+ }
+ }
+ h+='</div>';
 
-  // Expense by villa
-  h+='<div class="card"><div class="card-h">By Villa / ဗီလာ အလိုက္</div>';
-  var villaTotals={};
-  for(var i=0;i<monthExp.length;i++){
-    var v=monthExp[i].villaName||'General';
-    villaTotals[v]=(villaTotals[v]||0)+monthExp[i].amt;
-  }
-  var maxV=0;var villas=Object.keys(villaTotals);
-  for(var i=0;i<villas.length;i++){if(villaTotals[villas[i]]>maxV)maxV=villaTotals[villas[i]]}
-  if(villas.length===0){
-    h+='<div class="empty" style="padding:12px">No data</div>';
-  }else{
-    for(var i=0;i<villas.length;i++){
-      var v=villas[i];
-      var pct=maxV>0?(villaTotals[v]/maxV*100):0;
-      h+='<div style="margin-bottom:8px">';
-      h+='<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:2px">';
-      h+='<span>'+v+'</span><span style="font-weight:600">'+fmt(villaTotals[v])+' THB</span></div>';
-      h+='<div style="height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden">';
-      h+='<div style="height:100%;width:'+pct+'%;background:var(--navy);border-radius:4px"></div></div></div>';
-    }
-  }
-  h+='</div>';
+ // Expense by villa
+ h+='<div class="card"><div class="card-h">By Villa</div>';
+ var villaTotals={};
+ for(var i=0;i<monthExp.length;i++){
+ var v=monthExp[i].villaName||'General';
+ villaTotals[v]=(villaTotals[v]||0)+monthExp[i].amt;
+ }
+ var maxV=0;var villas=Object.keys(villaTotals);
+ for(var i=0;i<villas.length;i++){if(villaTotals[villas[i]]>maxV)maxV=villaTotals[villas[i]]}
+ if(villas.length===0){
+ h+='<div class="empty" style="padding:12px">No data</div>';
+ }else{
+ for(var i=0;i<villas.length;i++){
+ var v=villas[i];
+ var pct=maxV>0?(villaTotals[v]/maxV*100):0;
+ h+='<div style="margin-bottom:8px">';
+ h+='<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:2px">';
+ h+='<span>'+v+'</span><span style="font-weight:600">'+fmt(villaTotals[v])+' THB</span></div>';
+ h+='<div style="height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden">';
+ h+='<div style="height:100%;width:'+pct+'%;background:var(--navy);border-radius:4px"></div></div></div>';
+ }
+ }
+ h+='</div>';
 
-  // Staff expense summary
-  h+='<div class="card"><div class="card-h">By Staff / ၀န္ထမ္း အလိုက္</div>';
-  var staffTotals={};
-  for(var i=0;i<monthExp.length;i++){
-    var s=monthExp[i].byName;
-    staffTotals[s]=(staffTotals[s]||0)+monthExp[i].amt;
-  }
-  var maxS=0;var staffs=Object.keys(staffTotals);
-  for(var i=0;i<staffs.length;i++){if(staffTotals[staffs[i]]>maxS)maxS=staffTotals[staffs[i]]}
-  if(staffs.length===0){
-    h+='<div class="empty" style="padding:12px">No data</div>';
-  }else{
-    for(var i=0;i<staffs.length;i++){
-      var s=staffs[i];
-      var pct=maxS>0?(staffTotals[s]/maxS*100):0;
-      h+='<div style="margin-bottom:8px">';
-      h+='<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:2px">';
-      h+='<span>'+s+'</span><span style="font-weight:600">'+fmt(staffTotals[s])+' THB</span></div>';
-      h+='<div style="height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden">';
-      h+='<div style="height:100%;width:'+pct+'%;background:#8b5cf6;border-radius:4px"></div></div></div>';
-    }
-  }
-  h+='</div>';
+ // Staff expense summary
+ h+='<div class="card"><div class="card-h">By Staff</div>';
+ var staffTotals={};
+ for(var i=0;i<monthExp.length;i++){
+ var s=monthExp[i].byName;
+ staffTotals[s]=(staffTotals[s]||0)+monthExp[i].amt;
+ }
+ var maxS=0;var staffs=Object.keys(staffTotals);
+ for(var i=0;i<staffs.length;i++){if(staffTotals[staffs[i]]>maxS)maxS=staffTotals[staffs[i]]}
+ if(staffs.length===0){
+ h+='<div class="empty" style="padding:12px">No data</div>';
+ }else{
+ for(var i=0;i<staffs.length;i++){
+ var s=staffs[i];
+ var pct=maxS>0?(staffTotals[s]/maxS*100):0;
+ h+='<div style="margin-bottom:8px">';
+ h+='<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:2px">';
+ h+='<span>'+s+'</span><span style="font-weight:600">'+fmt(staffTotals[s])+' THB</span></div>';
+ h+='<div style="height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden">';
+ h+='<div style="height:100%;width:'+pct+'%;background:#8b5cf6;border-radius:4px"></div></div></div>';
+ }
+ }
+ h+='</div>';
 
-  c.innerHTML=h;
+ c.innerHTML=h;
 }
 </script>
 </body>
