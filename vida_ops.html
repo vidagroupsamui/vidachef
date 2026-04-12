@@ -786,7 +786,7 @@ function schedTypeLabel(type){
 
 function schedFetchCal(){
  if(!CAL_ID)return;
- var url='https://www.googleapis.com/calendar/v3/calendars/'+encodeURIComponent(CAL_ID)+'/events?key=AIzaSyBNLgmEtEJcsKEOGKcD0J8XvZmVqJmGqQo&singleEvents=true&orderBy=startTime&timeMin='+new Date().toISOString().slice(0,10)+'T00:00:00Z&maxResults=50';
+ var url='https://www.googleapis.com/calendar/v3/calendars/'+encodeURIComponent(CAL_ID)+'/events?key=AIzaSyBfArhqcaYyuJIxp4bfRNVd4KXEbOoPfg8&singleEvents=true&orderBy=startTime&timeMin='+new Date().toISOString().slice(0,10)+'T00:00:00Z&maxResults=50';
  console.log('[Calendar] Fetching:',url);
  fetch(url,{headers:{'Accept':'application/json'}})
  .then(function(r){
