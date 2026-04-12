@@ -842,46 +842,34 @@ function renderSchedule(){
  h+='<div style="font-size:11px;color:#666;margin-bottom:8px">Auto-refreshes every 5 min | Google Calendar sync</div>';
  }
 
- // Filter tabs
- h+='<div class="tab-pills" style="margin-bottom:12px">';
- var types=['all','cleaning','pool','laundry','chef','maintenance','other'];
- for(var i=0;i<types.length;i++){
- var t=types[i];
- var active=schedFilter===t?'tab-pill tab-active':'tab-pill';
- var lbl=t==='all'?'All':schedTypeLabel(t);
- h+='<div class="'+active+'" onclick="schedFilter=\''+t+'\';schedRefresh()">'+lbl+'</div>';
- }
- h+='</div>';
-
- // Filter jobs
- if(schedFilter!=='all'){jobs=jobs.filter(function(j){return j.type===schedFilter})}
+ // Filter tabs removed
 
  if(jobs.length===0){
  h+='<div class="empty"><div class="empty-icon">&#128197;</div><div>No jobs scheduled</div></div>';
  }else{
  var curDate='';
+ var dayNames=['SUN','MON','TUE','WED','THU','FRI','SAT'];
+ var mmNames=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
  for(var i=0;i<jobs.length;i++){
  var j=jobs[i];
  var d=new Date(j.start);
  var dateStr=d.toDateString();
  if(dateStr!==curDate){
  curDate=dateStr;
- var dayNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
- var mmNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
- h+='<div class="day-header">'+dayNames[d.getDay()]+', '+mmNames[d.getMonth()]+' '+d.getDate()+'</div>';
+ h+='<div style="font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.05em;margin:16px 0 8px">'+dayNames[d.getDay()]+' '+d.getDate()+' '+mmNames[d.getMonth()]+'</div>';
  }
- var color=schedGetTypeColor(j.type);
+ var title=(j.title||j.villa||'Untitled').toLowerCase();
+ var color;
+ if(/clean|checkout|staying/.test(title))color='#0d2744';
+ else if(/pool|garden/.test(title))color='#0e7490';
+ else if(/chef|breakfast|dinner|bbq/.test(title))color='#c9a84c';
+ else if(/laundry/.test(title))color='#7c3aed';
+ else if(/off|holiday/.test(title))color='#6b7280';
+ else color='#c9a84c';
  var time=d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
- h+='<div class="job-card" style="border-left:4px solid '+color+'" onclick="schedDetail(\''+j.id+'\')">';
- h+='<div class="job-type" style="background:'+color+'">'+schedTypeLabel(j.type)+'</div>';
- h+='<div class="job-info"><div class="job-title">'+(j.title||j.villa||'Untitled')+'</div>';
- h+='<div class="job-time">'+time;
- if(j.villa)h+=' &middot; '+j.villa;
- if(j.source==='google')h+=' &middot; <span style="color:#666">Google Calendar</span>';
- h+='</div></div>';
- if(isDirector||(!isStaff&&j.by===CUR.u)){
- h+='<button class="btn btn-sm btn-red" style="padding:2px 8px;font-size:11px" onclick="event.stopPropagation();schedDelete(\''+j.id+'\')">&#10005;</button>';
- }
+ h+='<div style="background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.08);border-left:4px solid '+color+';padding:12px 16px;margin-bottom:8px;cursor:pointer" onclick="schedDetail(\''+j.id+'\')">';
+ h+='<div style="font-size:16px;font-weight:700;color:var(--navy)">'+(j.title||j.villa||'Untitled')+'</div>';
+ h+='<div style="font-size:12px;color:#9ca3af;margin-top:2px">'+time+'</div>';
  h+='</div>';
  }
  }
