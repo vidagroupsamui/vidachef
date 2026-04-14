@@ -210,10 +210,9 @@ input,select,textarea{font-family:var(--sans);font-size:16px;touch-action:manipu
 // Google Sheets sync - columns: A:Date B:Category C:Description D:Supplier E:Amount(THB) F:PaymentMethod G:ReceiptNo H:Notes
 var SHEETS_URL='https://script.google.com/macros/s/AKfycbxN_1o95uHcu36iNtVq4aQ0NKEeIbV6WuPaEOtLY8D5VSKvWEYoV3aM0tE2Nml4wWGimQ/exec';
 function sendToSheet(data){
- var xhr=new XMLHttpRequest();
- xhr.open('POST',SHEETS_URL,true);
- xhr.setRequestHeader('Content-Type','application/json');
- xhr.send(JSON.stringify(data));
+ var params=encodeURIComponent(JSON.stringify(data));
+ var img=new Image();
+ img.src=SHEETS_URL+'?data='+params;
 }
 var ACCOUNTS=[
  {u:'phyo', pin:'1234',role:'director',name:'Phyo'},
