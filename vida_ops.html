@@ -1519,10 +1519,6 @@ function invRenderPerJob(client){
 
   var pjPrefix='PJ';
   var pjClient=client;
-  if(invState.client==='laurent'&&invState.laurentVilla){
-   var lv=client.subVillas.find(function(v){return v.id===invState.laurentVilla});
-   if(lv){pjPrefix=lv.invPrefix;pjClient={label:lv.company,addr:lv.attn+'\n'+lv.addr,wht:client.wht}}
-  }
   var invNum=invGetNextNum(pjPrefix,'');
   var invNo=pjPrefix+'-'+invState.month.slice(0,4)+'-'+invNum;
   var applyWht=(pjClient.wht);
@@ -1584,10 +1580,6 @@ function invCopyWA(){
  var totalDue=total-whtAmt;
  var invPrefix=client.prefix;
  var billToLabel=client.label;
- if(invState.client==='laurent'&&invState.laurentVilla){
-  var lv=client.subVillas.find(function(v){return v.id===invState.laurentVilla});
-  if(lv){invPrefix=lv.invPrefix;billToLabel=lv.company}
- }
  var invNum=invGetNextNum(invState.mode==='perjob'?'PJ':invPrefix,invState.mode==='semi'?invState.period:'');
  var invSuffix=invState.mode==='semi'?(invState.period==='1'?'a':'b'):'';
  var invNo=(invState.mode==='perjob'?'PJ':invPrefix)+'-'+invState.month.slice(0,4)+'-'+invNum+invSuffix;
