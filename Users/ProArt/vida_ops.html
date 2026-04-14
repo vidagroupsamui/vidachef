@@ -181,6 +181,7 @@ input,select,textarea{font-family:var(--sans);font-size:16px;touch-action:manipu
  <div id="mod-upload" class="module"><div class="container" id="upload-content"></div></div>
  <div id="mod-schedule" class="module"><div class="container" id="schedule-content"></div></div>
  <div id="mod-pnl" class="module"><div class="container" id="pnl-content"></div></div>
+ <div id="mod-pool" class="module"><div class="container" id="pool-content"></div></div>
  </main>
  <nav id="bottom-tabs">
  <button class="tab-btn" data-mod="chef" onclick="showMod('chef')"><span class="tab-icon">&#127859;</span><span>Chef</span></button>
@@ -188,7 +189,7 @@ input,select,textarea{font-family:var(--sans);font-size:16px;touch-action:manipu
  <button class="tab-btn" data-mod="upload" onclick="showMod('upload')"><span class="tab-icon">&#128203;</span><span>Expenses</span></button>
  <button class="tab-btn" data-mod="schedule" onclick="showMod('schedule')"><span class="tab-icon">&#128197;</span><span>Schedule</span></button>
  <button class="tab-btn" data-mod="pnl" onclick="showMod('pnl')"><span class="tab-icon">&#128200;</span><span>P&L</span></button>
- <button class="tab-btn" data-mod="pool" onclick="return false" style="opacity:.3;pointer-events:none"><span class="tab-icon">&#127946;</span><span>Pool</span></button>
+ <button class="tab-btn" data-mod="pool" onclick="showMod('pool')"><span class="tab-icon">&#127946;</span><span>Pool</span></button>
  </nav>
 </div>
 
@@ -241,9 +242,9 @@ var VILLAS=[
  {id:'sandra_airbnb',name:'Sandra Airbnb',group:'OTHERS',co:1800,st:1800,garbage:0,laundry:false}
 ];
 var SHARE_LABELS=['Labor','Ingredients','Commission','Company Profit','Buffer'];
-var MOD_TITLES={chef:'Chef Calculator',cleaning:'Cleaning Calculator',upload:'Expenses',schedule:'Schedule',pnl:'P&L Summary'};
-var ACCESS={chef:{director:1,viewer:0,manager:1,staff:0},cleaning:{director:1,viewer:0,manager:1,staff:0},upload:{director:1,viewer:0,manager:1,staff:1},schedule:{director:1,viewer:0,manager:1,staff:1},pnl:{director:1,viewer:1,manager:0,staff:0}};
-var EDITABLE={chef:{director:1,viewer:0,manager:1,staff:0},cleaning:{director:1,viewer:0,manager:1,staff:0},upload:{director:1,viewer:0,manager:1,staff:1},schedule:{director:1,viewer:0,manager:1,staff:1},pnl:{director:1,viewer:0,manager:0,staff:0}};
+var MOD_TITLES={chef:'Chef Calculator',cleaning:'Cleaning Calculator',upload:'Expenses',schedule:'Schedule',pnl:'P&L Summary',pool:'Pool Calculator'};
+var ACCESS={chef:{director:1,viewer:0,manager:1,staff:0},cleaning:{director:1,viewer:0,manager:1,staff:0},upload:{director:1,viewer:0,manager:1,staff:1},schedule:{director:1,viewer:0,manager:1,staff:1},pnl:{director:1,viewer:1,manager:0,staff:0},pool:{director:1,viewer:0,manager:1,staff:0}};
+var EDITABLE={chef:{director:1,viewer:0,manager:1,staff:0},cleaning:{director:1,viewer:0,manager:1,staff:0},upload:{director:1,viewer:0,manager:1,staff:1},schedule:{director:1,viewer:0,manager:1,staff:1},pnl:{director:1,viewer:0,manager:0,staff:0},pool:{director:1,viewer:0,manager:1,staff:0}};
 var EXP_CATS=[
  {id:'fuel',label:'Fuel / Gasoline'},
  {id:'cleaning_supplies',label:'Cleaning Supplies'},
@@ -311,7 +312,7 @@ function applyTabAccess(){
 }
 function showMod(m){
  if(!canAccess(m))return;
- var mods=['chef','cleaning','upload','schedule','pnl'];
+ var mods=['chef','cleaning','upload','schedule','pnl','pool'];
  for(var i=0;i<mods.length;i++){var el=document.getElementById('mod-'+mods[i]);if(el){el.classList.toggle('on',mods[i]===m)}}
  var btns=document.querySelectorAll('.tab-btn');
  for(var i=0;i<btns.length;i++){btns[i].classList.toggle('on',btns[i].getAttribute('data-mod')===m)}
@@ -321,6 +322,7 @@ function showMod(m){
  else if(m==='upload')renderUpload();
  else if(m==='schedule'){if(calTimer)clearInterval(calTimer);schedFetchCal();calTimer=setInterval(function(){schedFetchCal()},300000);renderSchedule();}
  else if(m==='pnl')renderPnl();
+ else if(m==='pool')renderPool();
 }
 function openModal(html){document.getElementById('modal-body').innerHTML=html;document.getElementById('modal-bg').classList.add('on')}
 function closeModal(){document.getElementById('modal-bg').classList.remove('on')}
@@ -426,7 +428,16 @@ function chefSlider(idx,val){
 }
 function chefSave(){
  var data={};for(var k in chefState.services){data[k]={guests:chefState.services[k].guests,ingredientCost:chefState.services[k].ingredientCost,manualPrice:chefState.services[k].manualPrice,shares:chefState.services[k].shares}}
- sv('chef_calcs',data);alert('Saved!');
+ sv('chef_calcs',data);
+ var jobs=ld('chef_jobs')||[];
+ for(var k in chefState.services){
+  var s=chefState.services[k];
+  var price=k==='custom'?s.manualPrice:chefGetPrice(k,s.guests);
+  var profit=price-s.ingredientCost;
+  jobs.push({date:today(),service:k,guests:s.guests,price:price,ingredientCost:s.ingredientCost,profit:profit,shares:s.shares,by:CUR.u,byName:CUR.name});
+ }
+ sv('chef_jobs',jobs);
+ alert('Saved!');
 }
 
 // ==================== CLEANING CALCULATOR ====================
@@ -485,6 +496,7 @@ function renderCleaning(){
  var laundryMsg=cleanGetLaundryMsg(villa);
  if(laundryMsg)h+='<div class="note" style="background:#fffde7;border-left-color:#f9a825"><strong>'+laundryMsg+'</strong></div>';
  if(ed){h+='<div class="fg2"><label>Extra Costs (THB)</label><input class="input" type="number" value="'+vdata.extraCost+'" min="0" onchange="cleanSetCost(this.value)"></div>';}
+ if(ed){h+='<button class="btn btn-navy btn-block" style="margin-top:10px" onclick="cleanSave()">Save Job</button>';}
  h+='<div class="summary"><div class="summary-row"><span>Revenue</span><span>'+fmt(totalPrice)+'</span></div>';
  h+='<div class="summary-row"><span>Costs</span><span>&minus;'+fmt(totalCost)+'</span></div>';
  h+='<div class="summary-row total"><span>Profit</span><span>'+fmt(profit)+'</span></div></div>';
@@ -555,7 +567,38 @@ function cleanSlider(idx,val){
  else{for(var i=0;i<others.length;i++){d.shares[others[i]]=Math.round(rem*(d.shares[others[i]]||0)/os)}}
  saved[cleaningState.villa][cleaningState.type]=d;sv('clean_calcs',saved);renderCleaning();
 }
-function cleanSave(){alert('Saved!');}
+function cleanSave(){
+ var villa=VILLAS.find(function(v){return v.id===cleaningState.villa});
+ if(!villa){alert('Select a villa first');return}
+ var basePrice=villa[cleaningState.type]||villa.co;
+ var garbage=villa.garbage||0;
+ var totalPrice=basePrice+garbage;
+ var saved=ld('clean_calcs')||{};
+ if(!saved[cleaningState.villa])saved[cleaningState.villa]={};
+ var def=cleanGetDefaultShares(cleaningState.type);
+ var d=saved[cleaningState.villa][cleaningState.type]||{extraCost:0,shares:{0:def.labor,1:def.supplies,2:def.commission,3:def.profit,4:def.buffer}};
+ var totalCost=d.extraCost+garbage;
+ if(villa.laundry&&villa.laundryCost)totalCost+=villa.laundryCost;
+ var profit=totalPrice-totalCost;
+ var commission=Math.round(totalPrice*0.10);
+ var netProfit=profit-commission;
+ if(!saved[cleaningState.villa]._jobs)saved[cleaningState.villa]._jobs=[];
+ saved[cleaningState.villa]._jobs.push({
+  date:today(),
+  villa:cleaningState.villa,
+  villaName:villa.name,
+  type:cleaningState.type,
+  amount:totalPrice,
+  extraCost:d.extraCost,
+  commission:commission,
+  profit:netProfit,
+  shares:d.shares,
+  by:CUR.u,
+  byName:CUR.name
+ });
+ sv('clean_calcs',saved);
+ alert('Saved!');
+}
 // ==================== EXPENSES (Unified Self-Service) ====================
 function expCatLabel(catId){
  var c=EXP_CATS.find(function(x){return x.id===catId});
@@ -990,6 +1033,145 @@ function schedDelete(id){
  sv('schedule',jobs);schedRefresh();
 }
 
+// ==================== POOL CALCULATOR ====================
+var poolState={villa:'',type:'standard',manualName:'',manualPrice:''};
+var POOL_PRICING={
+ standard:{
+  'villa_love':3500,'majesta':3500,'n1':3000,'n2':3000,'n3':3000,
+  'j3':4000,'sunrise_hill':3800,'villa_anna':3000,'villa_diana':3000,
+  'villa_yoco':3500,'big_buddha':3500,'aqua_314':3500,
+  'aqua_319_up':3500,'aqua_319_down':2500,'chacha':3500,
+  'julia':3500,'lulu':4000,'nicolas_1':2000,'nicolas_2':2000,
+  'bo_phut':3500,'sandra':3500,'sandra_airbnb':3800
+ },
+ chemical:{
+  'villa_love':1500,'majesta':1500,'n1':1200,'n2':1200,'n3':1200,
+  'j3':1800,'sunrise_hill':1600,'villa_anna':1200,'villa_diana':1200,
+  'villa_yoco':1500,'big_buddha':1500,'aqua_314':1500,
+  'aqua_319_up':1500,'aqua_319_down':1000,'chacha':1500,
+  'julia':1500,'lulu':1800,'nicolas_1':800,'nicolas_2':800,
+  'bo_phut':1500,'sandra':1500,'sandra_airbnb':1600
+ }
+};
+function poolGetDefaultShares(type){
+ if(type==='standard')return{labor:45,supplies:10,commission:5,profit:25,buffer:15};
+ if(type==='chemical')return{labor:35,supplies:20,commission:5,profit:25,buffer:15};
+ if(type==='deep')return{labor:40,supplies:15,commission:5,profit:25,buffer:15};
+ return{labor:40,supplies:12,commission:5,profit:28,buffer:15};
+}
+function renderPool(){
+ var c=document.getElementById('pool-content');
+ if(!c)return;
+ var ed=canEdit('pool');
+ var h='<div class="card"><div class="card-h-gold">Service Type</div>';
+ h+='<div class="fg2"><select class="select" id="pool-type" onchange="poolSetType(this.value)">';
+ h+='<option value="standard"'+(poolState.type==='standard'?' selected':'')+'>Standard Clean</option>';
+ h+='<option value="chemical"'+(poolState.type==='chemical'?' selected':'')+'>Chemical Treatment</option>';
+ h+='<option value="deep"'+(poolState.type==='deep'?' selected':'')+'>Deep Clean</option>';
+ h+='<option value="manual"'+(poolState.type==='manual'?' selected':'')+'>Manual Price</option>';
+ h+='</select></div></div>';
+ if(poolState.type==='manual'){
+  h+='<div class="card"><div class="card-h-gold">Manual Pool Service</div>';
+  h+='<div class="fg2"><label>Villa</label><select class="select" id="pool-villa" onchange="poolSelVilla(this.value)">';
+  h+='<option value="">Choose a villa...</option>';
+  for(var i=0;i<VILLAS.length;i++){h+='<option value="'+VILLAS[i].id+'"'+(poolState.villa===VILLAS[i].id?' selected':'')+'>'+VILLAS[i].name+'</option>'}
+  h+='</select></div>';
+  h+='<div class="fg2"><label>Or type villa name</label><input class="input" type="text" id="pool-manual-name" value="'+(poolState.manualName||'')+'" placeholder="e.g. Private Pool" oninput="poolSetManualName(this.value)"></div>';
+  h+='<div class="fg2"><label>Price (THB)</label><input class="input" type="number" id="pool-manual-price" value="'+(poolState.manualPrice||'')+'" min="0" placeholder="Enter price" oninput="poolSetManualPrice(this.value)"></div>';
+  h+='</div>';
+  var displayName=poolState.manualName||'';
+  var villaObj=VILLAS.find(function(v){return v.id===poolState.villa});
+  if(villaObj&&!poolState.manualName)displayName=villaObj.name;
+  var price=parseInt(poolState.manualPrice)||0;
+  if(price>0){
+   var commission=Math.round(price*0.10);
+   var labor=Math.round(price*0.45);
+   var companyProfit=Math.round(price*0.45);
+   h+='<div class="card" style="border-left:4px solid var(--gold)"><div style="font-size:18px;font-weight:700;color:var(--navy)">'+(displayName||'Pool Service')+'</div></div>';
+   h+='<div class="price-display"><div class="amount">'+fmt(price)+' THB</div><div class="sub">Pool Service</div></div>';
+   h+='<div class="summary"><div class="summary-row"><span>Revenue</span><span>'+fmt(price)+'</span></div>';
+   h+='<div class="summary-row total"><span>Profit</span><span>'+fmt(price)+'</span></div></div>';
+   h+='<div class="card"><div class="card-h-gold">Profit Split</div>';
+   h+='<div class="summary">';
+   h+='<div class="summary-row"><span>Labor</span><span>'+fmt(labor)+' (45%)</span></div>';
+   h+='<div class="summary-row"><span>Commission (10%)</span><span>&minus;'+fmt(commission)+'</span></div>';
+   h+='<div class="summary-row"><span>Company Profit</span><span>'+fmt(companyProfit)+' (45%)</span></div>';
+   h+='<div class="summary-row total"><span>Total</span><span>'+fmt(labor+commission+companyProfit)+'</span></div>';
+   h+='</div></div>';
+   if(ed){h+='<button class="btn btn-navy btn-block" style="margin-top:10px" onclick="poolSave()">Save Job</button>';}
+  }
+ }else{
+  var groups=['ADAM/KAGAMI','MPS','CHEN','STEVEN','OTHERS'];
+  h+='<div class="card"><div class="card-h-gold">Select Villa</div>';
+  h+='<div class="fg2"><label>Villa</label><select class="select" id="pool-villa" onchange="poolSelVilla(this.value)">';
+  h+='<option value="">Choose a villa...</option>';
+  for(var gi=0;gi<groups.length;gi++){
+   h+='<optgroup label="'+groups[gi]+'">';
+   for(var i=0;i<VILLAS.length;i++){if(VILLAS[i].group===groups[gi]){h+='<option value="'+VILLAS[i].id+'"'+(poolState.villa===VILLAS[i].id?' selected':'')+'>'+VILLAS[i].name+'</option>'}}
+   h+='</optgroup>';
+  }
+  h+='</select></div></div>';
+  var villa=VILLAS.find(function(v){return v.id===poolState.villa});
+  if(villa){
+   var basePrice=POOL_PRICING[poolState.type]?POOL_PRICING[poolState.type][villa.id]:0;
+   if(!basePrice)basePrice=POOL_PRICING.standard[villa.id]||3000;
+   var saved=ld('pool_calcs')||{};
+   var def=poolGetDefaultShares(poolState.type);
+   var vdata=(saved[villa.id]&&saved[villa.id][poolState.type])||{extraCost:0,shares:{0:def.labor,1:def.supplies,2:def.commission,3:def.profit,4:def.buffer}};
+   var totalCost=vdata.extraCost;
+   var profit=basePrice-totalCost;
+   var commission=Math.round(basePrice*0.10);
+   var netProfit=profit-commission;
+   h+='<div class="card" style="border-left:4px solid var(--gold)"><div style="font-size:18px;font-weight:700;color:var(--navy)">'+villa.name+'</div><div style="font-size:12px;color:var(--muted)">'+villa.group+'</div></div>';
+   var typeLabels={standard:'Standard Clean',chemical:'Chemical Treatment',deep:'Deep Clean'};
+   h+='<div class="price-display"><div class="amount">'+fmt(basePrice)+' THB</div><div class="sub">'+(typeLabels[poolState.type]||'Pool Service')+'</div></div>';
+   if(ed){h+='<div class="fg2"><label>Extra Costs (THB)</label><input class="input" type="number" value="'+vdata.extraCost+'" min="0" onchange="poolSetCost(this.value)"></div>';}
+   h+='<div class="summary"><div class="summary-row"><span>Revenue</span><span>'+fmt(basePrice)+'</span></div>';
+   h+='<div class="summary-row"><span>Costs</span><span>&minus;'+fmt(totalCost)+'</span></div>';
+   h+='<div class="summary-row total"><span>Profit</span><span>'+fmt(profit)+'</span></div></div>';
+   h+='<div class="card"><div class="card-h-gold">Commission & Net Profit</div>';
+   h+='<div class="summary">';
+   h+='<div class="summary-row"><span>Commission (10%)</span><span>&minus;'+fmt(commission)+'</span></div>';
+   h+='<div class="summary-row total"><span>Net Profit</span><span>'+fmt(netProfit)+' THB</span></div>';
+   h+='</div></div>';
+   if(ed){h+='<button class="btn btn-navy btn-block" style="margin-top:10px" onclick="poolSave()">Save Job</button>';}
+  }else{h+='<div class="empty"><div class="empty-icon">&#127754;</div><div>Select a villa to see pricing</div></div>';}
+ }
+ c.innerHTML=h;
+}
+function poolSetType(v){poolState.type=v;renderPool()}
+function poolSetManualName(v){poolState.manualName=v;renderPool()}
+function poolSetManualPrice(v){poolState.manualPrice=v;renderPool()}
+function poolSelVilla(v){poolState.villa=v;renderPool()}
+function poolSetCost(v){
+ var saved=ld('pool_calcs')||{};if(!saved[poolState.villa])saved[poolState.villa]={};
+ var def=poolGetDefaultShares(poolState.type);
+ var d=saved[poolState.villa][poolState.type]||{extraCost:0,shares:{0:def.labor,1:def.supplies,2:def.commission,3:def.profit,4:def.buffer}};
+ d.extraCost=Math.max(0,parseInt(v)||0);saved[poolState.villa][poolState.type]=d;sv('pool_calcs',saved);renderPool();
+}
+function poolSave(){
+ var villa=VILLAS.find(function(v){return v.id===poolState.villa});
+ var displayName=poolState.manualName||(villa?villa.name:'Pool Service');
+ var price=poolState.type==='manual'?(parseInt(poolState.manualPrice)||0):(POOL_PRICING[poolState.type]?POOL_PRICING[poolState.type][poolState.villa]:POOL_PRICING.standard[poolState.villa]||3000);
+ if(!price||price<=0){alert('No price set for this villa');return}
+ var commission=Math.round(price*0.10);
+ var netProfit=price-commission;
+ var jobs=ld('pool_jobs')||[];
+ jobs.push({
+  date:today(),
+  villa:poolState.villa,
+  villaName:displayName,
+  type:poolState.type,
+  amount:price,
+  commission:commission,
+  profit:netProfit,
+  by:CUR.u,
+  byName:CUR.name
+ });
+ sv('pool_jobs',jobs);
+ alert('Saved!');
+}
+
 // ==================== P&L SUMMARY ====================
 var pnlMonth=new Date().toISOString().slice(0,7);
 
@@ -1006,17 +1188,29 @@ function renderPnl(){
 
  // Calculate totals for selected month
  var expenses=ld('expenses')||[];
- var chefCalcs=ld('chef_calcs')||[];
- var cleanCalcs=ld('clean_calcs')||[];
+ var chefJobs=ld('chef_jobs')||[];
+ var cleanCalcs=ld('clean_calcs')||{};
+ var poolJobs=ld('pool_jobs')||[];
 
  var monthExp=expenses.filter(function(e){return e.at&&e.at.slice(0,7)===pnlMonth});
- var monthChef=chefCalcs.filter(function(c){return c.date&&c.date.slice(0,7)===pnlMonth});
- var monthClean=cleanCalcs.filter(function(c){return c.date&&c.date.slice(0,7)===pnlMonth});
+ var monthChef=chefJobs.filter(function(c){return c.date&&c.date.slice(0,7)===pnlMonth});
+ var monthClean=[];
+ for(var villaId in cleanCalcs){
+  var villaData=cleanCalcs[villaId];
+  if(villaData._jobs){
+   for(var ji=0;ji<villaData._jobs.length;ji++){
+    var j=villaData._jobs[ji];
+    if(j.date&&j.date.slice(0,7)===pnlMonth)monthClean.push(j);
+   }
+  }
+ }
+ var monthPool=poolJobs.filter(function(p){return p.date&&p.date.slice(0,7)===pnlMonth});
 
  var totalExp=0;for(var i=0;i<monthExp.length;i++){totalExp+=monthExp[i].amt}
- var totalChef=0;for(var i=0;i<monthChef.length;i++){totalChef+=monthChef[i].company||0}
- var totalClean=0;for(var i=0;i<monthClean.length;i++){totalClean+=monthClean[i].company||0}
- var revenue=totalChef+totalClean;
+ var totalChef=0;for(var i=0;i<monthChef.length;i++){totalChef+=monthChef[i].profit||0}
+ var totalClean=0;for(var i=0;i<monthClean.length;i++){totalClean+=monthClean[i].profit||0}
+ var totalPool=0;for(var i=0;i<monthPool.length;i++){totalPool+=monthPool[i].profit||0}
+ var revenue=totalChef+totalClean+totalPool;
  var profit=revenue-totalExp;
 
  // Summary cards
@@ -1031,6 +1225,7 @@ function renderPnl(){
  h+='<div class="summary">';
  h+='<div class="summary-row"><span>Chef Profit</span><span>'+fmt(totalChef)+' THB</span></div>';
  h+='<div class="summary-row"><span>Cleaning Profit</span><span>'+fmt(totalClean)+' THB</span></div>';
+ h+='<div class="summary-row"><span>Pool Profit</span><span>'+fmt(totalPool)+' THB</span></div>';
  h+='</div></div>';
 
  // Expense categories
