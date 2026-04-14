@@ -1198,18 +1198,18 @@ function poolSave(){
 // ==================== INVOICE GENERATOR ====================
 var invState={client:'',month:new Date().toISOString().slice(0,7),mode:'',period:'',pjJobs:[],laurentVilla:'',stevenVilla:''};
 var INV_CLIENTS=[
- {id:'adam',label:'Adam / Kagami',billName:'Kagami Movement Co., Ltd.',prefix:'AK',wht:true,addr:'Kagami Movement Co., Ltd.\nKoh Samui, Suratthani'},
- {id:'mps',label:'MPS Portfolio',billName:'Mr Property Siam',prefix:'MPS',wht:true,addr:'Mr Property Siam\nKoh Samui, Suratthani'},
- {id:'chen',label:'Chen / C.O Samui',billName:'C.O Samui',prefix:'CHN',wht:false,addr:'C.O Samui\nKoh Samui, Suratthani'},
- {id:'steven',label:'Steven',billName:'Steven',prefix:'STV',wht:false,addr:'Steven Portfolio\nKoh Samui, Suratthani',subVillas:[
-  {id:'chacha',label:'Villa Chacha'},
-  {id:'julia',label:'Villa Julia'}
+ {id:'adam',label:'Adam / Kagami',billName:'Kagami Movement Studio Co., Ltd.',prefix:'AK',wht:true,addr:'TAX ID: 0845566004663\n24/59 M.5, T.Bophut, A.Koh Samui, Suratthani 84320'},
+ {id:'mps',label:'MPS Portfolio',billName:'Mr Property Siam Co., Ltd.',prefix:'MPS',wht:true,addr:'TAX ID: 0845566025288\n115/26 Moo 6, Bophut, Koh Samui, Surat Thani 84320'},
+ {id:'chen',label:'Chen / C.O Samui',billName:'C.O Samui Property Management Co., Ltd.',prefix:'CHN',wht:false,addr:'TAX ID: 0845567017751\n167/56 Village No. 1, Bophut, Koh Samui, Surat Thani 84320'},
+ {id:'steven',label:'Steven',billName:'Steven',prefix:'STV',wht:false,addr:'Koh Samui, Suratthani',subVillas:[
+  {id:'chacha',label:'Villa Chacha',addr:'Koh Samui, Suratthani'},
+  {id:'julia',label:'Villa Julia',addr:'Koh Samui, Suratthani'}
  ]},
- {id:'laurent',label:'Laurent',billName:'Laurent',prefix:'LAU',wht:false,addr:'Laurent Portfolio\nKoh Samui, Suratthani',subVillas:[
-  {id:'villa6',label:'Bo Phut Villa 6 \u2014 Daao R\u00e9sidence',company:'Daao R\u00e9sidence',attn:'Owner: Khun R\u00e9gis | Attn: Laurent',addr:'Villa 6, Bo Phut, Koh Samui, Suratthani',invPrefix:'LAU-V6'},
-  {id:'a9',label:'Bangpor A9 \u2014 R\u00e9sidence Coast Breeze',company:'R\u00e9sidence Coast Breeze',attn:'Owner: Khun Yonni | Attn: Laurent',addr:'Bangpor A9, Koh Samui, Suratthani',invPrefix:'LAU-A9'}
+ {id:'laurent',label:'Laurent',billName:'Laurent',prefix:'LAU',wht:false,addr:'Koh Samui, Suratthani',subVillas:[
+  {id:'villa6',label:'Bo Phut Villa 6 \u2014 Daao R\u00e9sidence',company:'Daao R\u00e9sidence',attn:'Owner: Khun R\u00e9gis | Attn: Laurent',addr:'Koh Samui, Suratthani',invPrefix:'LAU-V6'},
+  {id:'a9',label:'Bangpor A9 \u2014 R\u00e9sidence Coast Breeze',company:'R\u00e9sidence Coast Breeze',attn:'Owner: Khun Yonni | Attn: Laurent',addr:'Koh Samui, Suratthani',invPrefix:'LAU-A9'}
  ]},
- {id:'others',label:'Others',billName:'Others',prefix:'OTH',wht:false,addr:'Others\nKoh Samui, Suratthani'}
+ {id:'others',label:'Others',billName:'Others',prefix:'OTH',wht:false,addr:'Koh Samui, Suratthani'}
 ];
 var INV_SERVICE_TYPES=[
  {id:'co',label:'Checkout Clean'},
@@ -1483,7 +1483,7 @@ function renderInvoice(){
  var billToClient=client;
  if(invState.client==='steven'&&invState.stevenVilla){
   var sv=client.subVillas.find(function(v){return v.id===invState.stevenVilla});
-  if(sv){billToClient={label:sv.label,addr:sv.label+'\nKoh Samui, Suratthani',wht:client.wht}}
+  if(sv){billToClient={label:sv.label,addr:sv.addr||sv.label,wht:client.wht}}
  }
  var invNum=invGetNextNum(invPrefix,invKey);
  var invSuffix='';
@@ -1550,7 +1550,7 @@ function invRenderPerJob(client){
   var pjClient=client;
   if(invState.client==='steven'&&invState.stevenVilla){
    var sv=client.subVillas.find(function(v){return v.id===invState.stevenVilla});
-   if(sv){pjClient={label:sv.label,addr:sv.label+'\nKoh Samui, Suratthani',wht:client.wht}}
+   if(sv){pjClient={label:sv.label,addr:sv.addr||sv.label,wht:client.wht}}
   }
   var invNum=invGetNextNum(pjPrefix,'');
   var invNo=pjPrefix+'-'+invState.month.slice(0,4)+'-'+invNum;
