@@ -150,7 +150,7 @@ input,select,textarea{font-family:var(--sans);font-size:16px;touch-action:manipu
  body *{visibility:hidden}
  #inv-preview,#inv-preview *{visibility:visible}
  #inv-preview{position:absolute;left:0;top:0;width:100%;padding:0}
- @page{margin:15mm}
+ @page{size:A4 portrait;margin:20mm 25mm}
 }
 </style>
 </head>
@@ -1290,7 +1290,7 @@ function invRenderPreview(jobs,client,invNo,periodLabel,dueDate,applyWht){
  var whtAmt=applyWht?Math.round(total*0.03):0;
  var totalDue=total-whtAmt;
  var NAVY='#0d2744';var GOLD='#c9a84c';var GREY='#f5f5f5';var RED='#dc2626';
- var h='<div id="inv-preview" style="background:#fff;font-family:Arial,Helvetica,sans-serif;color:#1a1a2e;padding:0;margin-bottom:16px">';
+ var h='<div id="inv-preview" style="background:#fff;font-family:Arial,Helvetica,sans-serif;color:#1a1a2e;max-width:680px;margin:0 auto;padding:40px 50px;margin-bottom:16px">';
 
  // HEADER
  h+='<div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:12px;border-bottom:3px solid '+GOLD+';margin-bottom:16px">';
@@ -1363,14 +1363,16 @@ function invRenderPreview(jobs,client,invNo,periodLabel,dueDate,applyWht){
  h+='</div>';
 
  // SIGNATURE LINES
- h+='<div style="display:flex;justify-content:space-between;margin-top:40px;padding-top:20px;border-top:1px solid #e0e0e0">';
+ h+='<div style="display:flex;justify-content:space-between;margin-top:60px;padding-top:30px;border-top:1px solid #e0e0e0">';
  h+='<div style="text-align:center;width:40%">';
- h+='<div style="border-bottom:1px solid #333;height:40px"></div>';
- h+='<div style="font-size:11px;color:#555;margin-top:4px">Customer</div>';
+ h+='<div style="border-bottom:1px solid #333;height:50px"></div>';
+ h+='<div style="font-size:11px;color:#555;margin-top:6px">Customer</div>';
+ h+='<div style="font-size:10px;color:#999;margin-top:2px">Authorized Signature</div>';
  h+='</div>';
  h+='<div style="text-align:center;width:40%">';
- h+='<div style="border-bottom:1px solid #333;height:40px"></div>';
- h+='<div style="font-size:11px;color:#555;margin-top:4px">Vida Group Samui Co., Ltd.</div>';
+ h+='<div style="border-bottom:1px solid #333;height:50px"></div>';
+ h+='<div style="font-size:11px;color:#555;margin-top:6px">Vida Group Samui Co., Ltd.</div>';
+ h+='<div style="font-size:10px;color:#999;margin-top:2px">Authorized Signature</div>';
  h+='</div>';
  h+='</div>';
 
@@ -1531,11 +1533,17 @@ function invRenderPerJob(client){
   }
   h+='</div>';
 
-  var invNum=invGetNextNum('PJ','');
-  var invNo='PJ-'+invState.month.slice(0,4)+'-'+invNum;
-  var applyWht=(client.id==='adam'||client.id==='mps');
+  var pjPrefix='PJ';
+  var pjClient=client;
+  if(invState.client==='laurent'&&invState.laurentVilla){
+   var lv=client.subVillas.find(function(v){return v.id===invState.laurentVilla});
+   if(lv){pjPrefix=lv.invPrefix;pjClient={label:lv.company,addr:lv.attn+'\n'+lv.addr,wht:client.wht}}
+  }
+  var invNum=invGetNextNum(pjPrefix,'');
+  var invNo=pjPrefix+'-'+invState.month.slice(0,4)+'-'+invNum;
+  var applyWht=(pjClient.wht);
   var periodLabel='Per Job Invoice';
-  h+=invRenderPreview(invState.pjJobs,client,invNo,periodLabel,'',applyWht);
+  h+=invRenderPreview(invState.pjJobs,pjClient,invNo,periodLabel,'',applyWht);
  }
  return h;
 }
@@ -1564,11 +1572,11 @@ function invPrint(){
  var w=window.open('','_blank','width=800,height=600');
  w.document.write('<html><head><title>Invoice</title>');
  w.document.write('<style>');
- w.document.write('body{font-family:Arial,Helvetica,sans-serif;padding:15mm;color:#1a1a2e;background:#fff;margin:0}');
+ w.document.write('body{font-family:Arial,Helvetica,sans-serif;padding:0;margin:0;color:#1a1a2e;background:#fff}');
  w.document.write('table{width:100%;border-collapse:collapse}');
  w.document.write('th,td{padding:6px;font-size:12px}');
  w.document.write('.no-print{display:none!important}');
- w.document.write('@media print{body{padding:0;margin:0}@page{margin:15mm}}');
+ w.document.write('@media print{body{padding:0;margin:0}@page{size:A4 portrait;margin:20mm 25mm}}');
  w.document.write('</style></head><body>');
  w.document.write(el.innerHTML);
  w.document.write('</body></html>');
