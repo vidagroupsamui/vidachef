@@ -1510,7 +1510,15 @@ function invSetMode(mode){
 
 function invRenderPerJob(client){
  var h='<div class="card"><div class="card-h-gold">Add Jobs</div>';
- h+='<div class="fg2"><label>Villa Name</label><input class="input" type="text" id="pj-villa" placeholder="e.g. Villa Paradise"></div>';
+ if(invState.client==='laurent'){
+  h+='<div class="fg2"><label>Laurent Villa</label><select class="select" id="pj-laurent-villa" onchange="invState.laurentVilla=this.value">';
+  h+='<option value="">Select villa...</option>';
+  h+='<option value="villa6"'+(invState.laurentVilla==='villa6'?' selected':'')+'>Bo Phut Villa 6 \u2014 Daao R\u00e9sidence (Khun R\u00e9gis)</option>';
+  h+='<option value="a9"'+(invState.laurentVilla==='a9'?' selected':'')+'>Bangpor A9 \u2014 R\u00e9sidence Coast Breeze (Khun Yonni)</option>';
+  h+='</select></div>';
+ }else{
+  h+='<div class="fg2"><label>Villa Name</label><input class="input" type="text" id="pj-villa" placeholder="e.g. Villa Paradise"></div>';
+ }
  h+='<div class="fg2"><label>Service Type</label><select class="select" id="pj-service">';
  for(var i=0;i<INV_SERVICE_TYPES.length;i++){
   h+='<option value="'+INV_SERVICE_TYPES[i].id+'">'+INV_SERVICE_TYPES[i].label+'</option>';
@@ -1549,11 +1557,20 @@ function invRenderPerJob(client){
 }
 
 function invAddPJ(){
- var villa=document.getElementById('pj-villa').value.trim();
- var service=document.getElementById('pj-service').value;
- var date=document.getElementById('pj-date').value;
- var amount=parseInt(document.getElementById('pj-amount').value)||0;
- if(!villa){alert('Enter villa name');return}
+ var villa,service,date,amount;
+ service=document.getElementById('pj-service').value;
+ date=document.getElementById('pj-date').value;
+ amount=parseInt(document.getElementById('pj-amount').value)||0;
+ if(invState.client==='laurent'){
+  var lvId=document.getElementById('pj-laurent-villa').value;
+  if(!lvId){alert('Select Laurent villa');return}
+  var client=INV_CLIENTS.find(function(x){return x.id==='laurent'});
+  var lv=client.subVillas.find(function(v){return v.id===lvId});
+  villa=lv?lv.company:lvId;
+ }else{
+  villa=document.getElementById('pj-villa').value.trim();
+  if(!villa){alert('Enter villa name');return}
+ }
  if(!date){alert('Select a date');return}
  if(amount<=0){alert('Enter valid amount');return}
  var svcLabel='';for(var i=0;i<INV_SERVICE_TYPES.length;i++){if(INV_SERVICE_TYPES[i].id===service)svcLabel=INV_SERVICE_TYPES[i].label}
