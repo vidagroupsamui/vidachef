@@ -1509,33 +1509,39 @@ function invSetMode(mode){
 }
 
 function invRenderPerJob(client){
- var h='<div class="card" style="padding-bottom:120px"><div class="card-h-gold">Add Jobs</div>';
- h+='<div class="fg2"><label>Villa Name</label><input class="input" type="text" id="pj-villa" placeholder="e.g. Villa Chacha..."></div>';
- h+='<div class="fg2"><label>Service Type</label><select class="select" id="pj-service">';
- for(var i=0;i<INV_SERVICE_TYPES.length;i++){
-  h+='<option value="'+INV_SERVICE_TYPES[i].id+'">'+INV_SERVICE_TYPES[i].label+'</option>';
- }
- h+='</select></div>';
- h+='<div class="fg2"><label>Date</label><input class="input" type="date" id="pj-date" value="'+new Date().toISOString().slice(0,10)+'"></div>';
- h+='<div class="fg2"><label>Amount (THB)</label><input class="input" type="number" id="pj-amount" value="" placeholder="0"></div>';
- h+='<button class="btn btn-navy btn-block" onclick="invAddPJ()">+ Add Job</button>';
- h+='</div>';
- return h;
+  var h='<div class="card" style="padding-bottom:120px">';
+  h+='<div class="card-h-gold">Add Jobs</div>';
+  h+='<div class="fg2"><label>Villa Name</label><input class="input" type="text" id="pj-villa" placeholder="e.g. Villa Chacha..."></div>';
+  h+='<div class="fg2"><label>Service Type</label><select class="select" id="pj-service">';
+  for(var i=0;i<INV_SERVICE_TYPES.length;i++){
+    h+='<option value="'+INV_SERVICE_TYPES[i].id+'">'+INV_SERVICE_TYPES[i].label+'</option>';
+  }
+  h+='</select></div>';
+  h+='<div class="fg2"><label>Date</label><input class="input" type="date" id="pj-date" value="'+new Date().toISOString().slice(0,10)+'"></div>';
+  h+='<div class="fg2"><label>Amount (THB)</label><input class="input" type="number" id="pj-amount" placeholder="e.g. 1500"></div>';
+  h+='<button class="btn btn-navy btn-block" onclick="invAddPJ()">+ Add Job</button>';
+  h+='</div>';
+  return h;
 }
 
 function invAddPJ(){
- var villa=document.getElementById('pj-villa').value.trim();
- var service=document.getElementById('pj-service').value;
- var date=document.getElementById('pj-date').value;
- var amountRaw=document.getElementById('pj-amount').value;
- var amount=parseInt(amountRaw)||0;
- if(!villa){alert('Enter villa name');return}
- if(!date){alert('Select a date');return}
- if(!amountRaw){alert('Enter valid amount');return}
- var svcLabel='';
- for(var i=0;i<INV_SERVICE_TYPES.length;i++){if(INV_SERVICE_TYPES[i].id===service)svcLabel=INV_SERVICE_TYPES[i].label}
- invState.pjJobs.push({villa:villa,service:svcLabel,date:date,amount:amount});
- renderInvoice();
+  var villaEl=document.getElementById('pj-villa');
+  var serviceEl=document.getElementById('pj-service');
+  var dateEl=document.getElementById('pj-date');
+  var amountEl=document.getElementById('pj-amount');
+  if(!villaEl||!serviceEl||!dateEl||!amountEl){alert('Form error - please try again');return;}
+  var villa=villaEl.value.trim();
+  var service=serviceEl.value;
+  var date=dateEl.value;
+  var amount=parseInt(amountEl.value)||0;
+  if(!villa){alert('Enter villa name');return;}
+  if(!date){alert('Select a date');return;}
+  if(amount<=0){alert('Enter valid amount');return;}
+  var svcLabel='';
+  for(var i=0;i<INV_SERVICE_TYPES.length;i++){if(INV_SERVICE_TYPES[i].id===service)svcLabel=INV_SERVICE_TYPES[i].label;}
+  if(!invState.pjJobs)invState.pjJobs=[];
+  invState.pjJobs.push({villa:villa,service:svcLabel,date:date,amount:amount});
+  renderInvoice();
 }
 
 function invRemovePJ(idx){
