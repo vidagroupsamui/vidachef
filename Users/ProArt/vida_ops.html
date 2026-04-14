@@ -210,9 +210,27 @@ input,select,textarea{font-family:var(--sans);font-size:16px;touch-action:manipu
 // Google Sheets sync - columns: A:Date B:Category C:Description D:Supplier E:Amount(THB) F:PaymentMethod G:ReceiptNo H:Notes
 var SHEETS_URL='https://script.google.com/macros/s/AKfycbxN_1o95uHcu36iNtVq4aQ0NKEeIbV6WuPaEOtLY8D5VSKvWEYoV3aM0tE2Nml4wWGimQ/exec';
 function sendToSheet(data){
- var params=encodeURIComponent(JSON.stringify(data));
- var img=new Image();
- img.src=SHEETS_URL+'?data='+params;
+ var form=document.createElement('form');
+ form.method='GET';
+ form.action=SHEETS_URL;
+ form.target='hidden_iframe';
+ form.style.display='none';
+ var input=document.createElement('input');
+ input.type='hidden';
+ input.name='data';
+ input.value=JSON.stringify(data);
+ form.appendChild(input);
+ var iframe=document.getElementById('hidden_iframe');
+ if(!iframe){
+  iframe=document.createElement('iframe');
+  iframe.name='hidden_iframe';
+  iframe.id='hidden_iframe';
+  iframe.style.display='none';
+  document.body.appendChild(iframe);
+ }
+ document.body.appendChild(form);
+ form.submit();
+ document.body.removeChild(form);
 }
 var ACCOUNTS=[
  {u:'phyo', pin:'1234',role:'director',name:'Phyo'},
