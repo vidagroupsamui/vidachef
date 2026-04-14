@@ -264,11 +264,11 @@ var EXP_CATS=[
  {id:'other',label:'Other'}
 ];
 var VEHICLES=[
- {id:'click160_4770',label:'Click 160 \u2014 4770'},
- {id:'click160_286',label:'Click 160 \u2014 286'},
- {id:'wave110i',label:'Honda Wave 110i'},
- {id:'ford_ranger',label:'Ford Ranger \u2014 6007'},
- {id:'other_vehicle',label:'Other'}
+ {id:'bike_4770',label:'Bike \u2014 4770'},
+ {id:'bike_286',label:'Bike \u2014 286'},
+ {id:'wave_5793',label:'Honda Wave \u2014 5793'},
+ {id:'pcx_2963',label:'PCX \u2014 2963 (Han Win Naing)'},
+ {id:'truck_6007',label:'Truck \u2014 6007'}
 ];
 var CUR=null;
 var chefState={tab:'breakfast',services:{}};
@@ -655,6 +655,7 @@ function renderUpload(){
  h+='<div class="fg2" id="exp-month-row" style="display:none"><label>Month</label><input class="input" type="month" id="exp-month" value="'+new Date().toISOString().slice(0,7)+'"></div>';
 
  h+='<div class="fg2"><label>Amount (THB)</label><input class="input" type="number" id="exp-amt" min="0" placeholder="0"></div>';
+ h+='<div class="fg2"><label>Supplier / Shop</label><input class="input" type="text" id="exp-supplier" placeholder="e.g. PTT, Makro, HomePro..."></div>';
  h+='<div class="fg2"><label>Photo</label>';
  h+='<input type="file" accept="image/*" capture="environment" id="exp-photo" onchange="uploadPhoto(this)" style="font-size:13px">';
  h+='<div id="exp-preview" style="margin-top:8px"></div></div>';
@@ -769,7 +770,7 @@ function expSubmit(){
  var expDate=document.getElementById('exp-date').value;
  if(!catId){alert('Select category');return}
  if(amt<=0){alert('Enter valid amount');return}
- var villa='';var villaName='';var vehicle='';var vehicleName='';var laundryShop='';var monthVal='';
+ var villa='';var villaName='';var vehicle='';var vehicleName='';var laundryShop='';var monthVal='';var supplier='';
  if(expShowVilla(catId)){
  villa=document.getElementById('exp-villa').value;
  if(!villa){alert('Select villa');return}
@@ -784,15 +785,16 @@ function expSubmit(){
  }
  if(expShowLaundryShop(catId)){laundryShop=document.getElementById('exp-laundry-shop').value.trim()}
  if(expShowMonth(catId)){monthVal=document.getElementById('exp-month').value}
+ supplier=document.getElementById('exp-supplier').value.trim();
  var expenses=ld('expenses')||[];
- expenses.push({id:gid('exp'),photo:uploadPhotoData||'',villa:villa,villaName:villaName,vehicle:vehicle,vehicleName:vehicleName,laundryShop:laundryShop,month:monthVal,cat:catId,amt:amt,notes:notes,status:'approved',by:CUR.u,byName:CUR.name,at:expDate?new Date(expDate).toISOString():new Date().toISOString(),submittedAt:new Date().toISOString()});
+ expenses.push({id:gid('exp'),photo:uploadPhotoData||'',villa:villa,villaName:villaName,vehicle:vehicle,vehicleName:vehicleName,laundryShop:laundryShop,month:monthVal,supplier:supplier,cat:catId,amt:amt,notes:notes,status:'approved',by:CUR.u,byName:CUR.name,at:expDate?new Date(expDate).toISOString():new Date().toISOString(),submittedAt:new Date().toISOString()});
  sv('expenses',expenses);
  uploadPhotoData=null;
  var sEl=document.getElementById('exp-success');
  if(sEl){sEl.textContent='Success \u2713';sEl.style.display='block'}
  if(expSuccessTimer)clearTimeout(expSuccessTimer);
  expSuccessTimer=setTimeout(function(){
- var ids=['exp-cat','exp-amt','exp-notes','exp-villa','exp-vehicle','exp-laundry-shop'];
+ var ids=['exp-cat','exp-amt','exp-notes','exp-villa','exp-vehicle','exp-laundry-shop','exp-supplier'];
  for(var i=0;i<ids.length;i++){var el=document.getElementById(ids[i]);if(el)el.value=''}
  var pv=document.getElementById('exp-preview');if(pv)pv.innerHTML='';
  var s2=document.getElementById('exp-success');if(s2)s2.style.display='none';
@@ -812,6 +814,7 @@ function expDetail(id){
  h+='<div class="summary-row"><span>Category</span><span>'+expCatLabel(e.cat)+'</span></div>';
  h+='<div class="summary-row"><span>Amount</span><span>'+fmt(e.amt)+' THB</span></div>';
  if(e.vehicle)h+='<div class="summary-row"><span>Vehicle</span><span>'+expVehicleLabel(e.vehicle)+'</span></div>';
+ if(e.supplier)h+='<div class="summary-row"><span>Supplier</span><span>'+e.supplier+'</span></div>';
  if(e.laundryShop)h+='<div class="summary-row"><span>Laundry Shop</span><span>'+e.laundryShop+'</span></div>';
  if(e.month)h+='<div class="summary-row"><span>Month</span><span>'+e.month+'</span></div>';
  h+='<div class="summary-row"><span>Date</span><span>'+fmtDate(e.at)+'</span></div>';
@@ -832,10 +835,10 @@ function expDelete(id){
 function expExport(){
  var expenses=ld('expenses')||[];
  if(expenses.length===0){alert('No data to export');return}
- var csv='Date,Staff,Villa,Vehicle,Category,Amount,Notes\n';
+ var csv='Date,Staff,Villa,Vehicle,Supplier,Category,Amount,Notes\n';
  for(var i=0;i<expenses.length;i++){
  var e=expenses[i];
- csv+=fmtDate(e.at)+','+e.byName+','+(e.villaName||'').replace(/,/g,'')+','+(e.vehicleName||'').replace(/,/g,'')+','+expCatLabel(e.cat)+','+e.amt+','+(e.notes||'').replace(/,/g,'')+'\n';
+ csv+=fmtDate(e.at)+','+e.byName+','+(e.villaName||'').replace(/,/g,'')+','+(e.vehicleName||'').replace(/,/g,'')+','+(e.supplier||'').replace(/,/g,'')+','+expCatLabel(e.cat)+','+e.amt+','+(e.notes||'').replace(/,/g,'')+'\n';
  }
  var blob=new Blob([csv],{type:'text/csv'});
  var a=document.createElement('a');a.href=URL.createObjectURL(blob);
