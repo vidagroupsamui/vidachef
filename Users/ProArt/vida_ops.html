@@ -1570,17 +1570,21 @@ function invPrint(){
  var el=document.getElementById('inv-preview');
  if(!el)return;
  var w=window.open('','_blank','width=800,height=600');
- w.document.write('<html><head><title>Invoice</title>');
+ w.document.write('<html><head><title></title>');
  w.document.write('<style>');
  w.document.write('body{font-family:Arial,Helvetica,sans-serif;padding:0;margin:0;color:#1a1a2e;background:#fff}');
  w.document.write('table{width:100%;border-collapse:collapse}');
  w.document.write('th,td{padding:6px;font-size:12px}');
  w.document.write('.no-print{display:none!important}');
- w.document.write('@media print{body{padding:0;margin:0}@page{size:A4 portrait;margin:20mm 25mm}}');
+ w.document.write('@media print{');
+ w.document.write('body{padding:0;margin:0}');
+ w.document.write('@page{size:A4 portrait;margin:18mm 20mm}');
+ w.document.write('}');
  w.document.write('</style></head><body>');
  w.document.write(el.innerHTML);
  w.document.write('</body></html>');
  w.document.close();
+ w.document.title='';
  setTimeout(function(){w.print()},300);
 }
 
