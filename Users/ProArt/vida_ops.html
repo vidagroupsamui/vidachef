@@ -804,6 +804,25 @@ function uploadPhoto(input){
  reader.readAsDataURL(input.files[0]);
 }
 
+function uploadPhotoToDrive(file,date,category,callback){
+ var reader=new FileReader();
+ reader.onload=function(e){
+  var base64=e.target.result.split(',')[1];
+  var mimeType=file.type||'image/jpeg';
+  var filename=date+'_'+category+'_'+file.name;
+  var data={type:'photo',base64:base64,mimeType:mimeType,filename:filename,date:date};
+  var xhr=new XMLHttpRequest();
+  xhr.open('POST',SHEETS_URL,true);
+  xhr.setRequestHeader('Content-Type','application/json');
+  xhr.onload=function(){
+   try{var res=JSON.parse(xhr.responseText);if(callback)callback(res.url||'')}catch(e){if(callback)callback('')}
+  };
+  xhr.onerror=function(){if(callback)callback('')};
+  xhr.send(JSON.stringify(data));
+ };
+ reader.readAsDataURL(file);
+}
+
 function expSubmit(){
  var catId=document.getElementById('exp-cat').value;
  var amt=parseInt(document.getElementById('exp-amt').value)||0;
@@ -831,6 +850,16 @@ function expSubmit(){
  expenses.push({id:gid('exp'),photo:uploadPhotoData||'',villa:villa,villaName:villaName,vehicle:vehicle,vehicleName:vehicleName,laundryShop:laundryShop,month:monthVal,supplier:supplier,cat:catId,amt:amt,notes:notes,status:'approved',by:CUR.u,byName:CUR.name,at:expDate?new Date(expDate).toISOString():new Date().toISOString(),submittedAt:new Date().toISOString()});
  sv('expenses',expenses);
  sendToSheet({type:'expense',date:expDate,category:expCatLabel(catId),description:expCatLabel(catId)+(vehicleName?' - '+vehicleName:''),supplier:supplier,amount:amt,paymentMethod:'',receiptNo:'',notes:notes||''});
+ var photoInput=document.getElementById('exp-photo');
+ if(photoInput&&photoInput.files&&photoInput.files[0]){
+  uploadPhotoToDrive(photoInput.files[0],expDate,expCatLabel(catId),function(driveUrl){
+   if(driveUrl){
+    var expenses2=ld('expenses')||[];
+    var last=expenses2[expenses2.length-1];
+    if(last&&last.photo){last.driveUrl=driveUrl;sv('expenses',expenses2)}
+   }
+  });
+ }
  uploadPhotoData=null;
  var sEl=document.getElementById('exp-success');
  if(sEl){sEl.textContent='Success \u2713';sEl.style.display='block'}
