@@ -1517,7 +1517,7 @@ function invRenderPerJob(client){
  }
  h+='</select></div>';
  h+='<div class="fg2"><label>Date</label><input class="input" type="date" id="pj-date" value="'+new Date().toISOString().slice(0,10)+'"></div>';
- h+='<div class="fg2"><label>Amount (THB)</label><input class="input" type="number" id="pj-amount" value="0"></div>';
+ h+='<div class="fg2"><label>Amount (THB)</label><input class="input" type="number" id="pj-amount" value="" placeholder="0"></div>';
  h+='<button class="btn btn-navy btn-block" onclick="invAddPJ()">+ Add Job</button>';
  h+='</div>';
  return h;
@@ -1527,10 +1527,11 @@ function invAddPJ(){
  var villa=document.getElementById('pj-villa').value.trim();
  var service=document.getElementById('pj-service').value;
  var date=document.getElementById('pj-date').value;
- var amount=parseInt(document.getElementById('pj-amount').value)||0;
+ var amountRaw=document.getElementById('pj-amount').value;
+ var amount=parseInt(amountRaw)||0;
  if(!villa){alert('Enter villa name');return}
  if(!date){alert('Select a date');return}
- if(amount<=0){alert('Enter valid amount');return}
+ if(!amountRaw){alert('Enter valid amount');return}
  var svcLabel='';
  for(var i=0;i<INV_SERVICE_TYPES.length;i++){if(INV_SERVICE_TYPES[i].id===service)svcLabel=INV_SERVICE_TYPES[i].label}
  invState.pjJobs.push({villa:villa,service:svcLabel,date:date,amount:amount});
