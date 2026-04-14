@@ -207,9 +207,13 @@ input,select,textarea{font-family:var(--sans);font-size:16px;touch-action:manipu
 </div>
 
 <script>
+// Google Sheets sync - columns: A:Date B:Category C:Description D:Supplier E:Amount(THB) F:PaymentMethod G:ReceiptNo H:Notes
 var SHEETS_URL='https://script.google.com/macros/s/AKfycbxN_1o95uHcu36iNtVq4aQ0NKEeIbV6WuPaEOtLY8D5VSKvWEYoV3aM0tE2Nml4wWGimQ/exec';
 function sendToSheet(data){
- fetch(SHEETS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).catch(function(e){console.log('Sheet sync error:',e)});
+ var xhr=new XMLHttpRequest();
+ xhr.open('POST',SHEETS_URL,true);
+ xhr.setRequestHeader('Content-Type','application/json');
+ xhr.send(JSON.stringify(data));
 }
 var ACCOUNTS=[
  {u:'phyo', pin:'1234',role:'director',name:'Phyo'},
@@ -809,7 +813,7 @@ function expSubmit(){
  var expenses=ld('expenses')||[];
  expenses.push({id:gid('exp'),photo:uploadPhotoData||'',villa:villa,villaName:villaName,vehicle:vehicle,vehicleName:vehicleName,laundryShop:laundryShop,month:monthVal,supplier:supplier,cat:catId,amt:amt,notes:notes,status:'approved',by:CUR.u,byName:CUR.name,at:expDate?new Date(expDate).toISOString():new Date().toISOString(),submittedAt:new Date().toISOString()});
  sv('expenses',expenses);
- sendToSheet({type:'expense',date:expDate,category:expCatLabel(catId),supplier:supplier,amount:amt,vehicle:vehicleName,submittedBy:CUR.name,notes:notes||''});
+ sendToSheet({type:'expense',date:expDate,category:expCatLabel(catId),description:expCatLabel(catId)+(vehicleName?' - '+vehicleName:''),supplier:supplier,amount:amt,paymentMethod:'',receiptNo:'',notes:notes||''});
  uploadPhotoData=null;
  var sEl=document.getElementById('exp-success');
  if(sEl){sEl.textContent='Success \u2713';sEl.style.display='block'}
