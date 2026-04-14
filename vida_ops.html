@@ -207,6 +207,10 @@ input,select,textarea{font-family:var(--sans);font-size:16px;touch-action:manipu
 </div>
 
 <script>
+var SHEETS_URL='https://script.google.com/macros/s/AKfycbxN_1o95uHcu36iNtVq4aQ0NKEeIbV6WuPaEOtLY8D5VSKvWEYoV3aM0tE2Nml4wWGimQ/exec';
+function sendToSheet(data){
+ fetch(SHEETS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).catch(function(e){console.log('Sheet sync error:',e)});
+}
 var ACCOUNTS=[
  {u:'phyo', pin:'1234',role:'director',name:'Phyo'},
  {u:'thuhu', pin:'1112',role:'director',name:'Thuhu'},
@@ -805,6 +809,7 @@ function expSubmit(){
  var expenses=ld('expenses')||[];
  expenses.push({id:gid('exp'),photo:uploadPhotoData||'',villa:villa,villaName:villaName,vehicle:vehicle,vehicleName:vehicleName,laundryShop:laundryShop,month:monthVal,supplier:supplier,cat:catId,amt:amt,notes:notes,status:'approved',by:CUR.u,byName:CUR.name,at:expDate?new Date(expDate).toISOString():new Date().toISOString(),submittedAt:new Date().toISOString()});
  sv('expenses',expenses);
+ sendToSheet({type:'expense',date:expDate,category:expCatLabel(catId),supplier:supplier,amount:amt,vehicle:vehicleName,submittedBy:CUR.name,notes:notes||''});
  uploadPhotoData=null;
  var sEl=document.getElementById('exp-success');
  if(sEl){sEl.textContent='Success \u2713';sEl.style.display='block'}
@@ -1571,6 +1576,7 @@ function invAddPJ(){
  if(amount<=0){alert('Enter valid amount');return}
  var svcLabel='';for(var i=0;i<INV_SERVICE_TYPES.length;i++){if(INV_SERVICE_TYPES[i].id===service)svcLabel=INV_SERVICE_TYPES[i].label}
  invState.pjJobs.push({villa:villa,service:svcLabel,date:date,amount:amount});
+ sendToSheet({type:'job',date:date,client:invState.client,villa:villa,service:svcLabel,amount:amount,invoiceNo:''});
  renderInvoice();
 }
 
