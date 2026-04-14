@@ -240,9 +240,7 @@ var VILLAS=[
  {id:'nicolas_1',name:'Nicolas 1',client:'Nicolas',group:'OTHERS',co:750,st:250,wht:false,laundry:false},
  {id:'nicolas_2',name:'Nicolas 2',client:'Nicolas',group:'OTHERS',co:750,st:250,wht:false,laundry:false},
  {id:'nicolas3',name:'Nicolas 3',client:'Nicolas',group:'OTHERS',co:750,st:250,wht:false,laundry:false},
- {id:'bo_phut',name:'Bo Phut',client:'Others',group:'OTHERS',co:1500,st:1500,wht:false,garbage:0,laundry:true,laundryCost:500,cleanCost:1000},
  {id:'bophut-david',name:'Bo Phut / David',client:'Others',group:'OTHERS',co:1700,st:1700,wht:false,laundry:true,laundryCost:500},
- {id:'sandra',name:'Sandra',client:'Others',group:'OTHERS',co:1500,st:1500,wht:false,laundry:false},
  {id:'sandra-home',name:'Sandra Home',client:'Others',group:'OTHERS',co:1800,st:1800,wht:false,laundry:false},
  {id:'sandra_airbnb',name:'Sandra Airbnb',client:'Others',group:'OTHERS',co:1800,st:1800,wht:false,laundry:false},
  {id:'adhoc-307',name:'307 (Ad-hoc)',client:'Ad-hoc',group:'OTHERS',co:800,st:800,wht:false,laundry:false},
@@ -463,7 +461,6 @@ function cleanGetLaundryMsg(villa){
  if(villa.id==='aqua_314')return'All-inclusive \u2014 laundry \u0e3f400 already included';
  if(villa.id==='aqua_319_up')return'All-inclusive \u2014 laundry \u0e3f400 already included';
  if(villa.id==='aqua_319_down')return'All-inclusive \u2014 laundry \u0e3f250 already included';
- if(villa.id==='bo_phut')return'Laundry \u0e3f500 fixed \u2014 already included in price';
  if(villa.id==='villa_love')return'Garbage collection \u0e3f1,500/month \u2014 billed end of month separately';
  return'';
 }
