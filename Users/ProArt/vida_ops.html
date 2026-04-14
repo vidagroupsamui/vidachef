@@ -1198,18 +1198,18 @@ function poolSave(){
 // ==================== INVOICE GENERATOR ====================
 var invState={client:'',month:new Date().toISOString().slice(0,7),mode:'',period:'',pjJobs:[],laurentVilla:'',stevenVilla:''};
 var INV_CLIENTS=[
- {id:'adam',label:'Adam / Kagami',prefix:'AK',wht:true,addr:'Kagami Movement Co., Ltd.\nKoh Samui, Suratthani'},
- {id:'mps',label:'MPS Portfolio',prefix:'MPS',wht:true,addr:'Mr Property Siam\nKoh Samui, Suratthani'},
- {id:'chen',label:'Chen / C.O Samui',prefix:'CHN',wht:false,addr:'C.O Samui\nKoh Samui, Suratthani'},
- {id:'steven',label:'Steven',prefix:'STV',wht:false,addr:'Steven Portfolio\nKoh Samui, Suratthani',subVillas:[
+ {id:'adam',label:'Adam / Kagami',billName:'Kagami Movement Co., Ltd.',prefix:'AK',wht:true,addr:'Kagami Movement Co., Ltd.\nKoh Samui, Suratthani'},
+ {id:'mps',label:'MPS Portfolio',billName:'Mr Property Siam',prefix:'MPS',wht:true,addr:'Mr Property Siam\nKoh Samui, Suratthani'},
+ {id:'chen',label:'Chen / C.O Samui',billName:'C.O Samui',prefix:'CHN',wht:false,addr:'C.O Samui\nKoh Samui, Suratthani'},
+ {id:'steven',label:'Steven',billName:'Steven',prefix:'STV',wht:false,addr:'Steven Portfolio\nKoh Samui, Suratthani',subVillas:[
   {id:'chacha',label:'Villa Chacha'},
   {id:'julia',label:'Villa Julia'}
  ]},
- {id:'laurent',label:'Laurent',prefix:'LAU',wht:false,addr:'Laurent Portfolio\nKoh Samui, Suratthani',subVillas:[
+ {id:'laurent',label:'Laurent',billName:'Laurent',prefix:'LAU',wht:false,addr:'Laurent Portfolio\nKoh Samui, Suratthani',subVillas:[
   {id:'villa6',label:'Bo Phut Villa 6 \u2014 Daao R\u00e9sidence',company:'Daao R\u00e9sidence',attn:'Owner: Khun R\u00e9gis | Attn: Laurent',addr:'Villa 6, Bo Phut, Koh Samui, Suratthani',invPrefix:'LAU-V6'},
   {id:'a9',label:'Bangpor A9 \u2014 R\u00e9sidence Coast Breeze',company:'R\u00e9sidence Coast Breeze',attn:'Owner: Khun Yonni | Attn: Laurent',addr:'Bangpor A9, Koh Samui, Suratthani',invPrefix:'LAU-A9'}
  ]},
- {id:'others',label:'Others',prefix:'OTH',wht:false,addr:'Others\nKoh Samui, Suratthani'}
+ {id:'others',label:'Others',billName:'Others',prefix:'OTH',wht:false,addr:'Others\nKoh Samui, Suratthani'}
 ];
 var INV_SERVICE_TYPES=[
  {id:'co',label:'Checkout Clean'},
@@ -1312,7 +1312,7 @@ function invRenderPreview(jobs,client,invNo,periodLabel,dueDate,applyWht){
  h+='<div style="display:flex;justify-content:space-between;margin-bottom:20px;gap:20px">';
  h+='<div style="flex:1">';
  h+='<div style="font-size:11px;font-weight:700;color:'+NAVY+';text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Bill To:</div>';
- h+='<div style="font-size:14px;font-weight:600">'+client.label+'</div>';
+ h+='<div style="font-size:14px;font-weight:600">'+client.billName+'</div>';
  h+='<div style="font-size:12px;color:#555;white-space:pre-line">'+client.addr+'</div>';
  h+='</div>';
  h+='<div style="text-align:right;font-size:13px">';
@@ -1612,7 +1612,7 @@ function invCopyWA(){
  var whtAmt=applyWht?Math.round(total*0.03):0;
  var totalDue=total-whtAmt;
  var invPrefix=client.prefix;
- var billToLabel=client.label;
+ var billToLabel=client.billName;
  var invNum=invGetNextNum(invState.mode==='perjob'?'PJ':invPrefix,invState.mode==='semi'?invState.period:'');
  var invSuffix=invState.mode==='semi'?(invState.period==='1'?'a':'b'):'';
  var invNo=(invState.mode==='perjob'?'PJ':invPrefix)+'-'+invState.month.slice(0,4)+'-'+invNum+invSuffix;
