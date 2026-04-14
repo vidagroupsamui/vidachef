@@ -1190,7 +1190,7 @@ function poolSave(){
 }
 
 // ==================== INVOICE GENERATOR ====================
-var invState={client:'',month:new Date().toISOString().slice(0,7)};
+var invState={client:'',month:new Date().toISOString().slice(0,7),mode:'',period:'',pjJobs:[]};
 var INV_CLIENTS=[
  {id:'adam',label:'Adam / Kagami',prefix:'AK',wht:true,addr:'Adam & Kagami Portfolio\nKoh Samui, Suratthani'},
  {id:'mps',label:'MPS Portfolio',prefix:'MPS',wht:true,addr:'MPS Portfolio\nKoh Samui, Suratthani'},
@@ -1199,21 +1199,37 @@ var INV_CLIENTS=[
  {id:'laurent',label:'Laurent',prefix:'LAU',wht:false,addr:'Laurent Portfolio\nKoh Samui, Suratthani'},
  {id:'others',label:'Others',prefix:'OTH',wht:false,addr:'Others\nKoh Samui, Suratthani'}
 ];
+var INV_SERVICE_TYPES=[
+ {id:'co',label:'Checkout Clean'},
+ {id:'st',label:'Staying Clean'},
+ {id:'deep',label:'Deep Clean'},
+ {id:'pool',label:'Pool'},
+ {id:'chef',label:'Chef'},
+ {id:'other',label:'Other'}
+];
 
-function invGetNextNum(prefix){
+function invGetDefaultMode(cid){
+ if(cid==='adam')return'semi';
+ return'monthly';
+}
+
+function invGetNextNum(prefix,key){
  var nums=ld('inv_numbers')||{};
- if(!nums[prefix])nums[prefix]=1;
- var n=nums[prefix];
- nums[prefix]=n+1;
+ var k=prefix+'_'+(key||'');
+ if(!nums[k])nums[k]=1;
+ var n=nums[k];
+ nums[k]=n+1;
  sv('inv_numbers',nums);
  return String(n).padStart(3,'0');
 }
 
-function invGetJobs(month){
+function invGetJobs(month,dayFrom,dayTo){
  var jobs=[];
  var chefJobs=ld('chef_jobs')||[];
  for(var i=0;i<chefJobs.length;i++){
   if(chefJobs[i].date&&chefJobs[i].date.slice(0,7)===month){
+   var day=parseInt(chefJobs[i].date.split('-')[2]);
+   if(dayFrom!==undefined&&dayTo!==undefined){if(day<dayFrom||day>dayTo)continue}
    jobs.push({date:chefJobs[i].date,villa:'',service:'Chef - '+chefJobs[i].service+' ('+chefJobs[i].guests+' guests)',amount:chefJobs[i].price});
   }
  }
@@ -1223,6 +1239,8 @@ function invGetJobs(month){
    for(var ji=0;ji<cleanCalcs[vid]._jobs.length;ji++){
     var j=cleanCalcs[vid]._jobs[ji];
     if(j.date&&j.date.slice(0,7)===month){
+     var day=parseInt(j.date.split('-')[2]);
+     if(dayFrom!==undefined&&dayTo!==undefined){if(day<dayFrom||day>dayTo)continue}
      var typeLabels={co:'Checkout Clean',st:'Staying Clean',deep:'Deep Clean'};
      jobs.push({date:j.date,villa:j.villaName,service:typeLabels[j.type]||j.type,amount:j.amount});
     }
@@ -1232,6 +1250,8 @@ function invGetJobs(month){
  var poolJobs=ld('pool_jobs')||[];
  for(var i=0;i<poolJobs.length;i++){
   if(poolJobs[i].date&&poolJobs[i].date.slice(0,7)===month){
+   var day=parseInt(poolJobs[i].date.split('-')[2]);
+   if(dayFrom!==undefined&&dayTo!==undefined){if(day<dayFrom||day>dayTo)continue}
    var pTypeLabels={standard:'Pool Standard Clean',chemical:'Pool Chemical Treatment',deep:'Pool Deep Clean'};
    jobs.push({date:poolJobs[i].date,villa:poolJobs[i].villaName,service:pTypeLabels[poolJobs[i].type]||poolJobs[i].type,amount:poolJobs[i].amount});
   }
@@ -1251,55 +1271,26 @@ function invClientMatch(villaName){
  return'others';
 }
 
-function renderInvoice(){
- var c=document.getElementById('invoice-content');
- if(!c)return;
- var h='<div class="card"><div class="card-h-gold">Invoice Generator</div>';
- h+='<div class="fg2"><label>Client</label><select class="select" id="inv-client" onchange="invState.client=this.value;renderInvoice()">';
- h+='<option value="">Select client...</option>';
- for(var i=0;i<INV_CLIENTS.length;i++){
-  h+='<option value="'+INV_CLIENTS[i].id+'"'+(invState.client===INV_CLIENTS[i].id?' selected':'')+'>'+INV_CLIENTS[i].label+'</option>';
- }
- h+='</select></div>';
- h+='<div class="fg2"><label>Month</label><input class="input" type="month" id="inv-month" value="'+invState.month+'" onchange="invState.month=this.value;renderInvoice()"></div>';
- h+='</div>';
-
- if(!invState.client||!invState.month){
-  h+='<div class="empty"><div class="empty-icon">&#128196;</div><div>Select client and month to generate invoice</div></div>';
-  c.innerHTML=h;return;
- }
-
- var client=INV_CLIENTS.find(function(x){return x.id===invState.client});
- var jobs=invGetJobs(invState.month);
+function invRenderPreview(jobs,client,invNo,periodLabel,dueDate,applyWht){
  var total=0;for(var i=0;i<jobs.length;i++){total+=jobs[i].amount}
- var whtAmt=client.wht?Math.round(total*0.03):0;
+ var whtAmt=applyWht?Math.round(total*0.03):0;
  var totalDue=total-whtAmt;
- var invNum=invGetNextNum(client.prefix);
- var invNo=client.prefix+'-'+invState.month.slice(0,4)+'-'+invNum;
-
- // Invoice preview
- h+='<div id="inv-preview" style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:24px;margin-bottom:16px">';
- // Header
+ var h='<div id="inv-preview" style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:24px;margin-bottom:16px">';
  h+='<div style="background:var(--navy);color:var(--gold);padding:20px;border-radius:8px 8px 0 0;margin:-24px -24px 20px">';
  h+='<div style="font-family:var(--serif);font-size:22px;font-weight:700">VIDA GROUP SAMUI CO., LTD.</div>';
  h+='<div style="font-size:11px;color:rgba(255,255,255,.7);margin-top:4px">Reg: 0845568014755 | 82/4 Moo 3, Bophut, Koh Samui, Suratthani 84320</div>';
  h+='</div>';
-
- // Invoice info
  h+='<div style="display:flex;justify-content:space-between;flex-wrap:wrap;margin-bottom:16px">';
  h+='<div><strong>Invoice No:</strong> '+invNo+'</div>';
  h+='<div><strong>Date:</strong> '+today()+'</div>';
- h+='<div><strong>Period:</strong> '+invState.month+'</div>';
+ h+='<div><strong>Period:</strong> '+(periodLabel||invState.month)+'</div>';
+ if(dueDate)h+='<div><strong>Due:</strong> '+dueDate+'</div>';
  h+='</div>';
-
- // Bill To
  h+='<div style="background:#f4f1eb;padding:12px;border-radius:8px;margin-bottom:16px">';
  h+='<div style="font-size:12px;color:var(--muted);margin-bottom:4px">Bill To:</div>';
  h+='<div style="font-size:14px;font-weight:600;color:var(--navy)">'+client.label+'</div>';
  h+='<div style="font-size:12px;color:var(--muted);white-space:pre-line">'+client.addr+'</div>';
  h+='</div>';
-
- // Job table
  h+='<table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:16px">';
  h+='<thead><tr style="border-bottom:2px solid var(--gold);text-align:left">';
  h+='<th style="padding:8px 4px;color:var(--navy)">Date</th>';
@@ -1317,17 +1308,13 @@ function renderInvoice(){
   h+='</tr>';
  }
  h+='</tbody></table>';
-
- // Totals
  h+='<div style="text-align:right;font-size:14px">';
  h+='<div style="padding:4px 0">Subtotal: <strong>'+fmt(total)+' THB</strong></div>';
- if(client.wht){
+ if(applyWht){
   h+='<div style="padding:4px 0;color:var(--red)">WHT 3%: <strong>&minus;'+fmt(whtAmt)+' THB</strong></div>';
  }
  h+='<div style="padding:8px 0;border-top:2px solid var(--gold);font-size:16px;font-weight:700;color:var(--navy)">Total Due: '+fmt(totalDue)+' THB</div>';
  h+='</div>';
-
- // Payment details
  h+='<div style="background:var(--navy);color:#fff;padding:16px;border-radius:8px;margin-top:16px">';
  h+='<div style="font-size:12px;color:var(--gold);margin-bottom:8px;font-weight:600">Payment Details:</div>';
  h+='<div style="font-size:13px">Krungthai Bank</div>';
@@ -1335,14 +1322,162 @@ function renderInvoice(){
  h+='<div style="font-size:13px">MR. PHYO NYI NYI THET</div>';
  h+='</div>';
  h+='</div>';
-
- // Buttons
  h+='<div style="display:flex;gap:8px">';
  h+='<button class="btn btn-navy btn-block" onclick="invPrint()">&#128424; Download PDF</button>';
  h+='<button class="btn btn-gold btn-block" onclick="invCopyWA()">&#128224; Copy for WhatsApp</button>';
  h+='</div>';
+ return h;
+}
 
+function renderInvoice(){
+ var c=document.getElementById('invoice-content');
+ if(!c)return;
+ var h='<div class="card"><div class="card-h-gold">Invoice Generator</div>';
+ h+='<div class="fg2"><label>Client</label><select class="select" id="inv-client" onchange="invSetClient(this.value)">';
+ h+='<option value="">Select client...</option>';
+ for(var i=0;i<INV_CLIENTS.length;i++){
+  h+='<option value="'+INV_CLIENTS[i].id+'"'+(invState.client===INV_CLIENTS[i].id?' selected':'')+'>'+INV_CLIENTS[i].label+'</option>';
+ }
+ h+='</select></div>';
+
+ if(invState.client){
+  var defMode=invGetDefaultMode(invState.client);
+  if(!invState.mode)invState.mode=defMode;
+  h+='<div class="fg2"><label>Billing Type</label><select class="select" id="inv-mode" onchange="invSetMode(this.value)">';
+  h+='<option value="semi"'+(invState.mode==='semi'?' selected':'')+'>Semi-Monthly</option>';
+  h+='<option value="monthly"'+(invState.mode==='monthly'?' selected':'')+'>Monthly</option>';
+  h+='<option value="perjob"'+(invState.mode==='perjob'?' selected':'')+'>Per Job</option>';
+  h+='</select></div>';
+ }
+
+ if(invState.client&&invState.mode!=='perjob'){
+  h+='<div class="fg2"><label>Month</label><input class="input" type="month" id="inv-month" value="'+invState.month+'" onchange="invState.month=this.value;renderInvoice()"></div>';
+ }
+ if(invState.client&&invState.mode==='semi'){
+  h+='<div class="fg2"><label>Billing Period</label><select class="select" id="inv-period" onchange="invState.period=this.value;renderInvoice()">';
+  h+='<option value="">Select period...</option>';
+  h+='<option value="1"'+(invState.period==='1'?' selected':'')+'>1st - 15th (Due 15th)</option>';
+  h+='<option value="2"'+(invState.period==='2'?' selected':'')+'>16th - 30th (Due 30th)</option>';
+  h+='</select></div>';
+ }
+ h+='</div>';
+
+ if(!invState.client){
+  h+='<div class="empty"><div class="empty-icon">&#128196;</div><div>Select a client to generate invoice</div></div>';
+  c.innerHTML=h;return;
+ }
+
+ var client=INV_CLIENTS.find(function(x){return x.id===invState.client});
+
+ if(invState.mode==='perjob'){
+  h+=invRenderPerJob(client);
+  c.innerHTML=h;return;
+ }
+
+ if(!invState.month){
+  h+='<div class="empty"><div class="empty-icon">&#128196;</div><div>Select month to generate invoice</div></div>';
+  c.innerHTML=h;return;
+ }
+ if(invState.mode==='semi'&&!invState.period){
+  h+='<div class="empty"><div class="empty-icon">&#128196;</div><div>Select billing period</div></div>';
+  c.innerHTML=h;return;
+ }
+
+ var dayFrom,dayTo,periodLabel,dueDate;
+ if(invState.mode==='semi'){
+  if(invState.period==='1'){dayFrom=1;dayTo=15;periodLabel='1-15 '+invState.month;dueDate='15 '+invState.month}
+  else{dayFrom=16;dayTo=31;periodLabel='16-30 '+invState.month;dueDate='30 '+invState.month}
+ }else{
+  var yr=parseInt(invState.month.split('-')[0]);
+  var mo=parseInt(invState.month.split('-')[1]);
+  var nextMo=mo+1;var nextYr=yr;
+  if(nextMo>12){nextMo=1;nextYr++}
+  dueDate='1 '+['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][nextMo]+' '+nextYr;
+  periodLabel=invState.month;
+ }
+
+ var jobs=invGetJobs(invState.month,dayFrom,dayTo);
+ if(jobs.length===0){
+  h+='<div class="empty"><div class="empty-icon">&#128196;</div><div>No jobs found for this period</div></div>';
+  c.innerHTML=h;return;
+ }
+
+ var invKey=invState.mode==='semi'?invState.period:'';
+ var invNum=invGetNextNum(client.prefix,invKey);
+ var invSuffix='';
+ if(invState.mode==='semi')invSuffix=invState.period==='1'?'a':'b';
+ var invNo=client.prefix+'-'+invState.month.slice(0,4)+'-'+invNum+invSuffix;
+ var applyWht=client.wht;
+
+ h+=invRenderPreview(jobs,client,invNo,periodLabel,dueDate,applyWht);
  c.innerHTML=h;
+}
+
+function invSetClient(cid){
+ invState.client=cid;
+ invState.mode=invGetDefaultMode(cid);
+ invState.period='';
+ invState.pjJobs=[];
+ renderInvoice();
+}
+
+function invSetMode(mode){
+ invState.mode=mode;
+ invState.period='';
+ invState.pjJobs=[];
+ renderInvoice();
+}
+
+function invRenderPerJob(client){
+ var h='<div class="card"><div class="card-h-gold">Add Jobs</div>';
+ h+='<div class="fg2"><label>Villa Name</label><input class="input" type="text" id="pj-villa" placeholder="e.g. Villa Paradise"></div>';
+ h+='<div class="fg2"><label>Service Type</label><select class="select" id="pj-service">';
+ for(var i=0;i<INV_SERVICE_TYPES.length;i++){
+  h+='<option value="'+INV_SERVICE_TYPES[i].id+'">'+INV_SERVICE_TYPES[i].label+'</option>';
+ }
+ h+='</select></div>';
+ h+='<div class="fg2"><label>Date</label><input class="input" type="date" id="pj-date" value="'+today()+'"></div>';
+ h+='<div class="fg2"><label>Amount (THB)</label><input class="input" type="number" id="pj-amount" min="0" placeholder="0"></div>';
+ h+='<button class="btn btn-navy btn-block" onclick="invAddPJ()">+ Add Job</button>';
+ h+='</div>';
+
+ if(invState.pjJobs.length>0){
+  h+='<div class="card"><div class="card-h-gold">Jobs ('+invState.pjJobs.length+')</div>';
+  for(var i=0;i<invState.pjJobs.length;i++){
+   var j=invState.pjJobs[i];
+   h+='<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0f0f0">';
+   h+='<div><strong>'+j.villa+'</strong><br><span style="font-size:12px;color:var(--muted)">'+j.service+' | '+fmtDate(j.date)+'</span></div>';
+   h+='<div style="font-weight:600">'+fmt(j.amount)+' THB ';
+   h+='<button class="btn btn-sm btn-red" onclick="invRemovePJ('+i+')">&times;</button></div>';
+   h+='</div>';
+  }
+  h+='</div>';
+
+  var invNum=invGetNextNum('PJ','');
+  var invNo='PJ-'+invState.month.slice(0,4)+'-'+invNum;
+  var applyWht=(client.id==='adam'||client.id==='mps');
+  var periodLabel='Per Job - '+today();
+  h+=invRenderPreview(invState.pjJobs,client,invNo,periodLabel,'',applyWht);
+ }
+ return h;
+}
+
+function invAddPJ(){
+ var villa=document.getElementById('pj-villa').value.trim();
+ var service=document.getElementById('pj-service').value;
+ var date=document.getElementById('pj-date').value;
+ var amount=parseInt(document.getElementById('pj-amount').value)||0;
+ if(!villa){alert('Enter villa name');return}
+ if(!date){alert('Select a date');return}
+ if(amount<=0){alert('Enter valid amount');return}
+ var svcLabel='';for(var i=0;i<INV_SERVICE_TYPES.length;i++){if(INV_SERVICE_TYPES[i].id===service)svcLabel=INV_SERVICE_TYPES[i].label}
+ invState.pjJobs.push({villa:villa,service:svcLabel,date:date,amount:amount});
+ renderInvoice();
+}
+
+function invRemovePJ(idx){
+ invState.pjJobs.splice(idx,1);
+ renderInvoice();
 }
 
 function invPrint(){
@@ -1365,23 +1500,28 @@ function invPrint(){
 function invCopyWA(){
  var client=INV_CLIENTS.find(function(x){return x.id===invState.client});
  if(!client)return;
- var jobs=invGetJobs(invState.month);
+ var jobs=invState.mode==='perjob'?invState.pjJobs:invGetJobs(invState.month,
+  invState.mode==='semi'?(invState.period==='1'?1:16):undefined,
+  invState.mode==='semi'?(invState.period==='1'?15:31):undefined);
  var total=0;for(var i=0;i<jobs.length;i++){total+=jobs[i].amount}
- var whtAmt=client.wht?Math.round(total*0.03):0;
+ var applyWht=client.wht||(invState.mode==='perjob'&&(client.id==='adam'||client.id==='mps'));
+ var whtAmt=applyWht?Math.round(total*0.03):0;
  var totalDue=total-whtAmt;
- var invNum=invGetNextNum(client.prefix);
- var invNo=client.prefix+'-'+invState.month.slice(0,4)+'-'+invNum;
+ var invNum=invGetNextNum(invState.mode==='perjob'?'PJ':client.prefix,invState.mode==='semi'?invState.period:'');
+ var invSuffix=invState.mode==='semi'?(invState.period==='1'?'a':'b'):'';
+ var invNo=(invState.mode==='perjob'?'PJ':client.prefix)+'-'+invState.month.slice(0,4)+'-'+invNum+invSuffix;
+ var periodLabel=invState.mode==='perjob'?'Per Job':(invState.mode==='semi'?(invState.period==='1'?'1-15':'16-30')+' '+invState.month:invState.month);
 
  var txt='*INVOICE '+invNo+'*\n';
  txt+='VIDA GROUP SAMUI CO., LTD.\n';
- txt+='Period: '+invState.month+'\n';
+ txt+='Period: '+periodLabel+'\n';
  txt+='Client: '+client.label+'\n\n';
  for(var i=0;i<jobs.length;i++){
   var j=jobs[i];
   txt+=fmtDate(j.date)+' | '+(j.villa||'-')+' | '+j.service+' | '+fmt(j.amount)+' THB\n';
  }
  txt+='\nSubtotal: '+fmt(total)+' THB\n';
- if(client.wht)txt+='WHT 3%: -'+fmt(whtAmt)+' THB\n';
+ if(applyWht)txt+='WHT 3%: -'+fmt(whtAmt)+' THB\n';
  txt+='*Total Due: '+fmt(totalDue)+' THB*\n\n';
  txt+='Payment:\nKrungthai Bank\n982-3-93931-4\nMR. PHYO NYI NYI THET';
 
