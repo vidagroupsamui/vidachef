@@ -218,28 +218,35 @@ var CHEF_PRICING={breakfast:[],floating:[],thai:[
 for(var i=1;i<=16;i++){CHEF_PRICING.breakfast.push({g:i,price:i*900})}
 CHEF_PRICING.floating={fixedPrice:2500,guests:2};
 var VILLAS=[
- {id:'villa_love',name:'Villa Love',group:'ADAM/KAGAMI',co:1500,st:1500,garbage:0,laundry:false},
- {id:'majesta',name:'Majesta',group:'ADAM/KAGAMI',co:1500,st:1500,garbage:300,laundry:false},
- {id:'n1',name:'N1',group:'ADAM/KAGAMI',co:1500,st:1500,garbage:0,laundry:false},
- {id:'n2',name:'N2',group:'ADAM/KAGAMI',co:1500,st:1500,garbage:0,laundry:false},
- {id:'n3',name:'N3',group:'ADAM/KAGAMI',co:1500,st:1500,garbage:0,laundry:false},
- {id:'j3',name:'J3',group:'ADAM/KAGAMI',co:2000,st:2000,garbage:0,laundry:false},
- {id:'sunrise_hill',name:'Sunrise Hill',group:'ADAM/KAGAMI',co:1700,st:1700,garbage:300,laundry:false},
- {id:'villa_anna',name:'Villa Anna',group:'MPS',co:1300,st:1300,garbage:0,laundry:false},
- {id:'villa_diana',name:'Villa Diana',group:'MPS',co:1300,st:1300,garbage:0,laundry:false},
- {id:'villa_yoco',name:'Villa Yoco',group:'MPS',co:1500,st:1500,garbage:0,laundry:false},
- {id:'big_buddha',name:'Big Buddha',group:'CHEN',co:1500,st:1500,garbage:0,laundry:true,laundryCost:500,cleanCost:1000},
- {id:'aqua_314',name:'Aqua 314',group:'CHEN',co:1600,st:1600,garbage:0,laundry:true,laundryCost:400,cleanCost:1200},
- {id:'aqua_319_up',name:'Aqua 319 upstairs',group:'CHEN',co:1600,st:1600,garbage:0,laundry:true,laundryCost:400,cleanCost:1200},
- {id:'aqua_319_down',name:'Aqua 319 downstairs',group:'CHEN',co:1000,st:1000,garbage:0,laundry:true,laundryCost:250,cleanCost:750},
- {id:'chacha',name:'Chacha',group:'STEVEN',co:1500,st:1500,garbage:0,laundry:false},
- {id:'julia',name:'Julia',group:'STEVEN',co:1500,st:1500,garbage:0,laundry:false},
- {id:'lulu',name:'Lulu',group:'OTHERS',co:2000,st:2000,garbage:0,laundry:false},
- {id:'nicolas_1',name:'Nicolas 1',group:'OTHERS',co:750,st:250,garbage:0,laundry:false},
- {id:'nicolas_2',name:'Nicolas 2',group:'OTHERS',co:750,st:250,garbage:0,laundry:false},
- {id:'bo_phut',name:'Bo Phut',group:'OTHERS',co:1500,st:1500,garbage:0,laundry:true,laundryCost:500,cleanCost:1000},
- {id:'sandra',name:'Sandra',group:'OTHERS',co:1500,st:1500,garbage:0,laundry:false},
- {id:'sandra_airbnb',name:'Sandra Airbnb',group:'OTHERS',co:1800,st:1800,garbage:0,laundry:false}
+ {id:'villa_love',name:'Villa Love',client:'Adam/Kagami',group:'ADAM/KAGAMI',co:1500,st:1500,wht:false,garbage:0,laundry:false},
+ {id:'majesta',name:'Majesta',client:'Adam/Kagami',group:'ADAM/KAGAMI',co:1500,st:1500,wht:false,garbage:300,laundry:false},
+ {id:'n1',name:'N1',client:'Adam/Kagami',group:'ADAM/KAGAMI',co:1500,st:1500,wht:false,garbage:0,laundry:false},
+ {id:'n2',name:'N2',client:'Adam/Kagami',group:'ADAM/KAGAMI',co:1500,st:1500,wht:false,garbage:0,laundry:false},
+ {id:'n3',name:'N3',client:'Adam/Kagami',group:'ADAM/KAGAMI',co:1500,st:1500,wht:false,garbage:0,laundry:false},
+ {id:'j3',name:'J3',client:'Adam/Kagami',group:'ADAM/KAGAMI',co:2000,st:2000,wht:false,garbage:0,laundry:false},
+ {id:'sunrise_hill',name:'Sunrise Hill',client:'Adam/Kagami',group:'ADAM/KAGAMI',co:1700,st:1700,wht:false,garbage:300,laundry:false},
+ {id:'villa_anna',name:'Villa Anna',client:'MPS',group:'MPS',co:1300,st:1300,wht:false,laundry:false},
+ {id:'villa_diana',name:'Villa Diana',client:'MPS',group:'MPS',co:1300,st:1300,wht:false,laundry:false},
+ {id:'villa_yoco',name:'Villa Yoco',client:'MPS',group:'MPS',co:1500,st:1500,wht:false,laundry:false},
+ {id:'big_buddha',name:'Big Buddha',client:'Chen',group:'CHEN',co:1500,st:1500,wht:false,garbage:0,laundry:true,laundryCost:500,cleanCost:1000},
+ {id:'aqua_314',name:'Aqua 314',client:'Chen',group:'CHEN',co:1600,st:1600,wht:false,garbage:0,laundry:true,laundryCost:400,cleanCost:1200},
+ {id:'aqua_319_up',name:'Aqua 319 upstairs',client:'Chen',group:'CHEN',co:1600,st:1600,wht:false,garbage:0,laundry:true,laundryCost:400,cleanCost:1200},
+ {id:'aqua_319_down',name:'Aqua 319 downstairs',client:'Chen',group:'CHEN',co:1000,st:1000,wht:false,garbage:0,laundry:true,laundryCost:250,cleanCost:750},
+ {id:'chacha',name:'Chacha',client:'Steven',group:'STEVEN',co:1500,st:1500,wht:false,laundry:false},
+ {id:'julia',name:'Julia',client:'Steven',group:'STEVEN',co:1500,st:1500,wht:false,laundry:false},
+ {id:'lau-a9',name:'Bangpor A9',client:'Laurent',group:'LAURENT',co:1500,st:1500,wht:false,laundry:false},
+ {id:'lau-villa6',name:'Bo Phut Villa 6',client:'Laurent',group:'LAURENT',co:1500,st:1500,wht:false,laundry:false},
+ {id:'lulu',name:'Lulu',client:'Others',group:'OTHERS',co:2000,st:2000,wht:false,laundry:false},
+ {id:'nicolas_1',name:'Nicolas 1',client:'Nicolas',group:'OTHERS',co:750,st:250,wht:false,laundry:false},
+ {id:'nicolas_2',name:'Nicolas 2',client:'Nicolas',group:'OTHERS',co:750,st:250,wht:false,laundry:false},
+ {id:'nicolas3',name:'Nicolas 3',client:'Nicolas',group:'OTHERS',co:750,st:250,wht:false,laundry:false},
+ {id:'bo_phut',name:'Bo Phut',client:'Others',group:'OTHERS',co:1500,st:1500,wht:false,garbage:0,laundry:true,laundryCost:500,cleanCost:1000},
+ {id:'bophut-david',name:'Bo Phut / David',client:'Others',group:'OTHERS',co:1700,st:1700,wht:false,laundry:true,laundryCost:500},
+ {id:'sandra',name:'Sandra',client:'Others',group:'OTHERS',co:1500,st:1500,wht:false,laundry:false},
+ {id:'sandra-home',name:'Sandra Home',client:'Others',group:'OTHERS',co:1800,st:1800,wht:false,laundry:false},
+ {id:'sandra_airbnb',name:'Sandra Airbnb',client:'Others',group:'OTHERS',co:1800,st:1800,wht:false,laundry:false},
+ {id:'adhoc-307',name:'307 (Ad-hoc)',client:'Ad-hoc',group:'OTHERS',co:800,st:800,wht:false,laundry:false},
+ {id:'adhoc-304',name:'304 (Ad-hoc)',client:'Ad-hoc',group:'OTHERS',co:800,st:800,wht:false,laundry:false}
 ];
 var SHARE_LABELS=['Labor','Ingredients','Commission','Company Profit','Buffer'];
 var MOD_TITLES={chef:'Chef Calculator',cleaning:'Cleaning Calculator',upload:'Expenses',schedule:'Schedule',pnl:'P&L Summary',pool:'Pool Calculator'};
@@ -468,7 +475,7 @@ function renderCleaning(){
  h+='<option value="st"'+(cleaningState.mode==='st'?' selected':'')+'>Staying Clean</option>';
  h+='<option value="deep"'+(cleaningState.mode==='deep'?' selected':'')+'>Deep Clean</option>';
  h+='</select></div></div>';
- var groups=['ADAM/KAGAMI','MPS','CHEN','STEVEN','OTHERS'];
+ var groups=['ADAM/KAGAMI','MPS','CHEN','STEVEN','LAURENT','OTHERS'];
  if(cleaningState.mode==='co'||cleaningState.mode==='st'){
  h+='<div class="card"><div class="card-h-gold">Select Villa</div>';
  h+='<div class="fg2"><label>Villa</label><select class="select" id="clean-villa" onchange="cleanSelVilla(this.value)">';
@@ -1038,7 +1045,9 @@ var POOL_PRICING={
   'villa_yoco':3500,'big_buddha':3500,'aqua_314':3500,
   'aqua_319_up':3500,'aqua_319_down':2500,'chacha':3500,
   'julia':3500,'lulu':4000,'nicolas_1':2000,'nicolas_2':2000,
-  'bo_phut':3500,'sandra':3500,'sandra_airbnb':3800
+  'bo_phut':3500,'sandra':3500,'sandra_airbnb':3800,
+  'lau-a9':3500,'lau-villa6':3500,'nicolas3':2000,'bophut-david':3500,
+  'sandra-home':3800,'adhoc-307':2500,'adhoc-304':2500
  },
  chemical:{
   'villa_love':1500,'majesta':1500,'n1':1200,'n2':1200,'n3':1200,
@@ -1046,7 +1055,9 @@ var POOL_PRICING={
   'villa_yoco':1500,'big_buddha':1500,'aqua_314':1500,
   'aqua_319_up':1500,'aqua_319_down':1000,'chacha':1500,
   'julia':1500,'lulu':1800,'nicolas_1':800,'nicolas_2':800,
-  'bo_phut':1500,'sandra':1500,'sandra_airbnb':1600
+  'bo_phut':1500,'sandra':1500,'sandra_airbnb':1600,
+  'lau-a9':1500,'lau-villa6':1500,'nicolas3':800,'bophut-david':1500,
+  'sandra-home':1600,'adhoc-307':1000,'adhoc-304':1000
  }
 };
 function poolGetDefaultShares(type){
@@ -1097,7 +1108,7 @@ function renderPool(){
    if(ed){h+='<button class="btn btn-navy btn-block" style="margin-top:10px" onclick="poolSave()">Save Job</button>';}
   }
  }else{
-  var groups=['ADAM/KAGAMI','MPS','CHEN','STEVEN','OTHERS'];
+  var groups=['ADAM/KAGAMI','MPS','CHEN','STEVEN','LAURENT','OTHERS'];
   h+='<div class="card"><div class="card-h-gold">Select Villa</div>';
   h+='<div class="fg2"><label>Villa</label><select class="select" id="pool-villa" onchange="poolSelVilla(this.value)">';
   h+='<option value="">Choose a villa...</option>';
