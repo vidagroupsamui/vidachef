@@ -267,7 +267,7 @@ var VEHICLES=[
 ];
 var CUR=null;
 var chefState={tab:'breakfast',services:{}};
-var cleaningState={villa:'',type:'co',mode:'regular',manualName:'',manualPrice:''};
+var cleaningState={villa:'',mode:'co',manualName:'',manualPrice:''};
 var CAL_API_KEY='AIzaSyBfArhqcaYyuJIxp4bfRNVd4KXEbOoPfg8';
 var CAL_ID='a9b8a635ba5f1b57274e5ed292ff8be2244b54fd8d18839c5094095e2ef6734b@group.calendar.google.com';
 var calEvents=[];var calLoading=false;var calOnline=false;var calTimer=null;
@@ -464,11 +464,12 @@ function renderCleaning(){
  var c=document.getElementById('cleaning-content');var ed=canEdit('cleaning');
  var h='<div class="card"><div class="card-h-gold">Job Type</div>';
  h+='<div class="fg2"><select class="select" id="clean-mode" onchange="cleanSetMode(this.value)">';
- h+='<option value="regular"'+(cleaningState.mode==='regular'?' selected':'')+'>Regular Clean</option>';
+ h+='<option value="co"'+(cleaningState.mode==='co'?' selected':'')+'>Checkout Clean</option>';
+ h+='<option value="st"'+(cleaningState.mode==='st'?' selected':'')+'>Staying Clean</option>';
  h+='<option value="deep"'+(cleaningState.mode==='deep'?' selected':'')+'>Deep Clean</option>';
  h+='</select></div></div>';
- if(cleaningState.mode==='regular'){
  var groups=['ADAM/KAGAMI','MPS','CHEN','STEVEN','OTHERS'];
+ if(cleaningState.mode==='co'||cleaningState.mode==='st'){
  h+='<div class="card"><div class="card-h-gold">Select Villa</div>';
  h+='<div class="fg2"><label>Villa</label><select class="select" id="clean-villa" onchange="cleanSelVilla(this.value)">';
  h+='<option value="">Choose a villa...</option>';
@@ -477,22 +478,17 @@ function renderCleaning(){
  for(var i=0;i<VILLAS.length;i++){if(VILLAS[i].group===groups[gi]){h+='<option value="'+VILLAS[i].id+'"'+(cleaningState.villa===VILLAS[i].id?' selected':'')+'>'+VILLAS[i].name+'</option>'}}
  h+='</optgroup>';
  }
- h+='</select></div>';
- h+='<div class="fg2"><label>Service Type</label><select class="select" id="clean-type" onchange="cleanSelType(this.value)">';
- h+='<option value="co"'+(cleaningState.type==='co'?' selected':'')+'>Checkout Clean</option>';
- h+='<option value="st"'+(cleaningState.type==='st'?' selected':'')+'>Staying Clean</option>';
- h+='<option value="normal"'+(cleaningState.type==='normal'?' selected':'')+'>Normal Clean</option>';
  h+='</select></div></div>';
  var villa=VILLAS.find(function(v){return v.id===cleaningState.villa});
  if(villa){
- var basePrice=villa[cleaningState.type]||villa.co;var garbage=villa.garbage||0;var totalPrice=basePrice+garbage;
- var saved=ld('clean_calcs');var def=cleanGetDefaultShares(cleaningState.type);
- var vdata=(saved&&saved[villa.id]&&saved[villa.id][cleaningState.type])||{extraCost:0,shares:{0:def.labor,1:def.supplies,2:def.commission,3:def.profit,4:def.buffer}};
+ var basePrice=villa[cleaningState.mode]||villa.co;var garbage=villa.garbage||0;var totalPrice=basePrice+garbage;
+ var saved=ld('clean_calcs');var def=cleanGetDefaultShares(cleaningState.mode);
+ var vdata=(saved&&saved[villa.id]&&saved[villa.id][cleaningState.mode])||{extraCost:0,shares:{0:def.labor,1:def.supplies,2:def.commission,3:def.profit,4:def.buffer}};
  var totalCost=vdata.extraCost+garbage;if(villa.laundry&&villa.laundryCost){totalCost+=villa.laundryCost}
  var profit=totalPrice-totalCost;
  h+='<div class="card" style="border-left:4px solid var(--gold)"><div style="font-size:18px;font-weight:700;color:var(--navy)">'+villa.name+'</div><div style="font-size:12px;color:var(--muted)">'+villa.group+'</div></div>';
- var typeLabels={co:'Checkout Clean',st:'Staying Clean',normal:'Normal Clean'};
- h+='<div class="price-display"><div class="amount">'+fmt(totalPrice)+' THB</div><div class="sub">'+(typeLabels[cleaningState.type]||'')+(garbage>0?' + '+fmt(garbage)+' garbage':'')+'</div></div>';
+ var typeLabels={co:'Checkout Clean',st:'Staying Clean'};
+ h+='<div class="price-display"><div class="amount">'+fmt(totalPrice)+' THB</div><div class="sub">'+(typeLabels[cleaningState.mode]||'')+(garbage>0?' + '+fmt(garbage)+' garbage':'')+'</div></div>';
  var laundryMsg=cleanGetLaundryMsg(villa);
  if(laundryMsg)h+='<div class="note" style="background:#fffde7;border-left-color:#f9a825"><strong>'+laundryMsg+'</strong></div>';
  if(ed){h+='<div class="fg2"><label>Extra Costs (THB)</label><input class="input" type="number" value="'+vdata.extraCost+'" min="0" onchange="cleanSetCost(this.value)"></div>';}
@@ -540,6 +536,7 @@ function renderCleaning(){
  h+='<div class="summary-row"><span>Company Profit</span><span>'+fmt(companyProfit)+' (50%)</span></div>';
  h+='<div class="summary-row total"><span>Total</span><span>'+fmt(labor+commission+companyProfit)+'</span></div>';
  h+='</div></div>';
+ if(ed){h+='<button class="btn btn-navy btn-block" style="margin-top:10px" onclick="cleanSave()">Save Job</button>';}
  }
  }
  c.innerHTML=h;
@@ -548,35 +545,34 @@ function cleanSetMode(v){cleaningState.mode=v;renderCleaning()}
 function cleanSetManualName(v){cleaningState.manualName=v;renderCleaning()}
 function cleanSetManualPrice(v){cleaningState.manualPrice=v;renderCleaning()}
 function cleanSelVilla(v){cleaningState.villa=v;renderCleaning()}
-function cleanSelType(v){cleaningState.type=v;renderCleaning()}
 function cleanSetCost(v){
  var saved=ld('clean_calcs')||{};if(!saved[cleaningState.villa])saved[cleaningState.villa]={};
- var def=cleanGetDefaultShares(cleaningState.type);
- var d=saved[cleaningState.villa][cleaningState.type]||{extraCost:0,shares:{0:def.labor,1:def.supplies,2:def.commission,3:def.profit,4:def.buffer}};
- d.extraCost=Math.max(0,parseInt(v)||0);saved[cleaningState.villa][cleaningState.type]=d;sv('clean_calcs',saved);renderCleaning();
+ var def=cleanGetDefaultShares(cleaningState.mode);
+ var d=saved[cleaningState.villa][cleaningState.mode]||{extraCost:0,shares:{0:def.labor,1:def.supplies,2:def.commission,3:def.profit,4:def.buffer}};
+ d.extraCost=Math.max(0,parseInt(v)||0);saved[cleaningState.villa][cleaningState.mode]=d;sv('clean_calcs',saved);renderCleaning();
 }
 function cleanSlider(idx,val){
  var saved=ld('clean_calcs')||{};if(!saved[cleaningState.villa])saved[cleaningState.villa]={};
- var def=cleanGetDefaultShares(cleaningState.type);
- var d=saved[cleaningState.villa][cleaningState.type]||{extraCost:0,shares:{0:def.labor,1:def.supplies,2:def.commission,3:def.profit,4:def.buffer}};
+ var def=cleanGetDefaultShares(cleaningState.mode);
+ var d=saved[cleaningState.villa][cleaningState.mode]||{extraCost:0,shares:{0:def.labor,1:def.supplies,2:def.commission,3:def.profit,4:def.buffer}};
  val=parseInt(val);d.shares[idx]=val;
  var others=[];for(var i=0;i<5;i++){if(i!==idx)others.push(i)}
  var os=0;for(var i=0;i<others.length;i++){os+=(d.shares[others[i]]||0)}
  var rem=100-val;
  if(os===0){var each=Math.floor(rem/others.length);for(var i=0;i<others.length;i++){d.shares[others[i]]=each}}
  else{for(var i=0;i<others.length;i++){d.shares[others[i]]=Math.round(rem*(d.shares[others[i]]||0)/os)}}
- saved[cleaningState.villa][cleaningState.type]=d;sv('clean_calcs',saved);renderCleaning();
+ saved[cleaningState.villa][cleaningState.mode]=d;sv('clean_calcs',saved);renderCleaning();
 }
 function cleanSave(){
  var villa=VILLAS.find(function(v){return v.id===cleaningState.villa});
  if(!villa){alert('Select a villa first');return}
- var basePrice=villa[cleaningState.type]||villa.co;
+ var basePrice=villa[cleaningState.mode]||villa.co;
  var garbage=villa.garbage||0;
  var totalPrice=basePrice+garbage;
  var saved=ld('clean_calcs')||{};
  if(!saved[cleaningState.villa])saved[cleaningState.villa]={};
- var def=cleanGetDefaultShares(cleaningState.type);
- var d=saved[cleaningState.villa][cleaningState.type]||{extraCost:0,shares:{0:def.labor,1:def.supplies,2:def.commission,3:def.profit,4:def.buffer}};
+ var def=cleanGetDefaultShares(cleaningState.mode);
+ var d=saved[cleaningState.villa][cleaningState.mode]||{extraCost:0,shares:{0:def.labor,1:def.supplies,2:def.commission,3:def.profit,4:def.buffer}};
  var totalCost=d.extraCost+garbage;
  if(villa.laundry&&villa.laundryCost)totalCost+=villa.laundryCost;
  var profit=totalPrice-totalCost;
@@ -587,7 +583,7 @@ function cleanSave(){
   date:today(),
   villa:cleaningState.villa,
   villaName:villa.name,
-  type:cleaningState.type,
+  type:cleaningState.mode,
   amount:totalPrice,
   extraCost:d.extraCost,
   commission:commission,
