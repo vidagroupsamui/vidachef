@@ -689,6 +689,14 @@ function renderUpload(){
  h+='<div id="exp-success" style="display:none;text-align:center;padding:12px;background:#dcfce7;border-radius:8px;color:#16a34a;font-weight:600;font-size:14px;margin-top:8px"></div>';
  h+='</div>';
 
+ // === JOB PHOTO (optional) ===
+ h+='<div class="card"><div class="card-h-gold">&#128248; Add Job Photo (Optional)</div>';
+ h+='<div class="fg2"><label>Photo</label>';
+ h+='<input type="file" accept="image/*" capture="environment" id="job-photo-file" onchange="jobPhotoSelectFile(this)" style="font-size:13px">';
+ h+='<div id="job-photo-preview" style="margin-top:8px"></div></div>';
+ h+='<div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px">Photo will upload automatically when expense is submitted</div>';
+ h+='</div>';
+
  // === EXPENSE LIST ===
  var expenses=ld('expenses')||[];
 
@@ -834,6 +842,7 @@ function expSubmit(){
  expenses.push({id:gid('exp'),photo:uploadPhotoData||'',villa:villa,villaName:villaName,vehicle:vehicle,vehicleName:vehicleName,laundryShop:laundryShop,month:monthVal,supplier:supplier,cat:catId,amt:amt,notes:notes,status:'approved',by:CUR.u,byName:CUR.name,at:expDate?new Date(expDate).toISOString():new Date().toISOString(),submittedAt:new Date().toISOString()});
  sv('expenses',expenses);
  sendToSheet({type:'expense',date:expDate,category:expCatLabel(catId),description:expCatLabel(catId)+(vehicleName?' - '+vehicleName:''),supplier:supplier,amount:amt,paymentMethod:'',receiptNo:'',notes:notes||''});
+ if(jobPhotoState.photoData&&villaName){jobPhotoUpload(expDate,villaName,expCatLabel(catId))}
  var photoInput=document.getElementById('exp-photo');
  if(photoInput&&photoInput.files&&photoInput.files[0]){
   uploadPhotoToDrive(photoInput.files[0],expDate,expCatLabel(catId),function(driveUrl){
