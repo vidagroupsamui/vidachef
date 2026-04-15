@@ -788,34 +788,33 @@ function uploadPhoto(input){
  };
  reader.readAsDataURL(input.files[0]);
 }
-
 function uploadPhotoToDrive(photoFile,expDate,category){
- if(photoFile){
-  var reader=new FileReader();
-  reader.onload=function(e){
-   var img=new Image();
-   img.onload=function(){
-    var canvas=document.createElement('canvas');
-    var maxW=800;
-    var scale=Math.min(1,maxW/img.width);
-    canvas.width=img.width*scale;
-    canvas.height=img.height*scale;
-    canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
-    var base64=canvas.toDataURL('image/jpeg',0.5);
-    var payload=JSON.stringify({
-      type:'photo',
-      photo:base64,
-      filename:expDate+'-'+category+'.jpg'
-    });
-    var xhr=new XMLHttpRequest();
-    xhr.open('POST',SHEETS_URL,true);
-    xhr.setRequestHeader('Content-Type','application/json');
-    xhr.send(payload);
-   };
-   img.src=e.target.result;
+ if(!photoFile) return;
+ var reader=new FileReader();
+ reader.onload=function(e){
+  var img=new Image();
+  img.onload=function(){
+   var canvas=document.createElement('canvas');
+   var maxW=400;
+   var scale=Math.min(1,maxW/img.width);
+   canvas.width=img.width*scale;
+   canvas.height=img.height*scale;
+   canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+   var base64=canvas.toDataURL('image/jpeg',0.3);
+   var payload=JSON.stringify({
+    type:'photo',
+    photo:base64,
+    filename:expDate+'-'+category+'.jpg'
+   });
+   var script=document.createElement('script');
+   script.src=SHEETS_URL+'?callback=void&data='+encodeURIComponent(payload);
+   document.body.appendChild(script);
+   setTimeout(function(){if(script.parentNode) script.parentNode.removeChild(script)},5000);
   };
-  reader.readAsDataURL(photoFile);
- }
+  img.src=e.target.result;
+ };
+ reader.readAsDataURL(photoFile);
+}
 }
 
 function expSubmit(){
