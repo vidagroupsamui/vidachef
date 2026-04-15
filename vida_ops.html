@@ -292,9 +292,9 @@ var VEHICLES=[
 var CUR=null;
 var chefState={tab:'breakfast',services:{}};
 var cleaningState={villa:'',mode:'co',manualName:'',manualPrice:''};
-var CAL_API_KEY='AIzaSyBfArhqcaYyuJIxp4bfRNVd4KXEbOoPfg8';
+var CAL_API_KEY='AIzaSyAns9oBt3jxzHVVTL-09NiarMHLcTiT2es';
 var CAL_ID='a9b8a635ba5f1b57274e5ed292ff8be2244b54fd8d18839c5094095e2ef6734b@group.calendar.google.com';
-var INV_CAL_API_KEY='AIzaSyCZ9P6SdlMBqnsCQNiDpEGgbF2DzKfCOHs';
+var INV_CAL_API_KEY='AIzaSyAns9oBt3jxzHVVTL-09NiarMHLcTiT2es';
 var calEvents=[];var calLoading=false;var calOnline=false;var calTimer=null;
 var invCalJobs=[];var invCalLoading=false;
 var schedViewDate=new Date();var schedSelDay=null;
@@ -926,7 +926,7 @@ function schedTypeLabel(type){
 
 function schedFetchCal(){
  if(!CAL_ID)return;
- var url='https://www.googleapis.com/calendar/v3/calendars/'+encodeURIComponent(CAL_ID)+'/events?key=AIzaSyBfArhqcaYyuJIxp4bfRNVd4KXEbOoPfg8&singleEvents=true&orderBy=startTime&timeMin='+new Date().toISOString().slice(0,10)+'T00:00:00Z&maxResults=50';
+ var url='https://www.googleapis.com/calendar/v3/calendars/'+encodeURIComponent(CAL_ID)+'/events?key='+CAL_API_KEY+'&singleEvents=true&orderBy=startTime&timeMin='+new Date().toISOString().slice(0,10)+'T00:00:00Z&maxResults=50';
  console.log('[Calendar] Fetching:',url);
  fetch(url,{headers:{'Accept':'application/json'}})
  .then(function(r){
