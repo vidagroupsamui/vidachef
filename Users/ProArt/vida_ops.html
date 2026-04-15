@@ -294,7 +294,9 @@ var chefState={tab:'breakfast',services:{}};
 var cleaningState={villa:'',mode:'co',manualName:'',manualPrice:''};
 var CAL_API_KEY='AIzaSyBfArhqcaYyuJIxp4bfRNVd4KXEbOoPfg8';
 var CAL_ID='a9b8a635ba5f1b57274e5ed292ff8be2244b54fd8d18839c5094095e2ef6734b@group.calendar.google.com';
+var INV_CAL_API_KEY='AIzaSyCZ9P6SdlMBqnsCQNiDpEGgbF2DzKfCOHs';
 var calEvents=[];var calLoading=false;var calOnline=false;var calTimer=null;
+var invCalJobs=[];var invCalLoading=false;
 var schedViewDate=new Date();var schedSelDay=null;
 var expFilterCat='all';var expFilterVilla='all';var expFilterStaff='all';
 var expSuccessTimer=null;var uploadPhotoData=null;
@@ -1243,6 +1245,76 @@ function poolSave(){
  alert('Saved!');
 }
 
+// ==================== INVOICE CALENDAR FETCH ====================
+var ADAM_VILLA_KEYWORDS=['adam/love','adam/majesta','adam/n1','adam/n2','adam/n3','adam/j3','adam/villa love','adam/q1','n1','n2','n3','majesta','j3','sunrise','villa love','love'];
+
+function invFetchCalJobs(month,dayFrom,dayTo,callback){
+ invCalLoading=true;
+ var timeMin=month+'-01T00:00:00Z';
+ var yr=parseInt(month.split('-')[0]);
+ var mo=parseInt(month.split('-')[1]);
+ var nextMo=mo+1;var nextYr=yr;
+ if(nextMo>12){nextMo=1;nextYr++}
+ var timeMax=nextYr+'-'+String(nextMo).padStart(2,'0')+'-01T00:00:00Z';
+ var url='https://www.googleapis.com/calendar/v3/calendars/'+encodeURIComponent(CAL_ID)+'/events?key='+INV_CAL_API_KEY+'&singleEvents=true&orderBy=startTime&timeMin='+timeMin+'&timeMax='+timeMax+'&maxResults=250';
+ fetch(url,{headers:{'Accept':'application/json'}})
+ .then(function(r){return r.json()})
+ .then(function(data){
+  var jobs=[];
+  if(data.items){
+   for(var i=0;i<data.items.length;i++){
+    var ev=data.items[i];
+    var evDate=ev.start.dateTime||ev.start.date;
+    var d=new Date(evDate);
+    var day=d.getDate();
+    if(dayFrom!==undefined&&dayTo!==undefined){if(day<dayFrom||day>dayTo)continue}
+    var title=(ev.summary||'').toLowerCase();
+    var matched=false;
+    for(var k=0;k<ADAM_VILLA_KEYWORDS.length;k++){
+     if(title.indexOf(ADAM_VILLA_KEYWORDS[k])>=0){matched=true;break}
+    }
+    if(!matched)continue;
+    var villaObj=invMatchAdamVilla(title);
+    var serviceType=invGuessServiceType(title);
+    var price=villaObj?villaObj[serviceType.mode]||villaObj.co:0;
+    if(price>0){
+     var dateStr=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
+     jobs.push({date:dateStr,villa:villaObj?villaObj.name:(ev.summary||'Unknown'),service:ev.summary||'Cleaning',amount:price});
+    }
+   }
+  }
+  jobs.sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:0});
+  invCalJobs=jobs;
+  invCalLoading=false;
+  if(callback)callback(jobs);
+ })
+ .catch(function(err){
+  console.error('[InvCal] Fetch failed:',err.message);
+  invCalLoading=false;
+  if(callback)callback([]);
+ });
+}
+
+function invMatchAdamVilla(title){
+ var tl=title.toLowerCase();
+ if(tl.indexOf('love')>=0||tl.indexOf('villa love')>=0)return VILLAS.find(function(v){return v.id==='villa_love'});
+ if(tl.indexOf('majesta')>=0)return VILLAS.find(function(v){return v.id==='majesta'});
+ if(tl.indexOf('n1')>=0&&!tl.match(/n1\d/))return VILLAS.find(function(v){return v.id==='n1'});
+ if(tl.indexOf('n2')>=0)return VILLAS.find(function(v){return v.id==='n2'});
+ if(tl.indexOf('n3')>=0)return VILLAS.find(function(v){return v.id==='n3'});
+ if(tl.indexOf('j3')>=0)return VILLAS.find(function(v){return v.id==='j3'});
+ if(tl.indexOf('sunrise')>=0)return VILLAS.find(function(v){return v.id==='sunrise_hill'});
+ if(tl.indexOf('q1')>=0)return VILLAS.find(function(v){return v.id==='n1'});
+ return null;
+}
+
+function invGuessServiceType(title){
+ var tl=title.toLowerCase();
+ if(tl.indexOf('checkout')>=0||tl.indexOf('check out')>=0||tl.indexOf('co ')>=0)return{mode:'co'};
+ if(tl.indexOf('staying')>=0||tl.indexOf('stay ')>=0||tl.indexOf('st ')>=0)return{mode:'st'};
+ return{mode:'co'};
+}
+
 // ==================== INVOICE GENERATOR ====================
 var invState={client:'',month:new Date().toISOString().slice(0,7),mode:'',period:'',pjJobs:[],laurentVilla:'',stevenVilla:''};
 var INV_CLIENTS=[
@@ -1520,7 +1592,23 @@ function renderInvoice(){
   periodLabel=invState.month;
  }
 
- var jobs=invGetJobs(invState.month,dayFrom,dayTo);
+ var jobs;
+ if(invState.client==='adam'){
+  jobs=invCalJobs.length>0?invCalJobs:[];
+  if(invCalLoading){
+   h+='<div class="empty"><div class="empty-icon">&#128196;</div><div>Loading calendar jobs...</div></div>';
+   c.innerHTML=h;
+   invFetchCalJobs(invState.month,dayFrom,dayTo,function(){renderInvoice()});
+   return;
+  }
+  if(jobs.length===0){
+   invFetchCalJobs(invState.month,dayFrom,dayTo,function(){renderInvoice()});
+   h+='<div class="empty"><div class="empty-icon">&#128196;</div><div>Fetching from Google Calendar...</div></div>';
+   c.innerHTML=h;return;
+  }
+ }else{
+  jobs=invGetJobs(invState.month,dayFrom,dayTo);
+ }
  if(jobs.length===0){
   h+='<div class="empty"><div class="empty-icon">&#128196;</div><div>No jobs found for this period</div></div>';
   c.innerHTML=h;return;
@@ -1550,6 +1638,7 @@ function invSetClient(cid){
  invState.pjJobs=[];
  invState.laurentVilla='';
  invState.stevenVilla='';
+ invCalJobs=[];
  renderInvoice();
 }
 
@@ -1557,6 +1646,7 @@ function invSetMode(mode){
  invState.mode=mode;
  invState.period='';
  invState.pjJobs=[];
+ invCalJobs=[];
  renderInvoice();
 }
 
