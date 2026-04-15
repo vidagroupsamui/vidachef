@@ -190,7 +190,6 @@ input,select,textarea{font-family:var(--sans);font-size:16px;touch-action:manipu
  <div id="mod-pnl" class="module"><div class="container" id="pnl-content"></div></div>
  <div id="mod-invoice" class="module"><div class="container" id="invoice-content"></div></div>
  <div id="mod-pool" class="module"><div class="container" id="pool-content"></div></div>
- <div id="mod-photos" class="module"><div class="container" id="photos-content"></div></div>
  </main>
  <nav id="bottom-tabs">
  <button class="tab-btn" data-mod="chef" onclick="showMod('chef')"><span class="tab-icon">&#127859;</span><span>Chef</span></button>
@@ -200,7 +199,6 @@ input,select,textarea{font-family:var(--sans);font-size:16px;touch-action:manipu
  <button class="tab-btn" data-mod="pnl" onclick="showMod('pnl')"><span class="tab-icon">&#128200;</span><span>P&L</span></button>
  <button class="tab-btn" data-mod="invoice" onclick="showMod('invoice')"><span class="tab-icon">&#128196;</span><span>Invoice</span></button>
  <button class="tab-btn" data-mod="pool" onclick="showMod('pool')"><span class="tab-icon">&#127946;</span><span>Pool</span></button>
- <button class="tab-btn" data-mod="photos" onclick="showMod('photos')"><span class="tab-icon">&#128248;</span><span>Photos</span></button>
  </nav>
 </div>
 
@@ -267,9 +265,9 @@ var VILLAS=[
  {id:'adhoc-304',name:'304 (Ad-hoc)',client:'Ad-hoc',group:'OTHERS',co:800,st:800,wht:false,laundry:false}
 ];
 var SHARE_LABELS=['Labor','Ingredients','Commission','Company Profit','Buffer'];
-var MOD_TITLES={chef:'Chef Calculator',cleaning:'Cleaning Calculator',upload:'Expenses',schedule:'Schedule',pnl:'P&L Summary',invoice:'Invoice Generator',pool:'Pool Calculator',photos:'Job Photos'};
-var ACCESS={chef:{director:1,viewer:0,manager:1,staff:0},cleaning:{director:1,viewer:0,manager:1,staff:0},upload:{director:1,viewer:0,manager:1,staff:1},schedule:{director:1,viewer:0,manager:1,staff:1},pnl:{director:1,viewer:1,manager:0,staff:0},invoice:{phyo:1,thuhu:1},pool:{director:1,viewer:0,manager:1,staff:0},photos:{director:1,viewer:0,manager:1,staff:1}};
-var EDITABLE={chef:{director:1,viewer:0,manager:1,staff:0},cleaning:{director:1,viewer:0,manager:1,staff:0},upload:{director:1,viewer:0,manager:1,staff:1},schedule:{director:1,viewer:0,manager:1,staff:1},pnl:{director:1,viewer:0,manager:0,staff:0},invoice:{phyo:1,thuhu:1},pool:{director:1,viewer:0,manager:1,staff:0},photos:{director:1,viewer:0,manager:1,staff:1}};
+var MOD_TITLES={chef:'Chef Calculator',cleaning:'Cleaning Calculator',upload:'Expenses',schedule:'Schedule',pnl:'P&L Summary',invoice:'Invoice Generator',pool:'Pool Calculator'};
+var ACCESS={chef:{director:1,viewer:0,manager:1,staff:0},cleaning:{director:1,viewer:0,manager:1,staff:0},upload:{director:1,viewer:0,manager:1,staff:1},schedule:{director:1,viewer:0,manager:1,staff:1},pnl:{director:1,viewer:1,manager:0,staff:0},invoice:{phyo:1,thuhu:1},pool:{director:1,viewer:0,manager:1,staff:0}};
+var EDITABLE={chef:{director:1,viewer:0,manager:1,staff:0},cleaning:{director:1,viewer:0,manager:1,staff:0},upload:{director:1,viewer:0,manager:1,staff:1},schedule:{director:1,viewer:0,manager:1,staff:1},pnl:{director:1,viewer:0,manager:0,staff:0},invoice:{phyo:1,thuhu:1},pool:{director:1,viewer:0,manager:1,staff:0}};
 var EXP_CATS=[
  {id:'fuel',label:'Fuel / Gasoline'},
  {id:'cleaning_supplies',label:'Cleaning Supplies'},
@@ -343,7 +341,7 @@ function applyTabAccess(){
 }
 function showMod(m){
  if(!canAccess(m))return;
- var mods=['chef','cleaning','upload','schedule','pnl','invoice','pool','photos'];
+ var mods=['chef','cleaning','upload','schedule','pnl','invoice','pool'];
  for(var i=0;i<mods.length;i++){var el=document.getElementById('mod-'+mods[i]);if(el){el.classList.toggle('on',mods[i]===m)}}
  var btns=document.querySelectorAll('.tab-btn');
  for(var i=0;i<btns.length;i++){btns[i].classList.toggle('on',btns[i].getAttribute('data-mod')===m)}
@@ -355,7 +353,6 @@ function showMod(m){
  else if(m==='pnl')renderPnl();
  else if(m==='invoice')renderInvoice();
  else if(m==='pool')renderPool();
- else if(m==='photos')renderPhotos();
 }
 function openModal(html){document.getElementById('modal-body').innerHTML=html;document.getElementById('modal-bg').classList.add('on')}
 function closeModal(){document.getElementById('modal-bg').classList.remove('on')}
@@ -1813,56 +1810,13 @@ function renderPnl(){
  c.innerHTML=h;
 }
 
-// ==================== JOB PHOTOS ====================
-var photoState={photoData:'',photoFile:null};
-var PHOTO_API_URL='https://script.google.com/macros/s/AKfycbzqnVHPkxSZtJsLrxNqm8D6kPY9VjMFtrkjzxFj-GCFHi5b9JpTkMtYxkN4EwCb8A/exec';
+// ==================== JOB PHOTO (inside Expenses) ====================
+var jobPhotoState={photoData:'',photoFile:null};
+var JOB_PHOTO_API_URL='https://script.google.com/macros/s/AKfycbzqnVHPkxSZtJsLrxNqm8D6kPY9VjMFtrkjzxFj-GCFHi5b9JpTkMtYxkN4EwCb8A/exec';
 
-function renderPhotos(){
- var c=document.getElementById('photos-content');
- if(!c)return;
- var h='<div class="card"><div class="card-h-gold">&#128248; Job Photo Upload</div>';
- h+='<div class="fg2"><label>Date</label><input class="input" type="date" id="photo-date" value="'+today()+'"></div>';
- h+='<div class="fg2"><label>Villa</label><select class="select" id="photo-villa">';
- h+='<option value="">Select villa...</option>';
- for(var i=0;i<VILLAS.length;i++){h+='<option value="'+VILLAS[i].id+'">'+VILLAS[i].name+'</option>'}
- h+='<option value="general">General / Office</option>';
- h+='</select></div>';
- h+='<div class="fg2"><label>Job Type</label><select class="select" id="photo-jobtype">';
- h+='<option value="Cleaning">Cleaning</option>';
- h+='<option value="Pool">Pool</option>';
- h+='<option value="Chef">Chef</option>';
- h+='<option value="Garden">Garden</option>';
- h+='<option value="Laundry">Laundry</option>';
- h+='<option value="Other">Other</option>';
- h+='</select></div>';
- h+='<div class="fg2"><label>Photo</label>';
- h+='<input type="file" accept="image/*" capture="environment" id="photo-file" onchange="photoSelectFile(this)" style="font-size:13px">';
- h+='<div id="photo-preview" style="margin-top:8px"></div></div>';
- h+='<button class="btn btn-gold btn-block" onclick="photoSubmit()" style="font-size:16px;padding:14px">Upload Photo</button>';
- h+='<div id="photo-success" style="display:none;text-align:center;padding:12px;background:#dcfce7;border-radius:8px;color:#16a34a;font-weight:600;font-size:14px;margin-top:8px"></div>';
- h+='</div>';
-
- // Recent photos
- var photos=ld('job_photos')||[];
- if(photos.length>0){
-  h+='<div style="font-size:14px;font-weight:600;color:var(--navy);margin:16px 0 8px">Recent Photos</div>';
-  var recent=photos.slice().reverse().slice(0,20);
-  for(var i=0;i<recent.length;i++){
-   var p=recent[i];
-   h+='<div class="exp-item">';
-   if(p.thumb)h+='<img class="exp-thumb" src="'+p.thumb+'">';
-   else h+='<div class="exp-thumb" style="display:flex;align-items:center;justify-content:center;font-size:20px">&#128247;</div>';
-   h+='<div class="exp-info"><div class="exp-villa">'+(p.villaName||'General')+'</div>';
-   h+='<div class="exp-cat">'+p.jobType+' \u00b7 '+fmtDate(p.at)+'</div></div>';
-   h+='</div>';
-  }
- }
- c.innerHTML=h;
-}
-
-function photoSelectFile(input){
+function jobPhotoSelectFile(input){
  if(!input.files||!input.files[0])return;
- photoState.photoFile=input.files[0];
+ jobPhotoState.photoFile=input.files[0];
  var reader=new FileReader();
  reader.onload=function(e){
   var img=new Image();
@@ -1872,49 +1826,45 @@ function photoSelectFile(input){
    if(w>MAX){h=h*MAX/w;w=MAX}if(h>MAX){w=w*MAX/h;h=MAX}
    canvas.width=w;canvas.height=h;
    var ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,w,h);
-   photoState.photoData=canvas.toDataURL('image/jpeg',0.7);
-   document.getElementById('photo-preview').innerHTML='<img class="exp-thumb" src="'+photoState.photoData+'" style="width:100%;max-width:300px;height:auto">';
+   jobPhotoState.photoData=canvas.toDataURL('image/jpeg',0.7);
+   document.getElementById('job-photo-preview').innerHTML='<img class="exp-thumb" src="'+jobPhotoState.photoData+'" style="width:100%;max-width:300px;height:auto">';
   };
   img.src=e.target.result;
  };
  reader.readAsDataURL(input.files[0]);
 }
 
-function photoSubmit(){
- var photoDate=document.getElementById('photo-date').value;
- var photoVilla=document.getElementById('photo-villa').value;
- var photoJobType=document.getElementById('photo-jobtype').value;
- if(!photoDate){alert('Select a date');return}
- if(!photoVilla){alert('Select a villa');return}
- if(!photoState.photoData){alert('Take or select a photo first');return}
+function jobPhotoClear(){
+ jobPhotoState.photoData='';jobPhotoState.photoFile=null;
+ var fi=document.getElementById('job-photo-file');if(fi)fi.value='';
+ var pv=document.getElementById('job-photo-preview');if(pv)pv.innerHTML='';
+}
 
- var villaObj=VILLAS.find(function(v){return v.id===photoVilla});
- var villaName=villaObj?villa.name:(photoVilla==='general'?'General':photoVilla);
+function jobPhotoUpload(dateStr,villaName,catLabel){
+ if(!jobPhotoState.photoData)return;
  var safeVilla=villaName.replace(/[^a-zA-Z0-9]/g,'_').toLowerCase();
- var safeDate=photoDate.replace(/-/g,'');
- var filename=safeDate+'-'+safeVilla+'-'+photoJobType.toLowerCase()+'.jpg';
+ var d=new Date(dateStr);
+ var day=String(d.getDate()).padStart(2,'0');
+ var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+ var mon=months[d.getMonth()]||'Jan';
+ var yr=d.getFullYear();
+ var safeDate=day+'-'+mon+'-'+yr;
+ var filename=safeDate+'-'+safeVilla+'-'+catLabel.toLowerCase()+'.jpg';
 
- var payload={type:'photo',date:photoDate,villa:villaName,jobType:photoJobType,photo:photoState.photoData,filename:filename};
+ var payload={type:'photo',date:dateStr,villa:villaName,jobType:catLabel,photo:jobPhotoState.photoData,filename:filename};
 
  var xhr=new XMLHttpRequest();
- xhr.open('POST',PHOTO_API_URL,true);
+ xhr.open('POST',JOB_PHOTO_API_URL,true);
  xhr.setRequestHeader('Content-Type','application/json');
  xhr.onload=function(){
   if(xhr.status===200){
    var photos=ld('job_photos')||[];
-   photos.push({id:gid('photo'),villa:villaName,villaName:villaName,jobType:photoJobType,date:photoDate,thumb:photoState.photoData,at:new Date().toISOString(),by:CUR.u,byName:CUR.name});
+   photos.push({id:gid('jphoto'),villa:villaName,villaName:villaName,jobType:catLabel,date:dateStr,thumb:jobPhotoState.photoData,at:new Date().toISOString(),by:CUR.u,byName:CUR.name});
    sv('job_photos',photos);
-   var sEl=document.getElementById('photo-success');
-   if(sEl){sEl.textContent='\u2705 Photo uploaded!';sEl.style.display='block'}
-   photoState.photoData='';photoState.photoFile=null;
-   var fi=document.getElementById('photo-file');if(fi)fi.value='';
-   var pv=document.getElementById('photo-preview');if(pv)pv.innerHTML='';
-   setTimeout(function(){renderPhotos()},1500);
-  }else{
-   alert('Upload failed. Please try again.');
+   jobPhotoClear();
   }
  };
- xhr.onerror=function(){alert('Network error. Please check connection.')};
+ xhr.onerror=function(){};
  xhr.send(JSON.stringify(payload));
 }
 </script>
