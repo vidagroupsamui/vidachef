@@ -1313,8 +1313,14 @@ function invFetchCalJobs(month,dayFrom,dayTo,callback){
    }
   }
   cleaningJobs.sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:0});
+  // Auto-generate laundry rows from cleaning jobs
+  var laundryRows=[];
+  for(var i=0;i<cleaningJobs.length;i++){
+   laundryRows.push({date:cleaningJobs[i].date,villa:cleaningJobs[i].villa,amount:''});
+  }
   invCalJobs=cleaningJobs;
   invCalGarbage=garbageJobs;
+  invLaundryRows=laundryRows;
   invCalLoading=false;
   if(callback)callback(cleaningJobs,garbageJobs);
  })
