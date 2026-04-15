@@ -1249,7 +1249,8 @@ function poolSave(){
 
 // ==================== INVOICE CALENDAR FETCH (Adam) ====================
 var ADAM_VILLA_KEYWORDS=['adam/love','adam/majesta','adam/n1','adam/n2','adam/n3','adam/j3','adam/villa love','adam/q1','n1','n2','n3','majesta','j3','sunrise','villa love','love'];
-var ADAM_EXCLUDE=['owner meeting','owner visit','appointment'];
+var ADAM_EXCLUDE=['meeting','owner','appointment','dinner','breakfast','bbq','chef','lunch','people','7:30','pm dinner','guests'];
+var ADAM_CLEAN_KEYWORDS=['clean','checkout','staying','garbage','laundry','deep clean','quick clean'];
 
 function invFetchCalJobs(month,dayFrom,dayTo,callback){
  invCalLoading=true;
@@ -1273,12 +1274,18 @@ function invFetchCalJobs(month,dayFrom,dayTo,callback){
     var day=d.getDate();
     if(dayFrom!==undefined&&dayTo!==undefined){if(day<dayFrom||day>dayTo)continue}
     var title=(ev.summary||'').toLowerCase();
-    // Exclude owner meetings, visits, appointments
+    // Exclude non-cleaning events
     var excluded=false;
     for(var ex=0;ex<ADAM_EXCLUDE.length;ex++){
      if(title.indexOf(ADAM_EXCLUDE[ex])>=0){excluded=true;break}
     }
     if(excluded)continue;
+    // Must be a cleaning-related event
+    var isClean=false;
+    for(var ck=0;ck<ADAM_CLEAN_KEYWORDS.length;ck++){
+     if(title.indexOf(ADAM_CLEAN_KEYWORDS[ck])>=0){isClean=true;break}
+    }
+    if(!isClean)continue;
     // Match Adam's villas
     var matched=false;
     for(var k=0;k<ADAM_VILLA_KEYWORDS.length;k++){
