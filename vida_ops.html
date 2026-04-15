@@ -208,7 +208,7 @@ input,select,textarea{font-family:var(--sans);font-size:16px;touch-action:manipu
 
 <script>
 // Google Sheets sync - columns: A:Date B:Category C:Description D:Supplier E:Amount(THB) F:PaymentMethod G:ReceiptNo H:Notes
-var SHEETS_URL='https://script.google.com/macros/s/AKfycbxN_1o95uHcu36iNtVq4aQ0NKEeIbV6WuPaEOtLY8D5VSKvWEYoV3aM0tE2Nml4wWGimQ/exec';
+var SHEETS_URL='https://script.google.com/macros/s/AKfycbwsf68fiTSwyH5GrboqRLqbOu_kggC1_dP1S5EqH0H-eOmJxwD0mAGzelQZqmk8-4H9/exec';
 function sendToSheet(data){
  var script=document.createElement('script');
  script.src=SHEETS_URL+'?callback=void&data='+encodeURIComponent(JSON.stringify(data));
@@ -1821,7 +1821,7 @@ function renderPnl(){
 
 // ==================== JOB PHOTO (inside Expenses) ====================
 var jobPhotoState={photoData:'',photoFile:null};
-var JOB_PHOTO_API_URL='https://script.google.com/macros/s/AKfycbzqnVHPkxSZtJsLrxNqm8D6kPY9VjMFtrkjzxFj-GCFHi5b9JpTkMtYxkN4EwCb8A/exec';
+var JOB_PHOTO_API_URL='https://script.google.com/macros/s/AKfycbwsf68fiTSwyH5GrboqRLqbOu_kggC1_dP1S5EqH0H-eOmJxwD0mAGzelQZqmk8-4H9/exec';
 
 function jobPhotoSelectFile(input){
  if(!input.files||!input.files[0])return;
