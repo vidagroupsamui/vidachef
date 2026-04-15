@@ -689,14 +689,7 @@ function renderUpload(){
  h+='<div id="exp-success" style="display:none;text-align:center;padding:12px;background:#dcfce7;border-radius:8px;color:#16a34a;font-weight:600;font-size:14px;margin-top:8px"></div>';
  h+='</div>';
 
- // === JOB PHOTO (optional) ===
- h+='<div class="card"><div class="card-h-gold">&#128248; Add Job Photo (Optional)</div>';
- h+='<div class="fg2"><label>Photo</label>';
- h+='<input type="file" accept="image/*" capture="environment" id="job-photo-file" onchange="jobPhotoSelectFile(this)" style="font-size:13px">';
- h+='<div id="job-photo-preview" style="margin-top:8px"></div></div>';
- h+='<div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px">Photo will upload automatically when expense is submitted</div>';
- h+='</div>';
-
+ 
  // === EXPENSE LIST ===
  var expenses=ld('expenses')||[];
 
@@ -796,23 +789,33 @@ function uploadPhoto(input){
  reader.readAsDataURL(input.files[0]);
 }
 
-function uploadPhotoToDrive(file,date,category,callback){
- var reader=new FileReader();
- reader.onload=function(e){
-  var base64=e.target.result.split(',')[1];
-  var mimeType=file.type||'image/jpeg';
-  var filename=date+'_'+category+'_'+file.name;
-  var data={type:'photo',base64:base64,mimeType:mimeType,filename:filename,date:date};
-  var xhr=new XMLHttpRequest();
-  xhr.open('POST',SHEETS_URL,true);
-  xhr.setRequestHeader('Content-Type','application/json');
-  xhr.onload=function(){
-   try{var res=JSON.parse(xhr.responseText);if(callback)callback(res.url||'')}catch(e){if(callback)callback('')}
+function uploadPhotoToDrive(photoFile,expDate,category){
+ if(photoFile){
+  var reader=new FileReader();
+  reader.onload=function(e){
+   var img=new Image();
+   img.onload=function(){
+    var canvas=document.createElement('canvas');
+    var maxW=800;
+    var scale=Math.min(1,maxW/img.width);
+    canvas.width=img.width*scale;
+    canvas.height=img.height*scale;
+    canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+    var base64=canvas.toDataURL('image/jpeg',0.5);
+    var payload=JSON.stringify({
+      type:'photo',
+      photo:base64,
+      filename:expDate+'-'+category+'.jpg'
+    });
+    var xhr=new XMLHttpRequest();
+    xhr.open('POST',SHEETS_URL,true);
+    xhr.setRequestHeader('Content-Type','application/json');
+    xhr.send(payload);
+   };
+   img.src=e.target.result;
   };
-  xhr.onerror=function(){if(callback)callback('')};
-  xhr.send(JSON.stringify(data));
- };
- reader.readAsDataURL(file);
+  reader.readAsDataURL(photoFile);
+ }
 }
 
 function expSubmit(){
@@ -842,17 +845,12 @@ function expSubmit(){
  expenses.push({id:gid('exp'),photo:uploadPhotoData||'',villa:villa,villaName:villaName,vehicle:vehicle,vehicleName:vehicleName,laundryShop:laundryShop,month:monthVal,supplier:supplier,cat:catId,amt:amt,notes:notes,status:'approved',by:CUR.u,byName:CUR.name,at:expDate?new Date(expDate).toISOString():new Date().toISOString(),submittedAt:new Date().toISOString()});
  sv('expenses',expenses);
  sendToSheet({type:'expense',date:expDate,category:expCatLabel(catId),description:expCatLabel(catId)+(vehicleName?' - '+vehicleName:''),supplier:supplier,amount:amt,paymentMethod:'',receiptNo:'',notes:notes||''});
- if(jobPhotoState.photoData&&villaName){jobPhotoUpload(expDate,villaName,expCatLabel(catId))}
+ 
  var photoInput=document.getElementById('exp-photo');
- if(photoInput&&photoInput.files&&photoInput.files[0]){
-  uploadPhotoToDrive(photoInput.files[0],expDate,expCatLabel(catId),function(driveUrl){
-   if(driveUrl){
-    var expenses2=ld('expenses')||[];
-    var last=expenses2[expenses2.length-1];
-    if(last&&last.photo){last.driveUrl=driveUrl;sv('expenses',expenses2)}
-   }
-  });
- }
+  var photoFile=photoInput&&photoInput.files&&photoInput.files[0]?photoInput.files[0]:null;
+  if(photoFile){
+   uploadPhotoToDrive(photoFile,expDate,expCatLabel(catId));
+  }
  uploadPhotoData=null;
  var sEl=document.getElementById('exp-success');
  if(sEl){sEl.textContent='Success \u2713';sEl.style.display='block'}
