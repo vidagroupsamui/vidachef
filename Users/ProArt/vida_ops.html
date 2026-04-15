@@ -297,6 +297,8 @@ var CAL_ID='a9b8a635ba5f1b57274e5ed292ff8be2244b54fd8d18839c5094095e2ef6734b@gro
 var INV_CAL_API_KEY='AIzaSyAns9oBt3jxzHVVTL-09NiarMHLcTiT2es';
 var calEvents=[];var calLoading=false;var calOnline=false;var calTimer=null;
 var invCalJobs=[];var invCalLoading=false;
+var invCalGarbage=[];
+var invLaundryRows=[];
 var schedViewDate=new Date();var schedSelDay=null;
 var expFilterCat='all';var expFilterVilla='all';var expFilterStaff='all';
 var expSuccessTimer=null;var uploadPhotoData=null;
@@ -1245,8 +1247,9 @@ function poolSave(){
  alert('Saved!');
 }
 
-// ==================== INVOICE CALENDAR FETCH ====================
+// ==================== INVOICE CALENDAR FETCH (Adam) ====================
 var ADAM_VILLA_KEYWORDS=['adam/love','adam/majesta','adam/n1','adam/n2','adam/n3','adam/j3','adam/villa love','adam/q1','n1','n2','n3','majesta','j3','sunrise','villa love','love'];
+var ADAM_EXCLUDE=['owner meeting','owner visit','appointment'];
 
 function invFetchCalJobs(month,dayFrom,dayTo,callback){
  invCalLoading=true;
@@ -1260,7 +1263,8 @@ function invFetchCalJobs(month,dayFrom,dayTo,callback){
  fetch(url,{headers:{'Accept':'application/json'}})
  .then(function(r){return r.json()})
  .then(function(data){
-  var jobs=[];
+  var cleaningJobs=[];
+  var garbageJobs=[];
   if(data.items){
    for(var i=0;i<data.items.length;i++){
     var ev=data.items[i];
@@ -1269,6 +1273,13 @@ function invFetchCalJobs(month,dayFrom,dayTo,callback){
     var day=d.getDate();
     if(dayFrom!==undefined&&dayTo!==undefined){if(day<dayFrom||day>dayTo)continue}
     var title=(ev.summary||'').toLowerCase();
+    // Exclude owner meetings, visits, appointments
+    var excluded=false;
+    for(var ex=0;ex<ADAM_EXCLUDE.length;ex++){
+     if(title.indexOf(ADAM_EXCLUDE[ex])>=0){excluded=true;break}
+    }
+    if(excluded)continue;
+    // Match Adam's villas
     var matched=false;
     for(var k=0;k<ADAM_VILLA_KEYWORDS.length;k++){
      if(title.indexOf(ADAM_VILLA_KEYWORDS[k])>=0){matched=true;break}
@@ -1277,21 +1288,33 @@ function invFetchCalJobs(month,dayFrom,dayTo,callback){
     var villaObj=invMatchAdamVilla(title);
     var serviceType=invGuessServiceType(title);
     var price=villaObj?villaObj[serviceType.mode]||villaObj.co:0;
-    if(price>0){
-     var dateStr=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
-     jobs.push({date:dateStr,villa:villaObj?villaObj.name:(ev.summary||'Unknown'),service:ev.summary||'Cleaning',amount:price});
+    var dateStr=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
+    if(price>0&&villaObj){
+     cleaningJobs.push({date:dateStr,villa:villaObj.name,villaId:villaObj.id,service:ev.summary||'Cleaning',amount:price});
+    }
+    // Garbage tracking
+    if(villaObj&&(villaObj.id==='majesta'||villaObj.id==='sunrise_hill')&&villaObj.garbage>0){
+     garbageJobs.push({date:dateStr,villa:villaObj.name,amount:villaObj.garbage});
+    }
+    if(villaObj&&villaObj.id==='villa_love'){
+     // Villa Love garbage: only on last day of month (30th or 31st), NOT on 15th/16th
+     var daysInMonth=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();
+     if(day===daysInMonth){
+      garbageJobs.push({date:dateStr,villa:villaObj.name,amount:1500});
+     }
     }
    }
   }
-  jobs.sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:0});
-  invCalJobs=jobs;
+  cleaningJobs.sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:0});
+  invCalJobs=cleaningJobs;
+  invCalGarbage=garbageJobs;
   invCalLoading=false;
-  if(callback)callback(jobs);
+  if(callback)callback(cleaningJobs,garbageJobs);
  })
  .catch(function(err){
   console.error('[InvCal] Fetch failed:',err.message);
   invCalLoading=false;
-  if(callback)callback([]);
+  if(callback)callback([],[]);
  });
 }
 
@@ -1513,6 +1536,180 @@ function invRenderPreview(jobs,client,invNo,periodLabel,dueDate,applyWht){
  return h;
 }
 
+function invRenderAdamPreview(cleanJobs,garbageJobs,laundryRows,client,invNo,periodLabel,dueDate){
+ var NAVY='#0d2744';var GOLD='#c9a84c';var GREY='#f5f5f5';var RED='#dc2626';
+
+ // Calculate cleaning subtotal (including garbage line items)
+ var cleaningTotal=0;
+ for(var i=0;i<cleanJobs.length;i++){cleaningTotal+=cleanJobs[i].amount}
+ for(var i=0;i<garbageJobs.length;i++){cleaningTotal+=garbageJobs[i].amount}
+
+ // Calculate laundry subtotal
+ var laundryTotal=0;
+ for(var i=0;i<laundryRows.length;i++){laundryTotal+=(parseInt(laundryRows[i].amount)||0)}
+
+ var grossTotal=cleaningTotal+laundryTotal;
+ var whtAmt=Math.round(grossTotal*0.03);
+ var totalDue=grossTotal-whtAmt;
+
+ var h='<div id="inv-preview" style="background:#fff;font-family:Arial,Helvetica,sans-serif;color:#1a1a2e;max-width:680px;margin:0 auto;padding:40px 50px;margin-bottom:16px">';
+
+ // HEADER
+ h+='<div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:12px;border-bottom:3px solid '+GOLD+';margin-bottom:16px">';
+ h+='<div>';
+ h+='<div style="font-size:18px;font-weight:700;color:'+NAVY+'">VIDA GROUP SAMUI CO., LTD.</div>';
+ h+='<div style="font-size:12px;color:#555;margin-top:2px">Professional Villa Services &mdash; Koh Samui, Thailand</div>';
+ h+='<div style="font-size:11px;color:#777;margin-top:4px">Reg. No.: 0845568014755</div>';
+ h+='<div style="font-size:11px;color:#777">82/4 Moo 3, Bophut, Koh Samui, Suratthani 84320, Thailand</div>';
+ h+='</div>';
+ h+='<div style="text-align:right">';
+ h+='<div style="font-size:28px;font-weight:700;color:'+NAVY+'">INVOICE</div>';
+ h+='</div>';
+ h+='</div>';
+
+ // BILL TO + INVOICE DETAILS
+ h+='<div style="display:flex;justify-content:space-between;margin-bottom:20px;gap:20px">';
+ h+='<div style="flex:1">';
+ h+='<div style="font-size:11px;font-weight:700;color:'+NAVY+';text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Bill To:</div>';
+ h+='<div style="font-size:14px;font-weight:600">'+client.billName+'</div>';
+ h+='<div style="font-size:12px;color:#555;white-space:pre-line">'+client.addr+'</div>';
+ h+='</div>';
+ h+='<div style="text-align:right;font-size:13px">';
+ h+='<div><strong>Invoice No:</strong> '+invNo+'</div>';
+ h+='<div><strong>Invoice Date:</strong> '+today()+'</div>';
+ h+='<div><strong>Period:</strong> '+periodLabel+'</div>';
+ if(dueDate)h+='<div><strong>Due Date:</strong> '+dueDate+'</div>';
+ h+='</div>';
+ h+='</div>';
+
+ // === SECTION 1: CLEANING SERVICES ===
+ h+='<div style="font-size:13px;font-weight:700;color:'+NAVY+';text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;padding-bottom:4px;border-bottom:2px solid '+GOLD+'">Section 1 &mdash; Cleaning Services</div>';
+ h+='<table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:8px">';
+ h+='<thead><tr style="background:'+NAVY+';color:#fff">';
+ h+='<th style="padding:8px 6px;text-align:left;width:30px">#</th>';
+ h+='<th style="padding:8px 6px;text-align:left;width:80px">Date</th>';
+ h+='<th style="padding:8px 6px;text-align:left">Villa</th>';
+ h+='<th style="padding:8px 6px;text-align:left">Service</th>';
+ h+='<th style="padding:8px 6px;text-align:right;width:100px">Amount (THB)</th>';
+ h+='</tr></thead><tbody>';
+
+ var lineNum=1;
+ for(var i=0;i<cleanJobs.length;i++){
+  var j=cleanJobs[i];
+  var bg=i%2===0?'#fff':GREY;
+  h+='<tr style="background:'+bg+';border-bottom:1px solid #e0e0e0">';
+  h+='<td style="padding:6px">'+lineNum+'</td>';
+  h+='<td style="padding:6px">'+fmtDate(j.date)+'</td>';
+  h+='<td style="padding:6px">'+invCapitalize(j.villa)+'</td>';
+  h+='<td style="padding:6px">'+j.service+'</td>';
+  h+='<td style="padding:6px;text-align:right;font-weight:600">'+fmt(j.amount)+'</td>';
+  h+='</tr>';
+  lineNum++;
+ }
+ // Garbage line items
+ for(var i=0;i<garbageJobs.length;i++){
+  var g=garbageJobs[i];
+  var bg2=(cleanJobs.length+i)%2===0?'#fff':GREY;
+  h+='<tr style="background:'+bg2+';border-bottom:1px solid #e0e0e0">';
+  h+='<td style="padding:6px">'+lineNum+'</td>';
+  h+='<td style="padding:6px">'+fmtDate(g.date)+'</td>';
+  h+='<td style="padding:6px">'+invCapitalize(g.villa)+'</td>';
+  h+='<td style="padding:6px">Garbage Collection</td>';
+  h+='<td style="padding:6px;text-align:right;font-weight:600">'+fmt(g.amount)+'</td>';
+  h+='</tr>';
+  lineNum++;
+ }
+ h+='</tbody></table>';
+ h+='<div style="text-align:right;font-size:12px;padding:4px 0;margin-bottom:12px">Cleaning Subtotal: <strong>'+fmt(cleaningTotal)+' THB</strong></div>';
+
+ // === SECTION 2: LAUNDRY SERVICES ===
+ h+='<div style="font-size:13px;font-weight:700;color:'+NAVY+';text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;padding-bottom:4px;border-bottom:2px solid '+GOLD+'">Section 2 &mdash; Laundry Services</div>';
+ h+='<table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:8px">';
+ h+='<thead><tr style="background:'+NAVY+';color:#fff">';
+ h+='<th style="padding:8px 6px;text-align:left;width:30px">#</th>';
+ h+='<th style="padding:8px 6px;text-align:left;width:80px">Date</th>';
+ h+='<th style="padding:8px 6px;text-align:left">Villa</th>';
+ h+='<th style="padding:8px 6px;text-align:right;width:100px">Amount (THB)</th>';
+ h+='<th style="padding:8px 6px;text-align:center;width:60px" class="no-print"></th>';
+ h+='</tr></thead><tbody id="inv-laundry-tbody">';
+ for(var i=0;i<laundryRows.length;i++){
+  var lr=laundryRows[i];
+  var bg3=i%2===0?'#fff':GREY;
+  h+='<tr style="background:'+bg3+';border-bottom:1px solid #e0e0e0" data-lr-idx="'+i+'">';
+  h+='<td style="padding:6px">'+(i+1)+'</td>';
+  h+='<td style="padding:6px"><input type="date" value="'+lr.date+'" onchange="invLaundryEdit('+i+',\'date\',this.value)" style="border:none;background:transparent;font-size:12px;width:100px;font-family:inherit"></td>';
+  h+='<td style="padding:6px"><input type="text" value="'+lr.villa+'" onchange="invLaundryEdit('+i+',\'villa\',this.value)" style="border:none;background:transparent;font-size:12px;width:120px;font-family:inherit"></td>';
+  h+='<td style="padding:6px;text-align:right"><input type="number" value="'+lr.amount+'" min="0" onchange="invLaundryEdit('+i+',\'amount\',this.value)" style="border:none;background:transparent;font-size:12px;width:80px;text-align:right;font-weight:600;font-family:inherit"></td>';
+  h+='<td style="padding:6px;text-align:center" class="no-print"><button onclick="invLaundryDel('+i+')" style="background:none;border:none;color:'+RED+';cursor:pointer;font-size:14px;font-weight:700">&times;</button></td>';
+  h+='</tr>';
+ }
+ if(laundryRows.length===0){
+  h+='<tr><td colspan="5" style="padding:12px;text-align:center;color:#999;font-size:12px">No laundry entries yet &mdash; add manually below</td></tr>';
+ }
+ h+='</tbody></table>';
+ h+='<div style="text-align:right;font-size:12px;padding:4px 0;margin-bottom:4px">Laundry Subtotal: <strong>'+fmt(laundryTotal)+' THB</strong></div>';
+ h+='<button class="btn btn-sm btn-outline no-print" onclick="invLaundryAdd()" style="margin-bottom:16px">+ Add Laundry Row</button>';
+
+ // === TOTALS ===
+ h+='<div style="border-top:2px solid '+NAVY+';padding-top:12px;margin-top:16px;text-align:right;font-size:13px">';
+ h+='<div style="padding:4px 0">Cleaning: <strong>'+fmt(cleaningTotal)+' THB</strong></div>';
+ h+='<div style="padding:4px 0">Laundry: <strong>'+fmt(laundryTotal)+' THB</strong></div>';
+ h+='<div style="padding:4px 0;font-size:15px">Gross Total: <strong>'+fmt(grossTotal)+' THB</strong></div>';
+ h+='<div style="padding:4px 0;color:'+RED+'">WHT 3%: <strong>&minus;'+fmt(whtAmt)+' THB</strong></div>';
+ h+='<div style="padding:8px 0;border-top:2px solid '+NAVY+';font-size:18px;font-weight:700;color:'+NAVY+'">TOTAL DUE: '+fmt(totalDue)+' THB</div>';
+ h+='</div>';
+
+ // PAYMENT BOX
+ h+='<div style="background:'+GREY+';padding:16px;border-radius:4px;margin-bottom:20px;margin-top:20px">';
+ h+='<div style="font-size:12px;font-weight:700;color:'+NAVY+';margin-bottom:8px;letter-spacing:1px">PAYMENT DETAILS</div>';
+ h+='<div style="font-size:12px"><strong>Bank:</strong> Krungthai Bank (KTB)</div>';
+ h+='<div style="font-size:12px"><strong>Account Name:</strong> MR. PHYO NYI NYI THET</div>';
+ h+='<div style="font-size:12px"><strong>Account No.:</strong> <span style="font-weight:700;color:'+NAVY+'">982-3-93931-4</span></div>';
+ if(dueDate)h+='<div style="font-size:11px;color:#777;margin-top:8px">Please transfer by '+dueDate+'. Thank you.</div>';
+ else h+='<div style="font-size:11px;color:#777;margin-top:8px">Please transfer upon receipt. Thank you.</div>';
+ h+='</div>';
+
+ // SIGNATURE LINES
+ h+='<div style="display:flex;justify-content:space-between;margin-top:60px;padding-top:30px;border-top:1px solid #e0e0e0">';
+ h+='<div style="text-align:center;width:40%">';
+ h+='<div style="border-bottom:1px solid #333;height:50px"></div>';
+ h+='<div style="font-size:11px;color:#555;margin-top:6px">Customer</div>';
+ h+='<div style="font-size:10px;color:#999;margin-top:2px">Authorized Signature</div>';
+ h+='</div>';
+ h+='<div style="text-align:center;width:40%">';
+ h+='<div style="border-bottom:1px solid #333;height:50px"></div>';
+ h+='<div style="font-size:11px;color:#555;margin-top:6px">Vida Group Samui Co., Ltd.</div>';
+ h+='<div style="font-size:10px;color:#999;margin-top:2px">Authorized Signature</div>';
+ h+='</div>';
+ h+='</div>';
+
+ // FOOTER
+ h+='<div style="text-align:center;font-size:9px;color:#999;margin-top:20px;padding-top:8px;border-top:1px solid #e0e0e0">';
+ h+='VIDA GROUP SAMUI CO., LTD. | Reg. No.: 0845568014755 | 82/4 Moo 3, Bophut, Koh Samui, Suratthani 84320, Thailand';
+ h+='</div>';
+
+ // BUTTONS
+ h+='<div style="display:flex;gap:8px;margin-top:16px" class="no-print">';
+ h+='<button class="btn btn-navy btn-block" onclick="invPrint()">&#128424; Download PDF</button>';
+ h+='<button class="btn btn-gold btn-block" onclick="invCopyWA()">&#128224; Copy for WhatsApp</button>';
+ h+='</div>';
+ h+='</div>';
+ return h;
+}
+
+function invLaundryAdd(){
+ invLaundryRows.push({date:today(),villa:'',amount:''});
+ renderInvoice();
+}
+function invLaundryEdit(idx,field,val){
+ invLaundryRows[idx][field]=val;
+ renderInvoice();
+}
+function invLaundryDel(idx){
+ invLaundryRows.splice(idx,1);
+ renderInvoice();
+}
+
 function renderInvoice(){
  var c=document.getElementById('invoice-content');
  if(!c)return;
@@ -1538,7 +1735,7 @@ function renderInvoice(){
   h+='<div class="fg2"><label>Month</label><input class="input" type="month" id="inv-month" value="'+invState.month+'" onchange="invState.month=this.value;renderInvoice()"></div>';
  }
  if(invState.client&&invState.mode==='semi'){
-  h+='<div class="fg2"><label>Billing Period</label><select class="select" id="inv-period" onchange="invState.period=this.value;renderInvoice()">';
+  h+='<div class="fg2"><label>Billing Period</label><select class="select" id="inv-period" onchange="invState.period=this.value;invLaundryRows=[];renderInvoice()">';
   h+='<option value="">Select period...</option>';
   h+='<option value="1"'+(invState.period==='1'?' selected':'')+'>1st - 15th (Due 15th)</option>';
   h+='<option value="2"'+(invState.period==='2'?' selected':'')+'>16th - 30th (Due 30th)</option>';
@@ -1606,6 +1803,13 @@ function renderInvoice(){
    h+='<div class="empty"><div class="empty-icon">&#128196;</div><div>Fetching from Google Calendar...</div></div>';
    c.innerHTML=h;return;
   }
+  // Adam: two-section invoice
+  var invKey=invState.mode==='semi'?invState.period:'';
+  var invNum=invGetNextNum(client.prefix,invKey);
+  var invSuffix=invState.period==='1'?'a':'b';
+  var invNo=client.prefix+'-'+invState.month.slice(0,4)+'-'+invNum+invSuffix;
+  h+=invRenderAdamPreview(jobs,invCalGarbage,invLaundryRows,client,invNo,periodLabel,dueDate);
+  c.innerHTML=h;return;
  }else{
   jobs=invGetJobs(invState.month,dayFrom,dayTo);
  }
@@ -1639,6 +1843,8 @@ function invSetClient(cid){
  invState.laurentVilla='';
  invState.stevenVilla='';
  invCalJobs=[];
+ invCalGarbage=[];
+ invLaundryRows=[];
  renderInvoice();
 }
 
@@ -1647,6 +1853,8 @@ function invSetMode(mode){
  invState.period='';
  invState.pjJobs=[];
  invCalJobs=[];
+ invCalGarbage=[];
+ invLaundryRows=[];
  renderInvoice();
 }
 
