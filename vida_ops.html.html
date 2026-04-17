@@ -1,0 +1,2377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Vida Group Ops</title>
+<style>
+:root{
+ --navy:#0d2744;--navy-l:#163a64;--navy-d:#091b30;
+ --gold:#c9a84c;--gold-l:#e0c76e;--gold-dim:rgba(201,168,76,.15);--gold-bdr:rgba(201,168,76,.3);
+ --white:#fff;--bg:#f4f1eb;--card:#fff;--text:#1a1a2e;--muted:#6b7280;--text-l:#9ca3af;
+ --green:#16a34a;--green-bg:#dcfce7;--red:#dc2626;--red-bg:#fee2e2;--orange:#ea580c;--orange-bg:#fff7ed;--blue:#2563eb;--blue-bg:#dbeafe;
+ --r:12px;--r-sm:8px;--r-lg:16px;
+ --sh:0 4px 16px rgba(13,39,68,.08);--sh-lg:0 8px 32px rgba(13,39,68,.12);
+ --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+ --serif:Georgia,'Times New Roman',serif;
+ --tab-h:56px;--top-h:54px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.5;
+ -webkit-font-smoothing:antialiased;touch-action:manipulation;overflow:hidden;height:100vh}
+button,a{touch-action:manipulation;cursor:pointer;-webkit-tap-highlight-color:transparent}
+input,select,textarea{font-family:var(--sans);font-size:16px;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+
+#login-screen{position:fixed;inset:0;background:var(--navy);display:flex;flex-direction:column;
+ align-items:center;justify-content:center;z-index:200;padding:20px}
+.login-card{background:var(--navy-l);border:2px solid var(--gold-bdr);border-radius:var(--r-lg);
+ padding:32px 24px;width:100%;max-width:320px;text-align:center;box-shadow:var(--sh-lg)}
+.login-brand{font-family:var(--serif);font-size:28px;font-weight:700;color:#fff;margin-bottom:4px}
+.login-brand em{color:var(--gold);font-style:italic}
+.login-sub{font-size:13px;color:rgba(255,255,255,.5);margin-bottom:24px}
+.login-field{text-align:left;margin-bottom:16px}
+.login-field label{display:block;font-size:12px;color:rgba(255,255,255,.6);margin-bottom:4px;font-weight:500}
+.login-field input{width:100%;padding:12px;background:rgba(255,255,255,.08);border:1px solid var(--gold-bdr);
+ border-radius:var(--r-sm);color:#fff;font-size:18px;text-align:center;letter-spacing:4px}
+.login-field input:focus{outline:none;border-color:var(--gold)}
+.login-btn{width:100%;padding:14px;background:var(--gold);color:var(--navy);border:none;border-radius:var(--r-sm);
+ font-size:16px;font-weight:700;cursor:pointer;margin-top:8px}
+.login-btn:active{background:var(--gold-l)}
+.login-err{color:#f87171;font-size:13px;margin-top:12px;display:none}
+#topbar{position:fixed;top:0;left:0;right:0;height:var(--top-h);background:var(--navy);
+ display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:100;
+ border-bottom:2px solid var(--gold)}
+.tb-brand{font-family:var(--serif);font-size:18px;font-weight:700;color:#fff;white-space:nowrap}
+.tb-brand em{color:var(--gold);font-style:italic}
+.tb-title{color:var(--gold);font-size:14px;font-weight:600;letter-spacing:.04em}
+.tb-right{display:flex;align-items:center;gap:8px}
+.tb-user{font-size:12px;color:rgba(255,255,255,.7)}
+.tb-btn{padding:6px 12px;background:transparent;border:1px solid var(--gold-bdr);border-radius:var(--r-sm);
+ color:var(--gold);font-size:12px;font-weight:600;cursor:pointer}
+.tb-btn:active{background:var(--gold-dim)}
+#content{position:fixed;top:var(--top-h);left:0;right:0;bottom:var(--tab-h);overflow-y:auto;
+ -webkit-overflow-scrolling:touch;padding:16px}
+#bottom-tabs{position:fixed;bottom:0;left:0;right:0;height:var(--tab-h);background:var(--navy);
+ display:flex;align-items:center;justify-content:space-around;z-index:100;
+ border-top:2px solid var(--gold-bdr);padding-bottom:env(safe-area-inset-bottom)}
+.tab-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;
+ background:none;border:none;color:rgba(255,255,255,.5);font-size:10px;padding:4px 8px;
+ cursor:pointer;transition:color .15s;min-width:0;flex:1}
+.tab-btn.on{color:var(--gold)}
+.tab-icon{font-size:20px;line-height:1.2}
+.module{display:none}.module.on{display:block}
+.container{max-width:600px;margin:0 auto}
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:16px;margin-bottom:16px}
+.card-h-gold{font-family:var(--serif);font-size:16px;font-weight:700;color:var(--gold);
+ margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--gold-bdr)}
+.fg2{margin-bottom:12px}
+.fg2 label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.input,.select,.textarea{width:100%;padding:10px 12px;border:1.5px solid #e5e7eb;border-radius:var(--r-sm);
+ background:#fff;color:var(--text);transition:border-color .15s}
+.input:focus,.select:focus,.textarea:focus{outline:none;border-color:var(--gold)}
+.textarea{min-height:60px;resize:vertical}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 20px;border-radius:var(--r-sm);
+ font-size:14px;font-weight:600;border:none;cursor:pointer;transition:all .15s;text-align:center}
+.btn:active{transform:scale(.97)}
+.btn-navy{background:var(--navy);color:var(--gold)}
+.btn-gold{background:var(--gold);color:var(--navy)}
+.btn-outline{background:transparent;border:1.5px solid var(--navy);color:var(--navy)}
+.btn-green{background:var(--green);color:#fff}
+.btn-red{background:var(--red);color:#fff}
+.btn-sm{padding:6px 12px;font-size:12px;border-radius:var(--r-sm)}
+.btn-block{width:100%;display:block}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.tab-pill{padding:8px 16px;background:var(--card);border:1.5px solid #e5e7eb;border-radius:20px;
+ font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .15s}
+.tab-pill.on{background:var(--navy);color:var(--gold);border-color:var(--navy)}
+.counter{display:flex;align-items:center;justify-content:center;gap:16px;margin:12px 0}
+.c-btn{width:48px;height:48px;border-radius:50%;border:2px solid var(--gold-bdr);background:var(--card);
+ font-size:24px;font-weight:700;color:var(--navy);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.c-btn:active{background:var(--gold-dim)}
+.c-mid{text-align:center}
+.c-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.c-val{font-size:28px;font-weight:700;color:var(--navy)}
+.price-display{text-align:center;padding:16px;background:var(--navy);border-radius:var(--r-sm);margin:12px 0}
+.price-display .amount{font-size:24px;font-weight:700;color:var(--gold)}
+.price-display .sub{font-size:12px;color:rgba(255,255,255,.5);margin-top:4px}
+.summary{background:var(--bg);border-radius:var(--r-sm);padding:12px;margin:12px 0}
+.summary-row{display:flex;justify-content:space-between;padding:6px 0;font-size:14px}
+.summary-row.total{font-weight:700;color:var(--navy);border-top:2px solid var(--gold-bdr);padding-top:10px;margin-top:6px}
+.sl-row{display:flex;align-items:center;gap:8px;padding:6px 0}
+.sl-label{font-size:13px;font-weight:600;min-width:120px;color:var(--navy)}
+.sl-range{flex:1;accent-color:var(--gold)}
+.sl-pct{font-size:13px;font-weight:600;min-width:40px;text-align:right;color:var(--gold)}
+.note{padding:10px 12px;background:#fffde7;border-left:3px solid #f59e0b;border-radius:0 var(--r-sm) var(--r-sm) 0;font-size:13px;margin:8px 0}
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty-icon{font-size:48px;margin-bottom:8px;opacity:.5}
+.exp-item{display:flex;align-items:center;gap:12px;padding:12px;background:var(--card);
+ border-radius:var(--r-sm);box-shadow:var(--sh);margin-bottom:8px;cursor:pointer;transition:box-shadow .15s}
+.exp-item:active{box-shadow:var(--sh-lg)}
+.exp-thumb{width:48px;height:48px;border-radius:6px;object-fit:cover;flex-shrink:0;background:#f3f4f6}
+.exp-info{flex:1;min-width:0}
+.exp-villa{font-size:14px;font-weight:600;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.exp-cat{font-size:12px;color:var(--muted)}
+.exp-amt{font-size:16px;font-weight:700;color:var(--navy);white-space:nowrap}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600}
+.b-approved{background:var(--green-bg);color:var(--green)}
+.sched-head{display:flex;gap:4px;overflow-x:auto;padding-bottom:8px;margin-bottom:12px;-webkit-overflow-scrolling:touch}
+.sched-day{flex:0 0 auto;width:44px;text-align:center;padding:8px 4px;border-radius:var(--r-sm);
+ background:var(--card);cursor:pointer;border:2px solid transparent}
+.sched-day.on{border-color:var(--gold);background:var(--gold-dim)}
+.dn{font-size:10px;color:var(--muted);text-transform:uppercase}
+.dd{font-size:18px;font-weight:700;color:var(--navy)}
+.job-card{padding:12px;border-radius:var(--r-sm);margin-bottom:8px;cursor:pointer;border-left:4px solid var(--gold-bdr);background:var(--card)}
+.jt{font-size:14px;font-weight:600;color:var(--navy)}
+.jv{font-size:12px;color:var(--muted);margin-top:2px}
+.jg{font-size:12px;color:var(--blue);margin-top:2px}
+.jt-chef-bbq{border-left-color:#f59e0b}
+.jt-chef-custom{border-left-color:#8b5cf6}
+.jt-clean-std{border-left-color:#10b981}
+.jt-clean-deep{border-left-color:#3b82f6}
+.jt-clean-move{border-left-color:#06b6d4}
+.pnl-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.pnl-card{background:var(--card);border-radius:var(--r);padding:16px;text-align:center;box-shadow:var(--sh)}
+.pv{font-size:20px;font-weight:700;color:var(--navy)}
+.pl{font-size:12px;color:var(--muted);margin-top:4px}
+.pc-rev .pv{color:var(--green)}.pc-exp .pv{color:var(--red)}.pc-prof .pv{color:var(--gold)}.pc-marg .pv{color:var(--blue)}
+.chart-bar-wrap{margin-bottom:8px}
+.chart-bar-label{font-size:12px;font-weight:600;color:var(--navy);margin-bottom:4px}
+.chart-bar-track{height:24px;background:#f3f4f6;border-radius:4px;overflow:hidden}
+.cbf-rev{height:100%;background:var(--green);color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;padding:0 6px;border-radius:4px;white-space:nowrap}
+.cbf-exp{height:100%;background:var(--red);color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;padding:0 6px;border-radius:4px;white-space:nowrap}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:150;display:none;align-items:flex-end;justify-content:center}
+.modal-bg.on{display:flex}
+.modal{background:var(--card);border-radius:var(--r-lg) var(--r-lg) 0 0;width:100%;max-width:500px;max-height:85vh;overflow-y:auto;padding:20px;box-shadow:var(--sh-lg)}
+.modal-h{font-family:var(--serif);font-size:18px;font-weight:700;color:var(--navy);margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--gold-bdr)}
+@media(max-width:360px){.tab-btn{font-size:9px}.tab-icon{font-size:18px}.sl-label{min-width:90px;font-size:12px}}
+@media print{
+ body{margin:0;padding:0}
+ body *{visibility:hidden}
+ #inv-preview,#inv-preview *{visibility:visible}
+ #inv-preview{position:absolute;left:0;top:0;width:100%;padding:0}
+ @page{size:A4 portrait;margin:20mm 25mm}
+}
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+ <div class="login-card">
+ <div class="login-brand">Vida <em>Ops</em></div>
+ <div class="login-sub">Internal Operations &mdash; Samui</div>
+ <div class="login-field">
+ <label>Username</label>
+ <input id="login-user" type="text" placeholder="username" autocomplete="off" style="letter-spacing:1px;text-align:left">
+ </div>
+ <div class="login-field">
+ <label>PIN</label>
+ <input id="login-pin" type="password" placeholder="&bull;&bull;&bull;&bull;" maxlength="6" inputmode="numeric">
+ </div>
+ <button class="login-btn" onclick="doLogin()">Login</button>
+ <div class="login-err" id="login-err">Invalid username or PIN</div>
+ </div>
+</div>
+
+<div id="app-shell" style="display:none">
+ <header id="topbar">
+ <div class="tb-brand">Vida <em>Ops</em></div>
+ <div class="tb-title" id="tb-title">Chef Calculator</div>
+ <div class="tb-right">
+ <span class="tb-user" id="tb-user"></span>
+ <button class="tb-btn" onclick="doLogout()" id="logout-btn">Logout</button>
+ </div>
+ </header>
+ <main id="content">
+ <div id="mod-chef" class="module"><div class="container" id="chef-content"></div></div>
+ <div id="mod-cleaning" class="module"><div class="container" id="cleaning-content"></div></div>
+ <div id="mod-upload" class="module"><div class="container" id="upload-content"></div></div>
+ <div id="mod-schedule" class="module"><div class="container" id="schedule-content"></div></div>
+ <div id="mod-pnl" class="module"><div class="container" id="pnl-content"></div></div>
+ <div id="mod-invoice" class="module"><div class="container" id="invoice-content"></div></div>
+ <div id="mod-pool" class="module"><div class="container" id="pool-content"></div></div>
+ <div id="mod-briefing" class="module"><div class="container" id="briefing-content"></div></div>
+ </main>
+ <nav id="bottom-tabs">
+ <button class="tab-btn" data-mod="chef" onclick="showMod('chef')"><span class="tab-icon">&#127859;</span><span>Chef</span></button>
+ <button class="tab-btn" data-mod="cleaning" onclick="showMod('cleaning')"><span class="tab-icon">&#129696;</span><span>Cleaning</span></button>
+ <button class="tab-btn" data-mod="upload" onclick="showMod('upload')"><span class="tab-icon">&#128203;</span><span>Expenses</span></button>
+ <button class="tab-btn" data-mod="schedule" onclick="showMod('schedule')"><span class="tab-icon">&#128197;</span><span>Schedule</span></button>
+ <button class="tab-btn" data-mod="pnl" onclick="showMod('pnl')"><span class="tab-icon">&#128200;</span><span>P&L</span></button>
+ <button class="tab-btn" data-mod="invoice" onclick="showMod('invoice')"><span class="tab-icon">&#128196;</span><span>Invoice</span></button>
+ <button class="tab-btn" data-mod="pool" onclick="showMod('pool')"><span class="tab-icon">&#127946;</span><span>Pool</span></button>
+ <button class="tab-btn" data-mod="briefing" onclick="showMod('briefing')"><span class="tab-icon">&#129302;</span><span>AI Brief</span></button>
+ </nav>
+</div>
+
+<div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeModal()">
+ <div class="modal" style="position:relative" id="modal-body"></div>
+</div>
+
+<script>
+// Google Sheets sync - columns: A:Date B:Category C:Description D:Supplier E:Amount(THB) F:PaymentMethod G:ReceiptNo H:Notes
+var SHEETS_URL='https://script.google.com/macros/s/AKfycbxN_1o95uHcu36iNtVq4aQ0NKEeIbV6WuPaEOtLY8D5VSKvWEYoV3aM0tE2Nml4wWGimQ/exec';
+function sendToSheet(data){
+ var script=document.createElement('script');
+ script.src=SHEETS_URL+'?callback=void&data='+encodeURIComponent(JSON.stringify(data));
+ script.onload=function(){document.body.removeChild(script)};
+ script.onerror=function(){document.body.removeChild(script)};
+ document.body.appendChild(script);
+}
+var ACCOUNTS=[
+ {u:'phyo', pin:'1234',role:'director',name:'Phyo'},
+ {u:'thuhu', pin:'1112',role:'director',name:'Thuhu'},
+ {u:'director1',pin:'1001',role:'director',name:'Director 1'},
+ {u:'phetop', pin:'1113',role:'viewer', name:'Phetop'},
+ {u:'hanwin', pin:'2221',role:'manager', name:'Han Win'},
+ {u:'ngwezin', pin:'3331',role:'staff', name:'Ngwe Zin'},
+ {u:'kohein', pin:'3332',role:'staff', name:'Ko Hein'},
+ {u:'aungaung', pin:'3333',role:'staff', name:'Aung Aung'},
+ {u:'thuzar', pin:'3334',role:'staff', name:'Thu Zar'},
+ {u:'nyilin', pin:'4441',role:'manager', name:'Nyi Lin'},
+ {u:'minhtwe', pin:'4442',role:'manager', name:'Minhtwe'}
+];
+var CHEF_PRICING={breakfast:[],floating:[],thai:[
+ {min:1,max:3,price:3450},{min:4,max:6,price:5384},{min:7,max:9,price:8801},
+ {min:10,max:12,price:12151},{min:13,max:15,price:17468}
+],bbq:[
+ {min:1,max:3,fee:2500},{min:4,max:6,fee:3500},{min:7,max:9,fee:4750},{min:10,max:12,fee:6500}
+]};
+for(var i=1;i<=16;i++){CHEF_PRICING.breakfast.push({g:i,price:i*900})}
+CHEF_PRICING.floating={fixedPrice:2500,guests:2};
+var VILLAS=[
+ {id:'villa_love',name:'Villa Love',client:'Adam/Kagami',group:'ADAM/KAGAMI',co:1500,st:1500,wht:false,garbage:0,laundry:false},
+ {id:'majesta',name:'Majesta',client:'Adam/Kagami',group:'ADAM/KAGAMI',co:1500,st:1500,wht:false,garbage:300,laundry:false},
+ {id:'n1',name:'N1',client:'Adam/Kagami',group:'ADAM/KAGAMI',co:1500,st:1500,wht:false,garbage:0,laundry:false},
+ {id:'n2',name:'N2',client:'Adam/Kagami',group:'ADAM/KAGAMI',co:1500,st:1500,wht:false,garbage:0,laundry:false},
+ {id:'n3',name:'N3',client:'Adam/Kagami',group:'ADAM/KAGAMI',co:1500,st:1500,wht:false,garbage:0,laundry:false},
+ {id:'j3',name:'J3',client:'Adam/Kagami',group:'ADAM/KAGAMI',co:2000,st:2000,wht:false,garbage:0,laundry:false},
+ {id:'sunrise_hill',name:'Sunrise Hill',client:'Adam/Kagami',group:'ADAM/KAGAMI',co:1700,st:1700,wht:false,garbage:300,laundry:false},
+ {id:'villa_anna',name:'Villa Anna',client:'MPS',group:'MPS',co:1300,st:1300,wht:false,laundry:false},
+ {id:'villa_diana',name:'Villa Diana',client:'MPS',group:'MPS',co:1300,st:1300,wht:false,laundry:false},
+ {id:'villa_yoco',name:'Villa Yoco',client:'MPS',group:'MPS',co:1500,st:1500,wht:false,laundry:false},
+ {id:'just_and_then',name:'Just and Then',client:'MPS',group:'MPS',co:1500,st:1500,wht:false,laundry:false},
+ {id:'big_buddha',name:'Big Buddha',client:'Chen',group:'CHEN',co:1500,st:1500,wht:false,garbage:0,laundry:true,laundryCost:500,cleanCost:1000},
+ {id:'aqua_314',name:'Aqua 314',client:'Chen',group:'CHEN',co:1600,st:1600,wht:false,garbage:0,laundry:true,laundryCost:400,cleanCost:1200},
+ {id:'aqua_319_up',name:'Aqua 319 upstairs',client:'Chen',group:'CHEN',co:1600,st:1600,wht:false,garbage:0,laundry:true,laundryCost:400,cleanCost:1200},
+ {id:'aqua_319_down',name:'Aqua 319 downstairs',client:'Chen',group:'CHEN',co:1000,st:1000,wht:false,garbage:0,laundry:true,laundryCost:250,cleanCost:750},
+ {id:'chacha',name:'Chacha',client:'Steven',group:'STEVEN',co:1500,st:1500,wht:false,laundry:false},
+ {id:'julia',name:'Julia',client:'Steven',group:'STEVEN',co:1500,st:1500,wht:false,laundry:false},
+ {id:'lau-a9',name:'Bangpor A9',client:'Laurent',group:'LAURENT',co:1500,st:1500,wht:false,laundry:false},
+ {id:'lau-villa6',name:'Bo Phut Villa 6',client:'Laurent',group:'LAURENT',co:1500,st:1500,wht:false,laundry:false},
+ {id:'lulu',name:'Lulu',client:'Others',group:'OTHERS',co:2000,st:2000,wht:false,laundry:false},
+ {id:'nicolas_1',name:'Nicolas 1',client:'Nicolas',group:'OTHERS',co:750,st:250,wht:false,laundry:false},
+ {id:'nicolas_2',name:'Nicolas 2',client:'Nicolas',group:'OTHERS',co:750,st:250,wht:false,laundry:false},
+ {id:'nicolas3',name:'Nicolas 3',client:'Nicolas',group:'OTHERS',co:750,st:250,wht:false,laundry:false},
+ {id:'bophut-david',name:'Bo Phut / David',client:'Others',group:'OTHERS',co:1700,st:1700,wht:false,laundry:true,laundryCost:0,laundryPerRoom:true,laundryRoomRate:250},
+ {id:'sandra-home',name:'Sandra Home',client:'Others',group:'OTHERS',co:1800,st:1800,wht:false,laundry:false},
+ {id:'sandra_airbnb',name:'Sandra Airbnb',client:'Others',group:'OTHERS',co:1800,st:1800,wht:false,laundry:false},
+ {id:'adhoc-307',name:'307 (Ad-hoc)',client:'Ad-hoc',group:'OTHERS',co:800,st:800,wht:false,laundry:false},
+ {id:'adhoc-304',name:'304 (Ad-hoc)',client:'Ad-hoc',group:'OTHERS',co:800,st:800,wht:false,laundry:false}
+];
+var SHARE_LABELS=['Labor','Ingredients','Commission','Company Profit','Buffer'];
+var MOD_TITLES={chef:'Chef Calculator',cleaning:'Cleaning Calculator',upload:'Expenses',schedule:'Schedule',pnl:'P&L Summary',invoice:'Invoice Generator',pool:'Pool Calculator',briefing:'AI Staff Briefing'};
+var ACCESS={chef:{director:1,viewer:0,manager:1,staff:0},cleaning:{director:1,viewer:0,manager:1,staff:0},upload:{director:1,viewer:0,manager:1,staff:1},schedule:{director:1,viewer:0,manager:1,staff:1},pnl:{director:1,viewer:1,manager:0,staff:0},invoice:{phyo:1,thuhu:1},pool:{director:1,viewer:0,manager:1,staff:0},briefing:{director:1,viewer:0,manager:1,staff:1}};
+var EDITABLE={chef:{director:1,viewer:0,manager:1,staff:0},cleaning:{director:1,viewer:0,manager:1,staff:0},upload:{director:1,viewer:0,manager:1,staff:1},schedule:{director:1,viewer:0,manager:1,staff:1},pnl:{director:1,viewer:0,manager:0,staff:0},invoice:{phyo:1,thuhu:1},pool:{director:1,viewer:0,manager:1,staff:0},briefing:{director:1,viewer:0,manager:1,staff:1}};
+var EXP_CATS=[
+ {id:'fuel',label:'Fuel / Gasoline'},
+ {id:'cleaning_supplies',label:'Cleaning Supplies'},
+ {id:'pcl_laundry',label:'PCL Laundry'},
+ {id:'other_laundry',label:'Other Laundry Shop'},
+ {id:'equipment',label:'Equipment & Tools'},
+ {id:'staff_meals',label:'Staff Meals & Drinks'},
+ {id:'electricity',label:'Electricity / PEA'},
+ {id:'accountant_fee',label:'Accountant Fee'},
+ {id:'office_general',label:'Office & General'},
+ {id:'repairs',label:'Repairs & Maintenance'},
+ {id:'other',label:'Other'}
+];
+var VEHICLES=[
+ {id:'Click 160 - 4770',label:'Click 160 \u2014 4770'},
+ {id:'Click 160 - 286',label:'Click 160 \u2014 286'},
+ {id:'Honda Wave - 5793',label:'Honda Wave \u2014 5793'},
+ {id:'PCX - 2963',label:'PCX \u2014 2963 (Han Win Naing)'},
+ {id:'Ford Ranger - 6007',label:'Ford Ranger \u2014 6007'},
+ {id:'Other',label:'Other'}
+];
+var CUR=null;
+var chefState={tab:'breakfast',services:{}};
+var cleaningState={villa:'',mode:'co',manualName:'',manualPrice:''};
+var CAL_API_KEY='AIzaSyAns9oBt3jxzHVVTL-09NiarMHLcTiT2es';
+var CAL_ID='a9b8a635ba5f1b57274e5ed292ff8be2244b54fd8d18839c5094095e2ef6734b@group.calendar.google.com';
+var INV_CAL_API_KEY='AIzaSyAns9oBt3jxzHVVTL-09NiarMHLcTiT2es';
+var calEvents=[];var calLoading=false;var calOnline=false;var calTimer=null;
+var invCalJobs=[];var invCalLoading=false;
+var invCalGarbage=[];
+var invLaundryRows=[];
+var schedViewDate=new Date();var schedSelDay=null;
+var expFilterCat='all';var expFilterVilla='all';var expFilterStaff='all';
+var expSuccessTimer=null;var uploadPhotoData=null;
+var pnlYear=new Date().getFullYear();var pnlMonth=new Date().getMonth();
+
+function ld(k){try{return JSON.parse(localStorage.getItem('v_'+k))}catch(e){return null}}
+function sv(k,v){try{localStorage.setItem('v_'+k,JSON.stringify(v))}catch(e){alert('Storage full.')}}
+function fmt(n){return Number(n||0).toLocaleString('en-US')}
+function gid(p){return(p||'x')+'_'+Date.now()+'_'+Math.random().toString(36).substr(2,4)}
+function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function fmtDate(s){if(!s)return'';var d=new Date(s);return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear()}
+function canAccess(mod){
+ if(!ACCESS[mod])return false;
+ var a=ACCESS[mod];
+ if(a[CUR.u]===1)return true;
+ return a[CUR.role]===1;
+}
+function canEdit(mod){return EDITABLE[mod]&&EDITABLE[mod][CUR.role]===1}
+
+function doLogin(){
+ var u=document.getElementById('login-user').value.trim().toLowerCase();
+ var p=document.getElementById('login-pin').value;
+ var acc=ACCOUNTS.find(function(a){return a.u==u&&a.pin==p});
+ if(!acc){document.getElementById('login-err').style.display='block';return}
+ CUR=acc;sv('session',acc);showApp();
+}
+function doLogout(){CUR=null;localStorage.removeItem('v_session');
+ document.getElementById('app-shell').style.display='none';
+ document.getElementById('login-screen').style.display='flex';
+ document.getElementById('login-user').value='';document.getElementById('login-pin').value='';
+ document.getElementById('login-err').style.display='none';
+}
+function showApp(){
+ document.getElementById('login-screen').style.display='none';
+ document.getElementById('app-shell').style.display='block';
+ document.getElementById('tb-user').textContent=CUR.name;
+ applyTabAccess();
+ var firstMod=CUR.role==='viewer'?'pnl':CUR.role==='staff'?'upload':'chef';
+ showMod(firstMod);
+}
+function applyTabAccess(){
+ var btns=document.querySelectorAll('.tab-btn');
+ for(var i=0;i<btns.length;i++){var m=btns[i].getAttribute('data-mod');if(m==='pool'||m==='briefing'){btns[i].style.display=canAccess(m)?'':'none';continue}btns[i].style.display=canAccess(m)?'':'none';}
+}
+function showMod(m){
+ if(!canAccess(m))return;
+ var mods=['chef','cleaning','upload','schedule','pnl','invoice','pool'];
+ for(var i=0;i<mods.length;i++){var el=document.getElementById('mod-'+mods[i]);if(el){el.classList.toggle('on',mods[i]===m)}}
+ var btns=document.querySelectorAll('.tab-btn');
+ for(var i=0;i<btns.length;i++){btns[i].classList.toggle('on',btns[i].getAttribute('data-mod')===m)}
+ document.getElementById('tb-title').textContent=MOD_TITLES[m]||'';
+ if(m==='chef')renderChef();
+ else if(m==='cleaning')renderCleaning();
+ else if(m==='upload')renderUpload();
+ else if(m==='schedule'){if(calTimer)clearInterval(calTimer);schedFetchCal();calTimer=setInterval(function(){schedFetchCal()},300000);renderSchedule();}
+ else if(m==='pnl')renderPnl();
+ else if(m==='invoice')renderInvoice();
+ else if(m==='pool')renderPool();
+ else if(m==='briefing')renderBriefing();
+}
+function openModal(html){document.getElementById('modal-body').innerHTML=html;document.getElementById('modal-bg').classList.add('on')}
+function closeModal(){document.getElementById('modal-bg').classList.remove('on')}
+(function init(){
+ var sess=ld('session');
+ if(sess){var acc=ACCOUNTS.find(function(a){return a.u==sess.u&&a.pin==sess.pin});if(acc){CUR=acc;showApp();return}}
+ document.getElementById('login-pin').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin()});
+ document.getElementById('login-user').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('login-pin').focus()});
+})();
+// ==================== CHEF CALCULATOR ====================
+function chefGetPrice(service,guests){
+ if(service==='breakfast'){var b=CHEF_PRICING.breakfast.find(function(x){return x.g===guests});return b?b.price:0}
+ if(service==='floating'){return CHEF_PRICING.floating.fixedPrice}
+ if(service==='thai'){var t=CHEF_PRICING.thai.find(function(x){return guests>=x.min&&guests<=x.max});return t?t.price:0}
+ if(service==='bbq'){var q=CHEF_PRICING.bbq.find(function(x){return guests>=x.min&&guests<=x.max});return q?q.fee:0}
+ return 0;
+}
+function chefGetDefaultShares(tab){
+ var g=chefState.services[tab]?chefState.services[tab].guests:2;var laborPct;
+ if(tab==='breakfast'){if(g<=3)laborPct=30;else if(g<=6)laborPct=35;else if(g<=10)laborPct=38;else laborPct=42;return{labor:laborPct,ingredients:28,commission:5,profit:27,buffer:100-laborPct-28-5-27}}
+ if(tab==='floating'){return{labor:30,ingredients:28,commission:5,profit:27,buffer:10}}
+ if(tab==='thai'){if(g<=3)laborPct=30;else if(g<=6)laborPct=35;else if(g<=9)laborPct=38;else laborPct=42;return{labor:laborPct,ingredients:33,commission:5,profit:17,buffer:100-laborPct-33-5-17}}
+ if(tab==='bbq'){if(g<=3)laborPct=30;else if(g<=6)laborPct=35;else if(g<=9)laborPct=38;else laborPct=42;return{labor:laborPct,ingredients:0,commission:5,profit:40,buffer:100-laborPct-0-5-40}}
+ return{labor:30,ingredients:20,commission:20,profit:15,buffer:15};
+}
+function chefInitServices(){
+ var saved=ld('chef_calcs');var svcs=['breakfast','floating','thai','bbq','custom'];
+ if(saved){chefState.saved=saved}
+ for(var i=0;i<svcs.length;i++){
+ if(!chefState.services[svcs[i]]){
+ var s=(chefState.saved&&chefState.saved[svcs[i]])||{};var def=chefGetDefaultShares(svcs[i]);
+ chefState.services[svcs[i]]={guests:s.guests||(svcs[i]==='breakfast'?2:svcs[i]==='thai'?4:svcs[i]==='bbq'?4:2),ingredientCost:s.ingredientCost||0,manualPrice:s.manualPrice||0,shares:s.shares||{0:def.labor,1:def.ingredients,2:def.commission,3:def.profit,4:def.buffer}};
+ }
+ }
+}
+function renderChef(){
+ chefInitServices();var c=document.getElementById('chef-content');
+ var tabs=['breakfast','floating','thai','bbq','custom'];
+ var labels=['Breakfast','Floating Breakfast','Thai Dinner','BBQ & Grill','Custom'];
+ var h='<div class="tabs">';
+ for(var i=0;i<tabs.length;i++){h+='<button class="tab-pill'+(chefState.tab===tabs[i]?' on':'')+'" onclick="chefSetTab(\''+tabs[i]+'\')">'+labels[i]+'</button>'}
+ h+='</div><div id="chef-panel"></div>';c.innerHTML=h;renderChefPanel();
+}
+function chefSetTab(t){chefState.tab=t;renderChef()}
+function renderChefPanel(){
+ var s=chefState.services[chefState.tab];var ed=canEdit('chef');
+ var price=chefState.tab==='custom'?s.manualPrice:chefGetPrice(chefState.tab,s.guests);
+ var profit=price-s.ingredientCost;
+ var h='<div class="card"><div class="card-h-gold">'+chefState.tab.charAt(0).toUpperCase()+chefState.tab.slice(1)+'</div>';
+ if(chefState.tab==='floating'){
+ h+='<div class="note"><strong>Floating Breakfast</strong> &mdash; Fixed price \u0e3f2,500 (2 pax only)</div>';
+ }else if(chefState.tab!=='custom'){
+ h+='<div class="counter">';
+ h+='<button class="c-btn plus" onclick="chefGuests(1)">+</button>';
+ h+='<div class="c-mid"><div class="c-label">Guests</div><div class="c-val" id="chef-gv">'+s.guests+'</div></div>';
+ if(ed)h+='<button class="c-btn minus" onclick="chefGuests(-1)">&minus;</button>';
+ else h+='<button class="c-btn minus" style="opacity:.3;pointer-events:none">&minus;</button>';
+ h+='</div>';
+ }else{
+ h+='<div class="fg2"><label>Guests</label><input class="input" type="number" value="'+s.guests+'" min="1" '+(ed?'':'readonly')+' onchange="chefSetGuests(this.value)"></div>';
+ h+='<div class="fg2"><label>Manual Price (THB)</label><input class="input" type="number" value="'+s.manualPrice+'" min="0" '+(ed?'':'readonly')+' onchange="chefSetManual(this.value)"></div>';
+ }
+ h+='</div>';
+ h+='<div class="price-display"><div class="amount">'+fmt(price)+' THB</div>';
+ h+='<div class="sub">Revenue'+(chefState.tab==='breakfast'?' ('+fmt(s.guests)+' x \u0e3f900)':'')+(chefState.tab==='floating'?' (Fixed \u0e3f2,500)':'')+'</div></div>';
+ if(ed){h+='<div class="fg2"><label>Ingredient / Extra Costs (THB)</label><input class="input" type="number" value="'+s.ingredientCost+'" min="0" onchange="chefSetCost(this.value)"></div>';}
+ h+='<div class="summary">';
+ h+='<div class="summary-row"><span>Revenue</span><span>'+fmt(price)+'</span></div>';
+ h+='<div class="summary-row"><span>Costs</span><span>&minus;'+fmt(s.ingredientCost)+'</span></div>';
+ h+='<div class="summary-row total"><span>Profit</span><span>'+fmt(profit)+'</span></div></div>';
+ h+='<div class="card"><div class="card-h-gold">5-Way Profit Split</div>';
+ var totalPct=0;for(var k in s.shares){totalPct+=s.shares[k]}
+ for(var si=0;si<SHARE_LABELS.length;si++){
+ var pct=s.shares[si]||0;var share=Math.round(profit*pct/100);
+ h+='<div class="sl-row"><span class="sl-label">'+SHARE_LABELS[si]+'</span>';
+ if(ed)h+='<input class="sl-range" type="range" min="0" max="100" value="'+pct+'" oninput="chefSlider('+si+',this.value)">';
+ else h+='<div style="flex:1;height:6px;background:#e5e7eb;border-radius:3px"><div style="height:100%;width:'+pct+'%;background:var(--gold);border-radius:3px"></div></div>';
+ h+='<span class="sl-pct">'+pct+'%</span>';
+ h+='<span style="font-size:12px;font-weight:600;min-width:60px;text-align:right;color:var(--navy)">'+fmt(share)+'</span></div>';
+ }
+ if(ed)h+='<button class="btn btn-navy btn-block" style="margin-top:10px" onclick="chefSave()">Save</button>';
+ h+='</div>';
+ document.getElementById('chef-panel').innerHTML=h;
+}
+function chefGuests(d){
+ var s=chefState.services[chefState.tab];
+ if(chefState.tab==='breakfast'){s.guests=Math.max(1,Math.min(16,s.guests+d))}
+ else if(chefState.tab==='thai'){var ranges=[3,6,9,12,15];var idx=ranges.indexOf(s.guests);idx=Math.max(0,Math.min(4,idx+d));s.guests=ranges[idx]}
+ else if(chefState.tab==='bbq'){var ranges=[3,6,9,12];var idx=ranges.indexOf(s.guests);idx=Math.max(0,Math.min(3,idx+d));s.guests=ranges[idx]}
+ renderChefPanel();
+}
+function chefSetGuests(v){var s=chefState.services[chefState.tab];s.guests=Math.max(1,parseInt(v)||2);renderChefPanel()}
+function chefSetManual(v){var s=chefState.services[chefState.tab];s.manualPrice=Math.max(0,parseInt(v)||0);renderChefPanel()}
+function chefSetCost(v){var s=chefState.services[chefState.tab];s.ingredientCost=Math.max(0,parseInt(v)||0);renderChefPanel()}
+function chefSlider(idx,val){
+ var s=chefState.services[chefState.tab];val=parseInt(val);s.shares[idx]=val;
+ var others=[];for(var i=0;i<5;i++){if(i!==idx)others.push(i)}
+ var othersSum=0;for(var i=0;i<others.length;i++){othersSum+=(s.shares[others[i]]||0)}
+ var remaining=100-val;
+ if(othersSum===0){var each=Math.floor(remaining/others.length);for(var i=0;i<others.length;i++){s.shares[others[i]]=each}}
+ else{for(var i=0;i<others.length;i++){s.shares[others[i]]=Math.round(remaining*(s.shares[others[i]]||0)/othersSum)}}
+ renderChefPanel();
+}
+function chefSave(){
+ var data={};for(var k in chefState.services){data[k]={guests:chefState.services[k].guests,ingredientCost:chefState.services[k].ingredientCost,manualPrice:chefState.services[k].manualPrice,shares:chefState.services[k].shares}}
+ sv('chef_calcs',data);
+ var jobs=ld('chef_jobs')||[];
+ for(var k in chefState.services){
+  var s=chefState.services[k];
+  var price=k==='custom'?s.manualPrice:chefGetPrice(k,s.guests);
+  var profit=price-s.ingredientCost;
+  jobs.push({date:today(),service:k,guests:s.guests,price:price,ingredientCost:s.ingredientCost,profit:profit,shares:s.shares,by:CUR.u,byName:CUR.name});
+ }
+ sv('chef_jobs',jobs);
+ alert('Saved!');
+}
+
+// ==================== CLEANING CALCULATOR ====================
+function cleanGetDefaultShares(type){
+ if(type==='co')return{labor:40,supplies:8,commission:5,profit:32,buffer:15};
+ if(type==='st')return{labor:45,supplies:5,commission:5,profit:30,buffer:15};
+ if(type==='normal')return{labor:42,supplies:6,commission:5,profit:32,buffer:15};
+ if(type==='deep')return{labor:38,supplies:12,commission:5,profit:30,buffer:15};
+ return{labor:40,supplies:8,commission:5,profit:32,buffer:15};
+}
+function cleanGetLaundryMsg(villa){
+ if(villa.id==='majesta')return'Remember: +\u0e3f300 garbage \u2014 invoice separately';
+ if(villa.id==='sunrise_hill')return'Remember: +\u0e3f300 garbage \u2014 invoice separately';
+ if(villa.group==='MPS')return'No laundry for MPS \u2014 do not add to invoice';
+ if(villa.id==='big_buddha')return'All-inclusive \u2014 laundry \u0e3f500 already included';
+ if(villa.id==='aqua_314')return'All-inclusive \u2014 laundry \u0e3f400 already included';
+ if(villa.id==='aqua_319_up')return'All-inclusive \u2014 laundry \u0e3f400 already included';
+ if(villa.id==='aqua_319_down')return'All-inclusive \u2014 laundry \u0e3f250 already included';
+ if(villa.id==='villa_love')return'Garbage collection \u0e3f1,500/month \u2014 billed end of month separately';
+ return'';
+}
+function renderCleaning(){
+ var c=document.getElementById('cleaning-content');var ed=canEdit('cleaning');
+ var h='<div class="card"><div class="card-h-gold">Job Type</div>';
+ h+='<div class="fg2"><select class="select" id="clean-mode" onchange="cleanSetMode(this.value)">';
+ h+='<option value="co"'+(cleaningState.mode==='co'?' selected':'')+'>Checkout Clean</option>';
+ h+='<option value="st"'+(cleaningState.mode==='st'?' selected':'')+'>Staying Clean</option>';
+ h+='<option value="deep"'+(cleaningState.mode==='deep'?' selected':'')+'>Deep Clean</option>';
+ h+='</select></div></div>';
+ var groups=['ADAM/KAGAMI','MPS','CHEN','STEVEN','LAURENT','OTHERS'];
+ if(cleaningState.mode==='co'||cleaningState.mode==='st'){
+ h+='<div class="card"><div class="card-h-gold">Select Villa</div>';
+ h+='<div class="fg2"><label>Villa</label><select class="select" id="clean-villa" onchange="cleanSelVilla(this.value)">';
+ h+='<option value="">Choose a villa...</option>';
+ for(var gi=0;gi<groups.length;gi++){
+ h+='<optgroup label="'+groups[gi]+'">';
+ for(var i=0;i<VILLAS.length;i++){if(VILLAS[i].group===groups[gi]){h+='<option value="'+VILLAS[i].id+'"'+(cleaningState.villa===VILLAS[i].id?' selected':'')+'>'+VILLAS[i].name+'</option>'}}
+ h+='</optgroup>';
+ }
+ h+='</select></div></div>';
+ var villa=VILLAS.find(function(v){return v.id===cleaningState.villa});
+ if(villa){
+ var basePrice=villa[cleaningState.mode]||villa.co;var garbage=villa.garbage||0;var totalPrice=basePrice+garbage;
+ var saved=ld('clean_calcs');var def=cleanGetDefaultShares(cleaningState.mode);
+ var vdata=(saved&&saved[villa.id]&&saved[villa.id][cleaningState.mode])||{extraCost:0,shares:{0:def.labor,1:def.supplies,2:def.commission,3:def.profit,4:def.buffer}};
+ var totalCost=vdata.extraCost+garbage;if(villa.laundry&&villa.laundryCost){totalCost+=villa.laundryCost}
+ var profit=totalPrice-totalCost;
+ h+='<div class="card" style="border-left:4px solid var(--gold)"><div style="font-size:18px;font-weight:700;color:var(--navy)">'+villa.name+'</div><div style="font-size:12px;color:var(--muted)">'+villa.group+'</div></div>';
+ var typeLabels={co:'Checkout Clean',st:'Staying Clean'};
+ h+='<div class="price-display"><div class="amount">'+fmt(totalPrice)+' THB</div><div class="sub">'+(typeLabels[cleaningState.mode]||'')+(garbage>0?' + '+fmt(garbage)+' garbage':'')+'</div></div>';
+ var laundryMsg=cleanGetLaundryMsg(villa);
+ if(laundryMsg)h+='<div class="note" style="background:#fffde7;border-left-color:#f9a825"><strong>'+laundryMsg+'</strong></div>';
+ if(ed){h+='<div class="fg2"><label>Extra Costs (THB)</label><input class="input" type="number" value="'+vdata.extraCost+'" min="0" onchange="cleanSetCost(this.value)"></div>';}
+ if(ed){h+='<button class="btn btn-navy btn-block" style="margin-top:10px" onclick="cleanSave()">Save Job</button>';}
+ h+='<div class="summary"><div class="summary-row"><span>Revenue</span><span>'+fmt(totalPrice)+'</span></div>';
+ h+='<div class="summary-row"><span>Costs</span><span>&minus;'+fmt(totalCost)+'</span></div>';
+ h+='<div class="summary-row total"><span>Profit</span><span>'+fmt(profit)+'</span></div></div>';
+ var commission=Math.round(totalPrice*0.10);
+ var netProfit=profit-commission;
+ h+='<div class="card"><div class="card-h-gold">Commission & Net Profit</div>';
+ h+='<div class="summary">';
+ h+='<div class="summary-row"><span>Commission (10%)</span><span>&minus;'+fmt(commission)+'</span></div>';
+ h+='<div class="summary-row total"><span>Net Profit</span><span>'+fmt(netProfit)+' THB</span></div>';
+ h+='</div></div>';
+ }else{h+='<div class="empty"><div class="empty-icon">&#129696;</div><div>Select a villa to see pricing</div></div>';}
+ }else{
+ h+='<div class="card"><div class="card-h-gold">Deep Clean</div>';
+ h+='<div class="fg2"><label>Villa</label><select class="select" id="clean-villa" onchange="cleanSelVilla(this.value)">';
+ h+='<option value="">Choose a villa...</option>';
+ for(var gi=0;gi<groups.length;gi++){
+ h+='<optgroup label="'+groups[gi]+'">';
+ for(var i=0;i<VILLAS.length;i++){if(VILLAS[i].group===groups[gi]){h+='<option value="'+VILLAS[i].id+'"'+(cleaningState.villa===VILLAS[i].id?' selected':'')+'>'+VILLAS[i].name+'</option>'}}
+ h+='</optgroup>';
+ }
+ h+='</select></div>';
+ h+='<div class="fg2"><label>Or type villa name</label><input class="input" type="text" id="clean-manual-name" value="'+(cleaningState.manualName||'')+'" placeholder="e.g. Villa Paradise" oninput="cleanSetManualName(this.value)"></div>';
+ h+='<div class="fg2"><label>Price (THB)</label><input class="input" type="number" id="clean-manual-price" value="'+(cleaningState.manualPrice||'')+'" min="0" placeholder="Enter deep clean price" oninput="cleanSetManualPrice(this.value)"></div>';
+ h+='</div>';
+ var displayName=cleaningState.manualName||'';
+ var villaObj=VILLAS.find(function(v){return v.id===cleaningState.villa});
+ if(villaObj&&!cleaningState.manualName)displayName=villaObj.name;
+ var price=parseInt(cleaningState.manualPrice)||0;
+ if(price>0){
+ var commission=Math.round(price*0.10);
+ var labor=Math.round(price*0.40);
+ var companyProfit=Math.round(price*0.50);
+ h+='<div class="card" style="border-left:4px solid var(--gold)"><div style="font-size:18px;font-weight:700;color:var(--navy)">'+(displayName||'Deep Clean')+'</div></div>';
+ h+='<div class="price-display"><div class="amount">'+fmt(price)+' THB</div><div class="sub">Deep Clean</div></div>';
+ h+='<div class="summary"><div class="summary-row"><span>Revenue</span><span>'+fmt(price)+'</span></div>';
+ h+='<div class="summary-row total"><span>Profit</span><span>'+fmt(price)+'</span></div></div>';
+ h+='<div class="card"><div class="card-h-gold">Profit Split</div>';
+ h+='<div class="summary">';
+ h+='<div class="summary-row"><span>Labor</span><span>'+fmt(labor)+' (40%)</span></div>';
+ h+='<div class="summary-row"><span>Commission (10%)</span><span>&minus;'+fmt(commission)+'</span></div>';
+ h+='<div class="summary-row"><span>Company Profit</span><span>'+fmt(companyProfit)+' (50%)</span></div>';
+ h+='<div class="summary-row total"><span>Total</span><span>'+fmt(labor+commission+companyProfit)+'</span></div>';
+ h+='</div></div>';
+ if(ed){h+='<button class="btn btn-navy btn-block" style="margin-top:10px" onclick="cleanSave()">Save Job</button>';}
+ }
+ }
+ c.innerHTML=h;
+}
+function cleanSetMode(v){cleaningState.mode=v;renderCleaning()}
+function cleanSetManualName(v){cleaningState.manualName=v;renderCleaning()}
+function cleanSetManualPrice(v){cleaningState.manualPrice=v;renderCleaning()}
+function cleanSelVilla(v){cleaningState.villa=v;renderCleaning()}
+function cleanSetCost(v){
+ var saved=ld('clean_calcs')||{};if(!saved[cleaningState.villa])saved[cleaningState.villa]={};
+ var def=cleanGetDefaultShares(cleaningState.mode);
+ var d=saved[cleaningState.villa][cleaningState.mode]||{extraCost:0,shares:{0:def.labor,1:def.supplies,2:def.commission,3:def.profit,4:def.buffer}};
+ d.extraCost=Math.max(0,parseInt(v)||0);saved[cleaningState.villa][cleaningState.mode]=d;sv('clean_calcs',saved);renderCleaning();
+}
+function cleanSlider(idx,val){
+ var saved=ld('clean_calcs')||{};if(!saved[cleaningState.villa])saved[cleaningState.villa]={};
+ var def=cleanGetDefaultShares(cleaningState.mode);
+ var d=saved[cleaningState.villa][cleaningState.mode]||{extraCost:0,shares:{0:def.labor,1:def.supplies,2:def.commission,3:def.profit,4:def.buffer}};
+ val=parseInt(val);d.shares[idx]=val;
+ var others=[];for(var i=0;i<5;i++){if(i!==idx)others.push(i)}
+ var os=0;for(var i=0;i<others.length;i++){os+=(d.shares[others[i]]||0)}
+ var rem=100-val;
+ if(os===0){var each=Math.floor(rem/others.length);for(var i=0;i<others.length;i++){d.shares[others[i]]=each}}
+ else{for(var i=0;i<others.length;i++){d.shares[others[i]]=Math.round(rem*(d.shares[others[i]]||0)/os)}}
+ saved[cleaningState.villa][cleaningState.mode]=d;sv('clean_calcs',saved);renderCleaning();
+}
+function cleanSave(){
+ var villa=VILLAS.find(function(v){return v.id===cleaningState.villa});
+ if(!villa){alert('Select a villa first');return}
+ var basePrice=villa[cleaningState.mode]||villa.co;
+ var garbage=villa.garbage||0;
+ var totalPrice=basePrice+garbage;
+ var saved=ld('clean_calcs')||{};
+ if(!saved[cleaningState.villa])saved[cleaningState.villa]={};
+ var def=cleanGetDefaultShares(cleaningState.mode);
+ var d=saved[cleaningState.villa][cleaningState.mode]||{extraCost:0,shares:{0:def.labor,1:def.supplies,2:def.commission,3:def.profit,4:def.buffer}};
+ var totalCost=d.extraCost+garbage;
+ if(villa.laundry&&villa.laundryCost)totalCost+=villa.laundryCost;
+ var profit=totalPrice-totalCost;
+ var commission=Math.round(totalPrice*0.10);
+ var netProfit=profit-commission;
+ if(!saved[cleaningState.villa]._jobs)saved[cleaningState.villa]._jobs=[];
+ saved[cleaningState.villa]._jobs.push({
+  date:today(),
+  villa:cleaningState.villa,
+  villaName:villa.name,
+  type:cleaningState.mode,
+  amount:totalPrice,
+  extraCost:d.extraCost,
+  commission:commission,
+  profit:netProfit,
+  shares:d.shares,
+  by:CUR.u,
+  byName:CUR.name
+ });
+ sv('clean_calcs',saved);
+ alert('Saved!');
+}
+// ==================== EXPENSES (Unified Self-Service) ====================
+function expCatLabel(catId){
+ var c=EXP_CATS.find(function(x){return x.id===catId});
+ return c?c.label:catId;
+}
+function expVehicleLabel(vid){
+ var v=VEHICLES.find(function(x){return x.id===vid});
+ return v?v.label:vid;
+}
+function expShowVilla(catId){
+ if(catId==='fuel')return false;
+ if(catId==='pcl_laundry')return false;
+ if(catId==='accountant_fee')return false;
+ return true;
+}
+function expShowVehicle(catId){return catId==='fuel'}
+function expShowLaundryShop(catId){return catId==='other_laundry'}
+function expShowMonth(catId){return catId==='pcl_laundry'}
+
+function renderUpload(){
+ var c=document.getElementById('upload-content');
+ var isStaff=CUR.role==='staff';
+ var isManager=CUR.role==='manager';
+ var isDirector=CUR.role==='director';
+ var h='';
+
+ // === SUBMISSION FORM (all roles) ===
+ h+='<div class="card"><div class="card-h-gold">New Expense</div>';
+ h+='<div class="fg2"><label>Date</label><input class="input" type="date" id="exp-date" value="'+today()+'"></div>';
+ h+='<div class="fg2"><label>Category</label><select class="select" id="exp-cat" onchange="expCatChange()">';
+ h+='<option value="">Select category</option>';
+ for(var i=0;i<EXP_CATS.length;i++){
+ h+='<option value="'+EXP_CATS[i].id+'">'+EXP_CATS[i].label+'</option>';
+ }
+ h+='</select></div>';
+
+ // Villa dropdown
+ h+='<div class="fg2" id="exp-villa-row" style="display:none"><label>Villa</label><select class="select" id="exp-villa">';
+ h+='<option value="">Select villa</option>';
+ for(var i=0;i<VILLAS.length;i++){h+='<option value="'+VILLAS[i].id+'">'+VILLAS[i].name+'</option>'}
+ h+='<option value="general">General / Office</option>';
+ h+='</select></div>';
+
+ // Vehicle dropdown (fuel only)
+ h+='<div class="fg2" id="exp-vehicle-row" style="display:none"><label>Vehicle</label><select class="select" id="exp-vehicle">';
+ h+='<option value="">Select vehicle</option>';
+ for(var i=0;i<VEHICLES.length;i++){h+='<option value="'+VEHICLES[i].id+'">'+VEHICLES[i].label+'</option>'}
+ h+='</select></div>';
+
+ // Laundry shop name
+ h+='<div class="fg2" id="exp-laundry-row" style="display:none"><label>Laundry Shop</label><input class="input" type="text" id="exp-laundry-shop" placeholder="Shop name"></div>';
+
+ // Month selector (pcl_laundry)
+ h+='<div class="fg2" id="exp-month-row" style="display:none"><label>Month</label><input class="input" type="month" id="exp-month" value="'+new Date().toISOString().slice(0,7)+'"></div>';
+
+ h+='<div class="fg2"><label>Amount (THB)</label><input class="input" type="number" id="exp-amt" min="0" placeholder="0"></div>';
+ h+='<div class="fg2"><label>Supplier / Shop</label><input class="input" type="text" id="exp-supplier" placeholder="e.g. PTT, Makro, HomePro..."></div>';
+ h+='<div class="fg2"><label>Photo</label>';
+ h+='<input type="file" accept="image/*" capture="environment" id="exp-photo" onchange="uploadPhoto(this)" style="font-size:13px">';
+ h+='<div id="exp-preview" style="margin-top:8px"></div></div>';
+ h+='<div class="fg2"><label>Notes</label><textarea class="textarea" id="exp-notes" placeholder="Brief description..."></textarea></div>';
+ h+='<button class="btn btn-gold btn-block" onclick="expSubmit()" style="font-size:16px;padding:14px">Submit</button>';
+ h+='<div id="exp-success" style="display:none;text-align:center;padding:12px;background:#dcfce7;border-radius:8px;color:#16a34a;font-weight:600;font-size:14px;margin-top:8px"></div>';
+ h+='</div>';
+
+ // === JOB PHOTO (optional) ===
+ h+='<div class="card"><div class="card-h-gold">&#128248; Add Job Photo (Optional)</div>';
+ h+='<div class="fg2"><label>Photo</label>';
+ h+='<input type="file" accept="image/*" capture="environment" id="job-photo-file" onchange="jobPhotoSelectFile(this)" style="font-size:13px">';
+ h+='<div id="job-photo-preview" style="margin-top:8px"></div></div>';
+ h+='<div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px">Photo will upload automatically when expense is submitted</div>';
+ h+='</div>';
+
+ // === EXPENSE LIST ===
+ var expenses=ld('expenses')||[];
+
+ // Director filters
+ if(isDirector){
+ h+='<div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0 8px;flex-wrap:wrap;gap:8px">';
+ h+='<div style="font-size:14px;font-weight:600;color:var(--navy)">All Expenses</div>';
+ h+='<button class="btn btn-sm btn-outline" onclick="expExport()">Export CSV</button></div>';
+ h+='<div class="filters" style="margin-bottom:8px">';
+ h+='<select class="select" style="font-size:12px;padding:4px 8px;margin-right:4px;width:auto" onchange="expFilterCat=this.value;renderUpload()">';
+ h+='<option value="all">All</option>';
+ for(var i=0;i<EXP_CATS.length;i++){
+ h+='<option value="'+EXP_CATS[i].id+'"'+(expFilterCat===EXP_CATS[i].id?' selected':'')+'>'+EXP_CATS[i].label+'</option>';
+ }
+ h+='</select>';
+ h+='<select class="select" style="font-size:12px;padding:4px 8px;margin-right:4px;width:auto" onchange="expFilterVilla=this.value;renderUpload()">';
+ h+='<option value="all">All Villas</option>';
+ for(var i=0;i<VILLAS.length;i++){
+ h+='<option value="'+VILLAS[i].id+'"'+(expFilterVilla===VILLAS[i].id?' selected':'')+'>'+VILLAS[i].name+'</option>';
+ }
+ h+='</select>';
+ var staffAccounts=ACCOUNTS.filter(function(a){return a.role==='staff'});
+ h+='<select class="select" style="font-size:12px;padding:4px 8px;width:auto" onchange="expFilterStaff=this.value;renderUpload()">';
+ h+='<option value="all">All Staff</option>';
+ for(var i=0;i<staffAccounts.length;i++){
+ h+='<option value="'+staffAccounts[i].u+'"'+(expFilterStaff===staffAccounts[i].u?' selected':'')+'>'+staffAccounts[i].name+'</option>';
+ }
+ h+='</select></div>';
+ }
+
+ if(isManager){
+ h+='<div style="font-size:14px;font-weight:600;color:var(--navy);margin:12px 0 8px">All Expenses</div>';
+ }
+
+ // Filter expenses
+ var filtered=expenses;
+ if(isStaff){filtered=filtered.filter(function(e){return e.by===CUR.u})}
+ if(expFilterCat!=='all'){filtered=filtered.filter(function(e){return e.cat===expFilterCat})}
+ if(expFilterVilla!=='all'){filtered=filtered.filter(function(e){return e.villa===expFilterVilla})}
+ if(expFilterStaff!=='all'){filtered=filtered.filter(function(e){return e.by===expFilterStaff})}
+
+ if(filtered.length===0){
+ h+='<div class="empty"><div class="empty-icon">&#128203;</div><div>No expenses yet</div></div>';
+ }else{
+ var list=filtered.slice().reverse();
+ for(var i=0;i<list.length;i++){
+ var e=list[i];
+ var catLbl=expCatLabel(e.cat);
+ h+='<div class="exp-item" onclick="expDetail(\''+e.id+'\')">';
+ if(e.photo)h+='<img class="exp-thumb" src="'+e.photo+'">';
+ else h+='<div class="exp-thumb" style="display:flex;align-items:center;justify-content:center;font-size:20px">&#128247;</div>';
+ var subInfo=catLbl;
+ if(e.villaName)subInfo+=' \u00b7 '+e.villaName;
+ if(e.vehicle)subInfo+=' \u00b7 '+expVehicleLabel(e.vehicle);
+ if(isDirector||isManager)subInfo+=' \u00b7 '+e.byName;
+ h+='<div class="exp-info"><div class="exp-villa">'+(e.villaName||e.vehicleName||'General')+'</div>';
+ h+='<div class="exp-cat">'+subInfo+' \u00b7 '+fmtDate(e.at)+'</div></div>';
+ h+='<div class="exp-amt">'+fmt(e.amt)+'</div>';
+ var canDelete=(isDirector)||(isStaff&&e.by===CUR.u);
+ if(canDelete){
+ h+='<button class="btn btn-sm btn-red" style="padding:2px 8px;font-size:11px;min-width:auto" onclick="event.stopPropagation();expDelete(\''+e.id+'\')">&#10005;</button>';
+ }
+ h+='</div>';
+ }
+ }
+ c.innerHTML=h;
+}
+
+function expCatChange(){
+ var catId=document.getElementById('exp-cat').value;
+ var vr=document.getElementById('exp-villa-row');if(vr)vr.style.display=expShowVilla(catId)?'':'none';
+ var vehr=document.getElementById('exp-vehicle-row');if(vehr)vehr.style.display=expShowVehicle(catId)?'':'none';
+ var lr=document.getElementById('exp-laundry-row');if(lr)lr.style.display=expShowLaundryShop(catId)?'':'none';
+ var mr=document.getElementById('exp-month-row');if(mr)mr.style.display=expShowMonth(catId)?'':'none';
+ if(catId==='other_laundry'){
+ var vs=document.getElementById('exp-villa');
+ if(vs){vs.onchange=function(){var si=document.getElementById('exp-laundry-shop');if(si&&vs.value==='sunrise_hill'){si.value='Lamai Laundry'}else if(si){si.value=''}}}
+ }
+}
+
+function uploadPhoto(input){
+ if(!input.files||!input.files[0])return;
+ var reader=new FileReader();
+ reader.onload=function(e){
+ var img=new Image();
+ img.onload=function(){
+ var canvas=document.createElement('canvas');
+ var MAX=800;var w=img.width,h=img.height;
+ if(w>MAX){h=h*MAX/w;w=MAX}if(h>MAX){w=w*MAX/h;h=MAX}
+ canvas.width=w;canvas.height=h;
+ var ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,w,h);
+ uploadPhotoData=canvas.toDataURL('image/jpeg',0.7);
+ document.getElementById('exp-preview').innerHTML='<img class="exp-thumb" src="'+uploadPhotoData+'" style="width:100%;max-width:300px;height:auto">';
+ };
+ img.src=e.target.result;
+ };
+ reader.readAsDataURL(input.files[0]);
+}
+
+function uploadPhotoToDrive(file,date,category,callback){
+ var reader=new FileReader();
+ reader.onload=function(e){
+  var base64=e.target.result.split(',')[1];
+  var mimeType=file.type||'image/jpeg';
+  var filename=date+'_'+category+'_'+file.name;
+  var data={type:'photo',base64:base64,mimeType:mimeType,filename:filename,date:date};
+  var xhr=new XMLHttpRequest();
+  xhr.open('POST',SHEETS_URL,true);
+  xhr.setRequestHeader('Content-Type','application/json');
+  xhr.onload=function(){
+   try{var res=JSON.parse(xhr.responseText);if(callback)callback(res.url||'')}catch(e){if(callback)callback('')}
+  };
+  xhr.onerror=function(){if(callback)callback('')};
+  xhr.send(JSON.stringify(data));
+ };
+ reader.readAsDataURL(file);
+}
+
+function expSubmit(){
+ var catId=document.getElementById('exp-cat').value;
+ var amt=parseInt(document.getElementById('exp-amt').value)||0;
+ var notes=document.getElementById('exp-notes').value.trim();
+ var expDate=document.getElementById('exp-date').value;
+ if(!catId){alert('Select category');return}
+ if(amt<=0){alert('Enter valid amount');return}
+ var villa='';var villaName='';var vehicle='';var vehicleName='';var laundryShop='';var monthVal='';var supplier='';
+ if(expShowVilla(catId)){
+ villa=document.getElementById('exp-villa').value;
+ if(!villa){alert('Select villa');return}
+ var vObj=VILLAS.find(function(v){return v.id===villa});
+ villaName=vObj?vObj.name:(villa==='general'?'General / Office':villa);
+ }
+ if(expShowVehicle(catId)){
+ vehicle=document.getElementById('exp-vehicle').value;
+ if(!vehicle){alert('Select vehicle');return}
+ var vhObj=VEHICLES.find(function(v){return v.id===vehicle});
+ vehicleName=vhObj?vhObj.label:vehicle;
+ }
+ if(expShowLaundryShop(catId)){laundryShop=document.getElementById('exp-laundry-shop').value.trim()}
+ if(expShowMonth(catId)){monthVal=document.getElementById('exp-month').value}
+ supplier=document.getElementById('exp-supplier').value.trim();
+ var expenses=ld('expenses')||[];
+ expenses.push({id:gid('exp'),photo:uploadPhotoData||'',villa:villa,villaName:villaName,vehicle:vehicle,vehicleName:vehicleName,laundryShop:laundryShop,month:monthVal,supplier:supplier,cat:catId,amt:amt,notes:notes,status:'approved',by:CUR.u,byName:CUR.name,at:expDate?new Date(expDate).toISOString():new Date().toISOString(),submittedAt:new Date().toISOString()});
+ sv('expenses',expenses);
+ sendToSheet({type:'expense',date:expDate,category:expCatLabel(catId),description:expCatLabel(catId)+(vehicleName?' - '+vehicleName:''),supplier:supplier,amount:amt,paymentMethod:'',receiptNo:'',notes:notes||''});
+ if(jobPhotoState.photoData&&villaName){jobPhotoUpload(expDate,villaName,expCatLabel(catId))}
+ var photoInput=document.getElementById('exp-photo');
+ if(photoInput&&photoInput.files&&photoInput.files[0]){
+  uploadPhotoToDrive(photoInput.files[0],expDate,expCatLabel(catId),function(driveUrl){
+   if(driveUrl){
+    var expenses2=ld('expenses')||[];
+    var last=expenses2[expenses2.length-1];
+    if(last&&last.photo){last.driveUrl=driveUrl;sv('expenses',expenses2)}
+   }
+  });
+ }
+ uploadPhotoData=null;
+ var sEl=document.getElementById('exp-success');
+ if(sEl){sEl.textContent='Success \u2713';sEl.style.display='block'}
+ if(expSuccessTimer)clearTimeout(expSuccessTimer);
+ expSuccessTimer=setTimeout(function(){
+ var ids=['exp-cat','exp-amt','exp-notes','exp-villa','exp-vehicle','exp-laundry-shop','exp-supplier'];
+ for(var i=0;i<ids.length;i++){var el=document.getElementById(ids[i]);if(el)el.value=''}
+ var pv=document.getElementById('exp-preview');if(pv)pv.innerHTML='';
+ var s2=document.getElementById('exp-success');if(s2)s2.style.display='none';
+ var rows=['exp-villa-row','exp-vehicle-row','exp-laundry-row','exp-month-row'];
+ for(var i=0;i<rows.length;i++){var el=document.getElementById(rows[i]);if(el)el.style.display='none'}
+ },2000);
+}
+
+function expDetail(id){
+ var expenses=ld('expenses')||[];
+ var e=expenses.find(function(x){return x.id===id});
+ if(!e)return;
+ var h='<div class="modal-h">Expense Detail</div>';
+ if(e.photo)h+='<img src="'+e.photo+'" style="width:100%;border-radius:8px;margin-bottom:12px">';
+ h+='<div class="summary">';
+ if(e.villaName)h+='<div class="summary-row"><span>Villa</span><span>'+e.villaName+'</span></div>';
+ h+='<div class="summary-row"><span>Category</span><span>'+expCatLabel(e.cat)+'</span></div>';
+ h+='<div class="summary-row"><span>Amount</span><span>'+fmt(e.amt)+' THB</span></div>';
+ if(e.vehicle)h+='<div class="summary-row"><span>Vehicle</span><span>'+expVehicleLabel(e.vehicle)+'</span></div>';
+ if(e.supplier)h+='<div class="summary-row"><span>Supplier</span><span>'+e.supplier+'</span></div>';
+ if(e.laundryShop)h+='<div class="summary-row"><span>Laundry Shop</span><span>'+e.laundryShop+'</span></div>';
+ if(e.month)h+='<div class="summary-row"><span>Month</span><span>'+e.month+'</span></div>';
+ h+='<div class="summary-row"><span>Date</span><span>'+fmtDate(e.at)+'</span></div>';
+ if(e.notes)h+='<div class="summary-row"><span>Notes</span><span>'+e.notes+'</span></div>';
+ h+='<div class="summary-row"><span>Submitted by</span><span>'+e.byName+'</span></div>';
+ h+='</div>';
+ h+='<button class="btn btn-outline btn-block" onclick="closeModal()" style="margin-top:12px">Close</button>';
+ openModal(h);
+}
+
+function expDelete(id){
+ if(!confirm('Delete this expense?'))return;
+ var expenses=ld('expenses')||[];
+ expenses=expenses.filter(function(e){return e.id!==id});
+ sv('expenses',expenses);renderUpload();
+}
+
+function expExport(){
+ var expenses=ld('expenses')||[];
+ if(expenses.length===0){alert('No data to export');return}
+ var csv='Date,Staff,Villa,Vehicle,Supplier,Category,Amount,Notes\n';
+ for(var i=0;i<expenses.length;i++){
+ var e=expenses[i];
+ csv+=fmtDate(e.at)+','+e.byName+','+(e.villaName||'').replace(/,/g,'')+','+(e.vehicleName||'').replace(/,/g,'')+','+(e.supplier||'').replace(/,/g,'')+','+expCatLabel(e.cat)+','+e.amt+','+(e.notes||'').replace(/,/g,'')+'\n';
+ }
+ var blob=new Blob([csv],{type:'text/csv'});
+ var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+ a.download='vida_expenses_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+}
+
+// ==================== SCHEDULE ====================
+var schedFilter='all';
+var calRefreshTimer=null;
+
+function schedGetTypeColor(type){
+ var m={'cleaning':'#22c55e','pool':'#3b82f6','laundry':'#a855f7','chef':'#f59e0b','maintenance':'#ef4444','other':'#6b7280'};
+ return m[type]||'#6b7280';
+}
+function schedTypeLabel(type){
+ var m={cleaning:'Cleaning',pool:'Pool',laundry:'Laundry',chef:'Chef',maintenance:'Maintenance',other:'Other'};
+ return m[type]||type;
+}
+
+function schedFetchCal(){
+ if(!CAL_ID)return;
+ var url='https://www.googleapis.com/calendar/v3/calendars/'+encodeURIComponent(CAL_ID)+'/events?key='+CAL_API_KEY+'&singleEvents=true&orderBy=startTime&timeMin='+new Date().toISOString().slice(0,10)+'T00:00:00Z&maxResults=50';
+ console.log('[Calendar] Fetching:',url);
+ fetch(url,{headers:{'Accept':'application/json'}})
+ .then(function(r){
+ console.log('[Calendar] Status:',r.status);
+ if(!r.ok)throw new Error('HTTP '+r.status+' '+r.statusText);
+ return r.json();
+ })
+ .then(function(data){
+ console.log('[Calendar] Got',data.items?data.items.length:0,'events');
+ if(data.items&&data.items.length>0){
+ var events=data.items.map(function(ev){
+ return {id:'cal_'+ev.id,title:ev.summary,start:ev.start.dateTime||ev.start.date,type:'other',notes:ev.description||'',source:'google'};
+ });
+ var local=ld('cal_events')||[];
+ var merged=local.concat(events);
+ var seen={};var unique=[];
+ for(var i=0;i<merged.length;i++){if(!seen[merged[i].id]){seen[merged[i].id]=true;unique.push(merged[i])}}
+ sv('cal_events',unique);
+ schedRefresh();
+ }
+ })
+ .catch(function(err){
+ console.error('[Calendar] Fetch failed:',err.message);
+ console.error('[Calendar] URL was:',url);
+ });
+}
+
+function schedRefresh(){
+ var all=ld('cal_events')||[];
+ var local=ld('schedule')||[];
+ var today=new Date();today.setHours(0,0,0,0);
+ var end=new Date(today);end.setDate(end.getDate()+14);
+ var filtered=all.filter(function(e){
+ var d=new Date(e.start);return d>=today&&d<=end;
+ }).concat(local.filter(function(e){
+ var d=new Date(e.start);return d>=today&&d<=end;
+ }));
+ filtered.sort(function(a,b){return new Date(a.start)-new Date(b.start)});
+ sv('_sched_view',filtered);
+ renderSchedule();
+}
+
+function renderSchedule(){
+ var c=document.getElementById('schedule-content');
+ if(!c)return;
+ var jobs=ld('_sched_view')||[];
+ var isStaff=CUR.role==='staff';
+ var isDirector=CUR.role==='director';
+ var h='';
+
+ // Auto-refresh info (director only)
+ if(isDirector){
+ h+='<div style="font-size:11px;color:#666;margin-bottom:8px">Auto-refreshes every 5 min | Google Calendar sync</div>';
+ }
+
+ // Filter tabs removed
+
+ if(jobs.length===0){
+ h+='<div class="empty"><div class="empty-icon">&#128197;</div><div>No jobs scheduled</div></div>';
+ }else{
+ var curDate='';
+ var dayNames=['SUN','MON','TUE','WED','THU','FRI','SAT'];
+ var mmNames=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+ for(var i=0;i<jobs.length;i++){
+ var j=jobs[i];
+ var d=new Date(j.start);
+ var dateStr=d.toDateString();
+ if(dateStr!==curDate){
+ curDate=dateStr;
+ h+='<div style="font-size:11px;font-weight:600;color:#c9a84c;letter-spacing:1px;text-transform:uppercase;margin:16px 0 8px;">'+dayNames[d.getDay()]+' '+d.getDate()+' '+mmNames[d.getMonth()]+'</div>';
+ }
+ var timeStr=d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+ var title=(j.title||j.summary||'No title');
+ var tl=title.toLowerCase();
+ var borderColor='#c9a84c';
+ var titleStyle='font-weight:700;font-size:16px;';
+ var cardBg='#fff';
+ if(tl.includes('same day')){borderColor='#dc2626';titleStyle+='color:#dc2626;';}
+ else if(tl.includes('checkout')||tl.includes('check out')){borderColor='#0d2744';titleStyle+='color:#16a34a;';}
+ else if(tl.includes('staying')){borderColor='#0d2744';titleStyle+='color:#1a1a2e;';}
+ else if(tl.includes('pool')||tl.includes('garden')){borderColor='#0e7490';titleStyle+='color:#1a1a2e;';}
+ else if(tl.includes('chef')||tl.includes('breakfast')||tl.includes('dinner')||tl.includes('bbq')){borderColor='#c9a84c';titleStyle+='color:#1a1a2e;';}
+ else if(tl.includes('laundry')){borderColor='#7c3aed';titleStyle+='color:#1a1a2e;';}
+ else if(tl.includes('off')||tl.includes('holiday')){borderColor='#6b7280';titleStyle+='color:#6b7280;font-style:italic;';cardBg='#f9fafb';}
+ else{titleStyle+='color:#1a1a2e;';}
+ h+='<div id="card-'+i+'" onclick="toggleCard('+i+')" style="cursor:pointer;background:'+cardBg+';border-radius:12px;box-shadow:0 1px 6px rgba(0,0,0,0.08);border-left:5px solid '+borderColor+';padding:12px 16px;margin-bottom:8px;">';
+ h+='<div style="'+titleStyle+'margin-bottom:4px;">'+title+'</div>';
+ h+='<div style="font-size:12px;color:#888;">'+timeStr+'</div>';
+ if(j.description){
+ h+='<div style="font-size:11px;color:#dc2626;margin-top:4px;">&#128203; Tap to see notes</div>';
+ }
+ h+='<div id="notes-'+i+'" style="display:none;margin-top:8px;padding-top:8px;border-top:1px solid #f0f0f0;font-size:13px;color:#444;white-space:pre-wrap;">'+(j.description||'')+'</div>';
+ h+='</div>';
+ }
+ }
+
+ // Add button (not for staff)
+ if(!isStaff){
+ h+='<button class="btn btn-gold btn-block" onclick="schedAdd()" style="margin-top:12px;font-size:15px;padding:12px">+ Add Job</button>';
+ }
+
+ c.innerHTML=h;
+}
+
+function toggleCard(i){
+ var n=document.getElementById('notes-'+i);
+ if(n) n.style.display=n.style.display==='none'?'block':'none';
+}
+
+function schedDetail(id){
+ var jobs=ld('_sched_view')||[];
+ var j=jobs.find(function(x){return x.id===id});
+ if(!j)return;
+ var d=new Date(j.start);
+ var h='<div class="modal-h">Job Detail</div>';
+ h+='<div class="summary">';
+ h+='<div class="summary-row"><span>Type</span><span>'+schedTypeLabel(j.type)+'</span></div>';
+ h+='<div class="summary-row"><span>Title</span><span>'+(j.title||'-')+'</span></div>';
+ if(j.villa)h+='<div class="summary-row"><span>Villa</span><span>'+j.villa+'</span></div>';
+ h+='<div class="summary-row"><span>Date</span><span>'+d.toLocaleDateString()+'</span></div>';
+ h+='<div class="summary-row"><span>Time</span><span>'+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+'</span></div>';
+ if(j.notes)h+='<div class="summary-row"><span>Notes</span><span>'+j.notes+'</span></div>';
+ if(j.byName)h+='<div class="summary-row"><span>Created by</span><span>'+j.byName+'</span></div>';
+ if(j.source==='google')h+='<div class="summary-row"><span>Source</span><span>Google Calendar</span></div>';
+ h+='</div>';
+ h+='<button class="btn btn-outline btn-block" onclick="closeModal()" style="margin-top:12px">Close</button>';
+ openModal(h);
+}
+
+function schedAdd(){
+ var h='<div class="modal-h">Add Job</div>';
+ h+='<div class="fg2"><label>Title</label><input class="input" type="text" id="sched-title" placeholder="Job title"></div>';
+ h+='<div class="fg2"><label>Type</label><select class="select" id="sched-type">';
+ h+='<option value="cleaning">Cleaning</option>';
+ h+='<option value="pool">Pool</option>';
+ h+='<option value="laundry">Laundry</option>';
+ h+='<option value="chef">Chef</option>';
+ h+='<option value="maintenance">Maintenance</option>';
+ h+='<option value="other">Other</option>';
+ h+='</select></div>';
+ h+='<div class="fg2"><label>Villa</label><select class="select" id="sched-villa">';
+ h+='<option value="">Select villa</option>';
+ for(var i=0;i<VILLAS.length;i++){h+='<option value="'+VILLAS[i].name+'">'+VILLAS[i].name+'</option>'}
+ h+='<option value="general">General / Office</option>';
+ h+='</select></div>';
+ h+='<div class="fg2"><label>Date</label><input class="input" type="date" id="sched-date" value="'+today()+'"></div>';
+ h+='<div class="fg2"><label>Time</label><input class="input" type="time" id="sched-time" value="09:00"></div>';
+ h+='<div class="fg2"><label>Notes</label><textarea class="textarea" id="sched-notes" placeholder="Details..."></textarea></div>';
+ h+='<button class="btn btn-gold btn-block" onclick="schedSave()">Save</button>';
+ h+='<button class="btn btn-outline btn-block" onclick="closeModal()" style="margin-top:8px">Cancel</button>';
+ openModal(h);
+}
+
+function schedSave(){
+ var title=document.getElementById('sched-title').value.trim();
+ var type=document.getElementById('sched-type').value;
+ var villa=document.getElementById('sched-villa').value;
+ var date=document.getElementById('sched-date').value;
+ var time=document.getElementById('sched-time').value;
+ var notes=document.getElementById('sched-notes').value.trim();
+ if(!title){alert('Enter title');return}
+ var start=new Date(date+'T'+time);
+ var jobs=ld('schedule')||[];
+ jobs.push({id:gid('job'),title:title,type:type,villa:villa,start:start.toISOString(),notes:notes,by:CUR.u,byName:CUR.name,source:'local'});
+ sv('schedule',jobs);
+ closeModal();schedRefresh();
+}
+
+function schedDelete(id){
+ if(!confirm('Delete this job?'))return;
+ var jobs=ld('schedule')||[];
+ jobs=jobs.filter(function(j){return j.id!==id});
+ sv('schedule',jobs);schedRefresh();
+}
+
+// ==================== POOL CALCULATOR ====================
+var poolState={villa:'',type:'standard',manualName:'',manualPrice:''};
+var POOL_PRICING={
+ standard:{
+  'villa_love':3500,'majesta':3500,'n1':3000,'n2':3000,'n3':3000,
+  'j3':4000,'sunrise_hill':3800,'villa_anna':3000,'villa_diana':3000,
+  'villa_yoco':3500,'big_buddha':3500,'aqua_314':3500,
+  'aqua_319_up':3500,'aqua_319_down':2500,'chacha':3500,
+  'julia':3500,'lulu':4000,'nicolas_1':2000,'nicolas_2':2000,
+  'bo_phut':3500,'sandra':3500,'sandra_airbnb':3800,
+  'lau-a9':3500,'lau-villa6':3500,'nicolas3':2000,'bophut-david':3500,
+  'sandra-home':3800,'adhoc-307':2500,'adhoc-304':2500
+ },
+ chemical:{
+  'villa_love':1500,'majesta':1500,'n1':1200,'n2':1200,'n3':1200,
+  'j3':1800,'sunrise_hill':1600,'villa_anna':1200,'villa_diana':1200,
+  'villa_yoco':1500,'big_buddha':1500,'aqua_314':1500,
+  'aqua_319_up':1500,'aqua_319_down':1000,'chacha':1500,
+  'julia':1500,'lulu':1800,'nicolas_1':800,'nicolas_2':800,
+  'bo_phut':1500,'sandra':1500,'sandra_airbnb':1600,
+  'lau-a9':1500,'lau-villa6':1500,'nicolas3':800,'bophut-david':1500,
+  'sandra-home':1600,'adhoc-307':1000,'adhoc-304':1000
+ }
+};
+function poolGetDefaultShares(type){
+ if(type==='standard')return{labor:45,supplies:10,commission:5,profit:25,buffer:15};
+ if(type==='chemical')return{labor:35,supplies:20,commission:5,profit:25,buffer:15};
+ if(type==='deep')return{labor:40,supplies:15,commission:5,profit:25,buffer:15};
+ return{labor:40,supplies:12,commission:5,profit:28,buffer:15};
+}
+function renderPool(){
+ var c=document.getElementById('pool-content');
+ if(!c)return;
+ var ed=canEdit('pool');
+ var h='<div class="card"><div class="card-h-gold">Service Type</div>';
+ h+='<div class="fg2"><select class="select" id="pool-type" onchange="poolSetType(this.value)">';
+ h+='<option value="standard"'+(poolState.type==='standard'?' selected':'')+'>Standard Clean</option>';
+ h+='<option value="chemical"'+(poolState.type==='chemical'?' selected':'')+'>Chemical Treatment</option>';
+ h+='<option value="deep"'+(poolState.type==='deep'?' selected':'')+'>Deep Clean</option>';
+ h+='<option value="manual"'+(poolState.type==='manual'?' selected':'')+'>Manual Price</option>';
+ h+='</select></div></div>';
+ if(poolState.type==='manual'){
+  h+='<div class="card"><div class="card-h-gold">Manual Pool Service</div>';
+  h+='<div class="fg2"><label>Villa</label><select class="select" id="pool-villa" onchange="poolSelVilla(this.value)">';
+  h+='<option value="">Choose a villa...</option>';
+  for(var i=0;i<VILLAS.length;i++){h+='<option value="'+VILLAS[i].id+'"'+(poolState.villa===VILLAS[i].id?' selected':'')+'>'+VILLAS[i].name+'</option>'}
+  h+='</select></div>';
+  h+='<div class="fg2"><label>Or type villa name</label><input class="input" type="text" id="pool-manual-name" value="'+(poolState.manualName||'')+'" placeholder="e.g. Private Pool" oninput="poolSetManualName(this.value)"></div>';
+  h+='<div class="fg2"><label>Price (THB)</label><input class="input" type="number" id="pool-manual-price" value="'+(poolState.manualPrice||'')+'" min="0" placeholder="Enter price" oninput="poolSetManualPrice(this.value)"></div>';
+  h+='</div>';
+  var displayName=poolState.manualName||'';
+  var villaObj=VILLAS.find(function(v){return v.id===poolState.villa});
+  if(villaObj&&!poolState.manualName)displayName=villaObj.name;
+  var price=parseInt(poolState.manualPrice)||0;
+  if(price>0){
+   var commission=Math.round(price*0.10);
+   var labor=Math.round(price*0.45);
+   var companyProfit=Math.round(price*0.45);
+   h+='<div class="card" style="border-left:4px solid var(--gold)"><div style="font-size:18px;font-weight:700;color:var(--navy)">'+(displayName||'Pool Service')+'</div></div>';
+   h+='<div class="price-display"><div class="amount">'+fmt(price)+' THB</div><div class="sub">Pool Service</div></div>';
+   h+='<div class="summary"><div class="summary-row"><span>Revenue</span><span>'+fmt(price)+'</span></div>';
+   h+='<div class="summary-row total"><span>Profit</span><span>'+fmt(price)+'</span></div></div>';
+   h+='<div class="card"><div class="card-h-gold">Profit Split</div>';
+   h+='<div class="summary">';
+   h+='<div class="summary-row"><span>Labor</span><span>'+fmt(labor)+' (45%)</span></div>';
+   h+='<div class="summary-row"><span>Commission (10%)</span><span>&minus;'+fmt(commission)+'</span></div>';
+   h+='<div class="summary-row"><span>Company Profit</span><span>'+fmt(companyProfit)+' (45%)</span></div>';
+   h+='<div class="summary-row total"><span>Total</span><span>'+fmt(labor+commission+companyProfit)+'</span></div>';
+   h+='</div></div>';
+   if(ed){h+='<button class="btn btn-navy btn-block" style="margin-top:10px" onclick="poolSave()">Save Job</button>';}
+  }
+ }else{
+  var groups=['ADAM/KAGAMI','MPS','CHEN','STEVEN','LAURENT','OTHERS'];
+  h+='<div class="card"><div class="card-h-gold">Select Villa</div>';
+  h+='<div class="fg2"><label>Villa</label><select class="select" id="pool-villa" onchange="poolSelVilla(this.value)">';
+  h+='<option value="">Choose a villa...</option>';
+  for(var gi=0;gi<groups.length;gi++){
+   h+='<optgroup label="'+groups[gi]+'">';
+   for(var i=0;i<VILLAS.length;i++){if(VILLAS[i].group===groups[gi]){h+='<option value="'+VILLAS[i].id+'"'+(poolState.villa===VILLAS[i].id?' selected':'')+'>'+VILLAS[i].name+'</option>'}}
+   h+='</optgroup>';
+  }
+  h+='</select></div></div>';
+  var villa=VILLAS.find(function(v){return v.id===poolState.villa});
+  if(villa){
+   var basePrice=POOL_PRICING[poolState.type]?POOL_PRICING[poolState.type][villa.id]:0;
+   if(!basePrice)basePrice=POOL_PRICING.standard[villa.id]||3000;
+   var saved=ld('pool_calcs')||{};
+   var def=poolGetDefaultShares(poolState.type);
+   var vdata=(saved[villa.id]&&saved[villa.id][poolState.type])||{extraCost:0,shares:{0:def.labor,1:def.supplies,2:def.commission,3:def.profit,4:def.buffer}};
+   var totalCost=vdata.extraCost;
+   var profit=basePrice-totalCost;
+   var commission=Math.round(basePrice*0.10);
+   var netProfit=profit-commission;
+   h+='<div class="card" style="border-left:4px solid var(--gold)"><div style="font-size:18px;font-weight:700;color:var(--navy)">'+villa.name+'</div><div style="font-size:12px;color:var(--muted)">'+villa.group+'</div></div>';
+   var typeLabels={standard:'Standard Clean',chemical:'Chemical Treatment',deep:'Deep Clean'};
+   h+='<div class="price-display"><div class="amount">'+fmt(basePrice)+' THB</div><div class="sub">'+(typeLabels[poolState.type]||'Pool Service')+'</div></div>';
+   if(ed){h+='<div class="fg2"><label>Extra Costs (THB)</label><input class="input" type="number" value="'+vdata.extraCost+'" min="0" onchange="poolSetCost(this.value)"></div>';}
+   h+='<div class="summary"><div class="summary-row"><span>Revenue</span><span>'+fmt(basePrice)+'</span></div>';
+   h+='<div class="summary-row"><span>Costs</span><span>&minus;'+fmt(totalCost)+'</span></div>';
+   h+='<div class="summary-row total"><span>Profit</span><span>'+fmt(profit)+'</span></div></div>';
+   h+='<div class="card"><div class="card-h-gold">Commission & Net Profit</div>';
+   h+='<div class="summary">';
+   h+='<div class="summary-row"><span>Commission (10%)</span><span>&minus;'+fmt(commission)+'</span></div>';
+   h+='<div class="summary-row total"><span>Net Profit</span><span>'+fmt(netProfit)+' THB</span></div>';
+   h+='</div></div>';
+   if(ed){h+='<button class="btn btn-navy btn-block" style="margin-top:10px" onclick="poolSave()">Save Job</button>';}
+  }else{h+='<div class="empty"><div class="empty-icon">&#127754;</div><div>Select a villa to see pricing</div></div>';}
+ }
+ c.innerHTML=h;
+}
+function poolSetType(v){poolState.type=v;renderPool()}
+function poolSetManualName(v){poolState.manualName=v;renderPool()}
+function poolSetManualPrice(v){poolState.manualPrice=v;renderPool()}
+function poolSelVilla(v){poolState.villa=v;renderPool()}
+function poolSetCost(v){
+ var saved=ld('pool_calcs')||{};if(!saved[poolState.villa])saved[poolState.villa]={};
+ var def=poolGetDefaultShares(poolState.type);
+ var d=saved[poolState.villa][poolState.type]||{extraCost:0,shares:{0:def.labor,1:def.supplies,2:def.commission,3:def.profit,4:def.buffer}};
+ d.extraCost=Math.max(0,parseInt(v)||0);saved[poolState.villa][poolState.type]=d;sv('pool_calcs',saved);renderPool();
+}
+function poolSave(){
+ var villa=VILLAS.find(function(v){return v.id===poolState.villa});
+ var displayName=poolState.manualName||(villa?villa.name:'Pool Service');
+ var price=poolState.type==='manual'?(parseInt(poolState.manualPrice)||0):(POOL_PRICING[poolState.type]?POOL_PRICING[poolState.type][poolState.villa]:POOL_PRICING.standard[poolState.villa]||3000);
+ if(!price||price<=0){alert('No price set for this villa');return}
+ var commission=Math.round(price*0.10);
+ var netProfit=price-commission;
+ var jobs=ld('pool_jobs')||[];
+ jobs.push({
+  date:today(),
+  villa:poolState.villa,
+  villaName:displayName,
+  type:poolState.type,
+  amount:price,
+  commission:commission,
+  profit:netProfit,
+  by:CUR.u,
+  byName:CUR.name
+ });
+ sv('pool_jobs',jobs);
+ alert('Saved!');
+}
+
+// ==================== INVOICE CALENDAR FETCH (Adam) ====================
+var ADAM_VILLA_KEYWORDS=['adam/love','adam/majesta','adam/n1','adam/n2','adam/n3','adam/j3','adam/villa love','adam/q1','n1','n2','n3','majesta','j3','sunrise','villa love','love'];
+var ADAM_EXCLUDE=['meeting','owner','appointment','dinner','breakfast','bbq','chef','lunch','people','7:30','pm dinner','guests'];
+var ADAM_CLEAN_KEYWORDS=['clean','checkout','staying','garbage','laundry','deep clean','quick clean'];
+
+function invFetchCalJobs(month,dayFrom,dayTo,callback){
+ invCalLoading=true;
+ var timeMin=month+'-01T00:00:00Z';
+ var yr=parseInt(month.split('-')[0]);
+ var mo=parseInt(month.split('-')[1]);
+ var nextMo=mo+1;var nextYr=yr;
+ if(nextMo>12){nextMo=1;nextYr++}
+ var timeMax=nextYr+'-'+String(nextMo).padStart(2,'0')+'-01T00:00:00Z';
+ var url='https://www.googleapis.com/calendar/v3/calendars/'+encodeURIComponent(CAL_ID)+'/events?key='+INV_CAL_API_KEY+'&singleEvents=true&orderBy=startTime&timeMin='+timeMin+'&timeMax='+timeMax+'&maxResults=250';
+ fetch(url,{headers:{'Accept':'application/json'}})
+ .then(function(r){return r.json()})
+ .then(function(data){
+  var cleaningJobs=[];
+  var garbageJobs=[];
+  if(data.items){
+   for(var i=0;i<data.items.length;i++){
+    var ev=data.items[i];
+    var evDate=ev.start.dateTime||ev.start.date;
+    var d=new Date(evDate);
+    var day=d.getDate();
+    if(dayFrom!==undefined&&dayTo!==undefined){if(day<dayFrom||day>dayTo)continue}
+    var title=(ev.summary||'').toLowerCase();
+    // Exclude non-cleaning events
+    var excluded=false;
+    for(var ex=0;ex<ADAM_EXCLUDE.length;ex++){
+     if(title.indexOf(ADAM_EXCLUDE[ex])>=0){excluded=true;break}
+    }
+    if(excluded)continue;
+    // Must be a cleaning-related event
+    var isClean=false;
+    for(var ck=0;ck<ADAM_CLEAN_KEYWORDS.length;ck++){
+     if(title.indexOf(ADAM_CLEAN_KEYWORDS[ck])>=0){isClean=true;break}
+    }
+    if(!isClean)continue;
+    // Match Adam's villas
+    var matched=false;
+    for(var k=0;k<ADAM_VILLA_KEYWORDS.length;k++){
+     if(title.indexOf(ADAM_VILLA_KEYWORDS[k])>=0){matched=true;break}
+    }
+    if(!matched)continue;
+    var villaObj=invMatchAdamVilla(title);
+    var serviceType=invGuessServiceType(title);
+    var price=villaObj?villaObj[serviceType.mode]||villaObj.co:0;
+    var dateStr=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
+    if(price>0&&villaObj){
+     cleaningJobs.push({date:dateStr,villa:villaObj.name,villaId:villaObj.id,service:ev.summary||'Cleaning',amount:price});
+    }
+    // Garbage tracking
+    if(villaObj&&(villaObj.id==='majesta'||villaObj.id==='sunrise_hill')&&villaObj.garbage>0){
+     garbageJobs.push({date:dateStr,villa:villaObj.name,amount:villaObj.garbage});
+    }
+    if(villaObj&&villaObj.id==='villa_love'){
+     // Villa Love garbage: only on last day of month (30th or 31st), NOT on 15th/16th
+     var daysInMonth=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();
+     if(day===daysInMonth){
+      garbageJobs.push({date:dateStr,villa:villaObj.name,amount:1500});
+     }
+    }
+   }
+  }
+  cleaningJobs.sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:0});
+  // Auto-generate laundry rows from cleaning jobs
+  var laundryRows=[];
+  for(var i=0;i<cleaningJobs.length;i++){
+   laundryRows.push({date:cleaningJobs[i].date,villa:cleaningJobs[i].villa,amount:''});
+  }
+  invCalJobs=cleaningJobs;
+  invCalGarbage=garbageJobs;
+  invLaundryRows=laundryRows;
+  invCalLoading=false;
+  if(callback)callback(cleaningJobs,garbageJobs);
+ })
+ .catch(function(err){
+  console.error('[InvCal] Fetch failed:',err.message);
+  invCalLoading=false;
+  if(callback)callback([],[]);
+ });
+}
+
+function invMatchAdamVilla(title){
+ var tl=title.toLowerCase();
+ if(tl.indexOf('love')>=0||tl.indexOf('villa love')>=0)return VILLAS.find(function(v){return v.id==='villa_love'});
+ if(tl.indexOf('majesta')>=0)return VILLAS.find(function(v){return v.id==='majesta'});
+ if(tl.indexOf('n1')>=0&&!tl.match(/n1\d/))return VILLAS.find(function(v){return v.id==='n1'});
+ if(tl.indexOf('n2')>=0)return VILLAS.find(function(v){return v.id==='n2'});
+ if(tl.indexOf('n3')>=0)return VILLAS.find(function(v){return v.id==='n3'});
+ if(tl.indexOf('j3')>=0)return VILLAS.find(function(v){return v.id==='j3'});
+ if(tl.indexOf('sunrise')>=0)return VILLAS.find(function(v){return v.id==='sunrise_hill'});
+ if(tl.indexOf('q1')>=0)return VILLAS.find(function(v){return v.id==='n1'});
+ return null;
+}
+
+function invGuessServiceType(title){
+ var tl=title.toLowerCase();
+ if(tl.indexOf('checkout')>=0||tl.indexOf('check out')>=0||tl.indexOf('co ')>=0)return{mode:'co'};
+ if(tl.indexOf('staying')>=0||tl.indexOf('stay ')>=0||tl.indexOf('st ')>=0)return{mode:'st'};
+ return{mode:'co'};
+}
+
+// ==================== INVOICE GENERATOR ====================
+var invState={client:'',month:new Date().toISOString().slice(0,7),mode:'',period:'',pjJobs:[],laurentVilla:'',stevenVilla:''};
+var INV_CLIENTS=[
+ {id:'adam',label:'Adam / Kagami',billName:'Kagami Movement Studio Co., Ltd.',prefix:'AK',wht:true,addr:'TAX ID: 0845566004663\n24/59 M.5, T.Bophut, A.Koh Samui, Suratthani 84320'},
+ {id:'mps',label:'MPS Portfolio',billName:'Mr Property Siam Co., Ltd.',prefix:'MPS',wht:true,addr:'TAX ID: 0845566025288\n115/26 Moo 6, Bophut, Koh Samui, Surat Thani 84320'},
+ {id:'chen',label:'Chen / C.O Samui',billName:'C.O Samui Property Management Co., Ltd.',prefix:'CHN',wht:false,addr:'TAX ID: 0845567017751\n167/56 Village No. 1, Bophut, Koh Samui, Surat Thani 84320'},
+ {id:'steven',label:'Steven',billName:'Steven',prefix:'STV',wht:false,addr:'Koh Samui, Suratthani',subVillas:[
+  {id:'chacha',label:'Villa Chacha',addr:'Koh Samui, Suratthani'},
+  {id:'julia',label:'Villa Julia',addr:'Koh Samui, Suratthani'}
+ ]},
+ {id:'david',label:'Bo Phut / David',billName:'Bo Phut / David',prefix:'BPD',wht:false,addr:'Koh Samui, Suratthani'},
+ {id:'laurent',label:'Laurent',billName:'Laurent',prefix:'LAU',wht:false,addr:'Koh Samui, Suratthani',subVillas:[
+  {id:'villa6',label:'Bo Phut Villa 6 \u2014 Daao R\u00e9sidence',company:'Daao R\u00e9sidence',attn:'Owner: Khun R\u00e9gis | Attn: Laurent',addr:'Koh Samui, Suratthani',invPrefix:'LAU-V6'},
+  {id:'a9',label:'Bangpor A9 \u2014 R\u00e9sidence Coast Breeze',company:'R\u00e9sidence Coast Breeze',attn:'Owner: Khun Yonni | Attn: Laurent',addr:'Koh Samui, Suratthani',invPrefix:'LAU-A9'}
+ ]},
+ {id:'others',label:'Others',billName:'Others',prefix:'OTH',wht:false,addr:'Koh Samui, Suratthani'}
+];
+var INV_SERVICE_TYPES=[
+ {id:'co',label:'Checkout Clean'},
+ {id:'st',label:'Staying Clean'},
+ {id:'deep',label:'Deep Clean'},
+ {id:'pool',label:'Pool'},
+ {id:'chef',label:'Chef'},
+ {id:'other',label:'Other'}
+];
+
+function invGetDefaultMode(cid){
+ if(cid==='adam')return'semi';
+ return'monthly';
+}
+
+function invGetNextNum(prefix,key){
+ var nums=ld('inv_numbers')||{};
+ var k=prefix+'_'+(key||'');
+ if(!nums[k])nums[k]=1;
+ var n=nums[k];
+ nums[k]=n+1;
+ sv('inv_numbers',nums);
+ return String(n).padStart(3,'0');
+}
+
+function invGetJobs(month,dayFrom,dayTo){
+ var jobs=[];
+ var chefJobs=ld('chef_jobs')||[];
+ for(var i=0;i<chefJobs.length;i++){
+  if(chefJobs[i].date&&chefJobs[i].date.slice(0,7)===month){
+   var day=parseInt(chefJobs[i].date.split('-')[2]);
+   if(dayFrom!==undefined&&dayTo!==undefined){if(day<dayFrom||day>dayTo)continue}
+   jobs.push({date:chefJobs[i].date,villa:'',service:'Chef - '+chefJobs[i].service+' ('+chefJobs[i].guests+' guests)',amount:chefJobs[i].price});
+  }
+ }
+ var cleanCalcs=ld('clean_calcs')||{};
+ for(var vid in cleanCalcs){
+  if(cleanCalcs[vid]._jobs){
+   for(var ji=0;ji<cleanCalcs[vid]._jobs.length;ji++){
+    var j=cleanCalcs[vid]._jobs[ji];
+    if(j.date&&j.date.slice(0,7)===month){
+     var day=parseInt(j.date.split('-')[2]);
+     if(dayFrom!==undefined&&dayTo!==undefined){if(day<dayFrom||day>dayTo)continue}
+     var typeLabels={co:'Checkout Clean',st:'Staying Clean',deep:'Deep Clean'};
+     jobs.push({date:j.date,villa:j.villaName,service:typeLabels[j.type]||j.type,amount:j.amount});
+    }
+   }
+  }
+ }
+ var poolJobs=ld('pool_jobs')||[];
+ for(var i=0;i<poolJobs.length;i++){
+  if(poolJobs[i].date&&poolJobs[i].date.slice(0,7)===month){
+   var day=parseInt(poolJobs[i].date.split('-')[2]);
+   if(dayFrom!==undefined&&dayTo!==undefined){if(day<dayFrom||day>dayTo)continue}
+   var pTypeLabels={standard:'Pool Standard Clean',chemical:'Pool Chemical Treatment',deep:'Pool Deep Clean'};
+   jobs.push({date:poolJobs[i].date,villa:poolJobs[i].villaName,service:pTypeLabels[poolJobs[i].type]||poolJobs[i].type,amount:poolJobs[i].amount});
+  }
+ }
+ jobs.sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:0});
+ return jobs;
+}
+
+function invClientMatch(villaName){
+ if(!villaName)return'';
+ var vl=villaName.toLowerCase();
+ if(vl.indexOf('adam')>=0||vl.indexOf('kagami')>=0||vl.indexOf('love')>=0||vl.indexOf('majesta')>=0||vl.indexOf(' n1')>=0||vl.indexOf(' n2')>=0||vl.indexOf(' n3')>=0||vl.indexOf('j3')>=0||vl.indexOf('sunrise')>=0)return'adam';
+ if(vl.indexOf('anna')>=0||vl.indexOf('diana')>=0||vl.indexOf('yoco')>=0||vl.indexOf('just')>=0||vl.indexOf('mps')>=0)return'mps';
+ if(vl.indexOf('buddha')>=0||vl.indexOf('aqua')>=0||vl.indexOf('chen')>=0)return'chen';
+ if(vl.indexOf('chacha')>=0||vl.indexOf('julia')>=0||vl.indexOf('steven')>=0)return'steven';
+ if(vl.indexOf('bangpor')>=0||vl.indexOf('laurent')>=0)return'laurent';
+ return'others';
+}
+
+function invCapitalize(s){
+ if(!s)return'';
+ return s.replace(/\b\w/g,function(c){return c.toUpperCase()});
+}
+
+function invRenderPreview(jobs,client,invNo,periodLabel,dueDate,applyWht){
+ var total=0;for(var i=0;i<jobs.length;i++){total+=jobs[i].amount}
+ var whtAmt=applyWht?Math.round(total*0.03):0;
+ var totalDue=total-whtAmt;
+ var NAVY='#0d2744';var GOLD='#c9a84c';var GREY='#f5f5f5';var RED='#dc2626';
+ var h='<div id="inv-preview" style="background:#fff;font-family:Arial,Helvetica,sans-serif;color:#1a1a2e;max-width:680px;margin:0 auto;padding:40px 50px;margin-bottom:16px">';
+
+ // HEADER
+ h+='<div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:12px;border-bottom:3px solid '+GOLD+';margin-bottom:16px">';
+ h+='<div>';
+ h+='<div style="font-size:18px;font-weight:700;color:'+NAVY+'">VIDA GROUP SAMUI CO., LTD.</div>';
+ h+='<div style="font-size:12px;color:#555;margin-top:2px">Professional Villa Services &mdash; Koh Samui, Thailand</div>';
+ h+='<div style="font-size:11px;color:#777;margin-top:4px">Reg. No.: 0845568014755</div>';
+ h+='<div style="font-size:11px;color:#777">82/4 Moo 3, Bophut, Koh Samui, Suratthani 84320, Thailand</div>';
+ h+='</div>';
+ h+='<div style="text-align:right">';
+ h+='<div style="font-size:28px;font-weight:700;color:'+NAVY+'">INVOICE</div>';
+ h+='</div>';
+ h+='</div>';
+
+ // BILL TO + INVOICE DETAILS
+ h+='<div style="display:flex;justify-content:space-between;margin-bottom:20px;gap:20px">';
+ h+='<div style="flex:1">';
+ h+='<div style="font-size:11px;font-weight:700;color:'+NAVY+';text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Bill To:</div>';
+ h+='<div style="font-size:14px;font-weight:600">'+client.billName+'</div>';
+ h+='<div style="font-size:12px;color:#555;white-space:pre-line">'+client.addr+'</div>';
+ h+='</div>';
+ h+='<div style="text-align:right;font-size:13px">';
+ h+='<div><strong>Invoice No:</strong> '+invNo+'</div>';
+ h+='<div><strong>Invoice Date:</strong> '+today()+'</div>';
+ h+='<div><strong>Period:</strong> '+periodLabel+'</div>';
+ if(dueDate)h+='<div><strong>Due Date:</strong> '+dueDate+'</div>';
+ h+='</div>';
+ h+='</div>';
+
+ // JOB TABLE
+ h+='<table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:20px">';
+ h+='<thead><tr style="background:'+NAVY+';color:#fff">';
+ h+='<th style="padding:8px 6px;text-align:left;width:30px">#</th>';
+ h+='<th style="padding:8px 6px;text-align:left;width:80px">Date</th>';
+ h+='<th style="padding:8px 6px;text-align:left">Villa</th>';
+ h+='<th style="padding:8px 6px;text-align:left">Service</th>';
+ h+='<th style="padding:8px 6px;text-align:right;width:100px">Amount (THB)</th>';
+ h+='</tr></thead><tbody>';
+ for(var i=0;i<jobs.length;i++){
+  var j=jobs[i];
+  var bg=i%2===0?'#fff':GREY;
+  var villaName=invCapitalize(j.villa||'-');
+  h+='<tr style="background:'+bg+';border-bottom:1px solid #e0e0e0">';
+  h+='<td style="padding:6px">'+(i+1)+'</td>';
+  h+='<td style="padding:6px">'+fmtDate(j.date)+'</td>';
+  h+='<td style="padding:6px">'+villaName+'</td>';
+  h+='<td style="padding:6px">'+j.service+'</td>';
+  h+='<td style="padding:6px;text-align:right;font-weight:600">'+fmt(j.amount)+'</td>';
+  h+='</tr>';
+ }
+ h+='</tbody></table>';
+
+ // TOTALS
+ h+='<div style="text-align:right;font-size:13px;margin-bottom:20px">';
+ h+='<div style="padding:4px 0">Subtotal: <strong>'+fmt(total)+' THB</strong></div>';
+ if(applyWht){
+  h+='<div style="padding:4px 0;color:'+RED+'">WHT 3%: <strong>&minus;'+fmt(whtAmt)+' THB</strong></div>';
+ }
+ h+='<div style="padding:8px 0;border-top:2px solid '+NAVY+';font-size:18px;font-weight:700;color:'+NAVY+'">TOTAL DUE: '+fmt(totalDue)+' THB</div>';
+ h+='</div>';
+
+ // PAYMENT BOX
+ h+='<div style="background:'+GREY+';padding:16px;border-radius:4px;margin-bottom:20px">';
+ h+='<div style="font-size:12px;font-weight:700;color:'+NAVY+';margin-bottom:8px;letter-spacing:1px">PAYMENT DETAILS</div>';
+ h+='<div style="font-size:12px"><strong>Bank:</strong> Krungthai Bank (KTB)</div>';
+ h+='<div style="font-size:12px"><strong>Account Name:</strong> MR. PHYO NYI NYI THET</div>';
+ h+='<div style="font-size:12px"><strong>Account No.:</strong> <span style="font-weight:700;color:'+NAVY+'">982-3-93931-4</span></div>';
+ if(dueDate)h+='<div style="font-size:11px;color:#777;margin-top:8px">Please transfer by '+dueDate+'. Thank you.</div>';
+ else h+='<div style="font-size:11px;color:#777;margin-top:8px">Please transfer upon receipt. Thank you.</div>';
+ h+='</div>';
+
+ // SIGNATURE LINES
+ h+='<div style="display:flex;justify-content:space-between;margin-top:60px;padding-top:30px;border-top:1px solid #e0e0e0">';
+ h+='<div style="text-align:center;width:40%">';
+ h+='<div style="border-bottom:1px solid #333;height:50px"></div>';
+ h+='<div style="font-size:11px;color:#555;margin-top:6px">Customer</div>';
+ h+='<div style="font-size:10px;color:#999;margin-top:2px">Authorized Signature</div>';
+ h+='</div>';
+ h+='<div style="text-align:center;width:40%">';
+ h+='<div style="border-bottom:1px solid #333;height:50px"></div>';
+ h+='<div style="font-size:11px;color:#555;margin-top:6px">Vida Group Samui Co., Ltd.</div>';
+ h+='<div style="font-size:10px;color:#999;margin-top:2px">Authorized Signature</div>';
+ h+='</div>';
+ h+='</div>';
+
+ // FOOTER
+ h+='<div style="text-align:center;font-size:9px;color:#999;margin-top:20px;padding-top:8px;border-top:1px solid #e0e0e0">';
+ h+='VIDA GROUP SAMUI CO., LTD. | Reg. No.: 0845568014755 | 82/4 Moo 3, Bophut, Koh Samui, Suratthani 84320, Thailand';
+ h+='</div>';
+
+ // BUTTONS (hidden in print)
+ h+='<div style="display:flex;gap:8px;margin-top:16px" class="no-print">';
+ h+='<button class="btn btn-navy btn-block" onclick="invPrint()">&#128424; Download PDF</button>';
+ h+='<button class="btn btn-gold btn-block" onclick="invCopyWA()">&#128224; Copy for WhatsApp</button>';
+ h+='</div>';
+ h+='</div>';
+ return h;
+}
+
+function invRenderAdamPreview(cleanJobs,garbageJobs,laundryRows,client,invNo,periodLabel,dueDate){
+ var NAVY='#0d2744';var GOLD='#c9a84c';var GREY='#f5f5f5';var RED='#dc2626';
+
+ // Calculate cleaning subtotal (including garbage line items)
+ var cleaningTotal=0;
+ for(var i=0;i<cleanJobs.length;i++){cleaningTotal+=cleanJobs[i].amount}
+ for(var i=0;i<garbageJobs.length;i++){cleaningTotal+=garbageJobs[i].amount}
+
+ // Calculate laundry subtotal
+ var laundryTotal=0;
+ for(var i=0;i<laundryRows.length;i++){laundryTotal+=(parseInt(laundryRows[i].amount)||0)}
+
+ var grossTotal=cleaningTotal+laundryTotal;
+ var whtAmt=Math.round(grossTotal*0.03);
+ var totalDue=grossTotal-whtAmt;
+
+ var h='<div id="inv-preview" style="background:#fff;font-family:Arial,Helvetica,sans-serif;color:#1a1a2e;max-width:680px;margin:0 auto;padding:40px 50px;margin-bottom:16px">';
+
+ // HEADER
+ h+='<div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:12px;border-bottom:3px solid '+GOLD+';margin-bottom:16px">';
+ h+='<div>';
+ h+='<div style="font-size:18px;font-weight:700;color:'+NAVY+'">VIDA GROUP SAMUI CO., LTD.</div>';
+ h+='<div style="font-size:12px;color:#555;margin-top:2px">Professional Villa Services &mdash; Koh Samui, Thailand</div>';
+ h+='<div style="font-size:11px;color:#777;margin-top:4px">Reg. No.: 0845568014755</div>';
+ h+='<div style="font-size:11px;color:#777">82/4 Moo 3, Bophut, Koh Samui, Suratthani 84320, Thailand</div>';
+ h+='</div>';
+ h+='<div style="text-align:right">';
+ h+='<div style="font-size:28px;font-weight:700;color:'+NAVY+'">INVOICE</div>';
+ h+='</div>';
+ h+='</div>';
+
+ // BILL TO + INVOICE DETAILS
+ h+='<div style="display:flex;justify-content:space-between;margin-bottom:20px;gap:20px">';
+ h+='<div style="flex:1">';
+ h+='<div style="font-size:11px;font-weight:700;color:'+NAVY+';text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Bill To:</div>';
+ h+='<div style="font-size:14px;font-weight:600">'+client.billName+'</div>';
+ h+='<div style="font-size:12px;color:#555;white-space:pre-line">'+client.addr+'</div>';
+ h+='</div>';
+ h+='<div style="text-align:right;font-size:13px">';
+ h+='<div><strong>Invoice No:</strong> '+invNo+'</div>';
+ h+='<div><strong>Invoice Date:</strong> '+today()+'</div>';
+ h+='<div><strong>Period:</strong> '+periodLabel+'</div>';
+ if(dueDate)h+='<div><strong>Due Date:</strong> '+dueDate+'</div>';
+ h+='</div>';
+ h+='</div>';
+
+ // === SECTION 1: CLEANING SERVICES ===
+ h+='<div style="font-size:13px;font-weight:700;color:'+NAVY+';text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;padding-bottom:4px;border-bottom:2px solid '+GOLD+'">Section 1 &mdash; Cleaning Services</div>';
+ h+='<table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:8px">';
+ h+='<thead><tr style="background:'+NAVY+';color:#fff">';
+ h+='<th style="padding:8px 6px;text-align:left;width:30px">#</th>';
+ h+='<th style="padding:8px 6px;text-align:left;width:80px">Date</th>';
+ h+='<th style="padding:8px 6px;text-align:left">Villa</th>';
+ h+='<th style="padding:8px 6px;text-align:left">Service</th>';
+ h+='<th style="padding:8px 6px;text-align:right;width:100px">Amount (THB)</th>';
+ h+='</tr></thead><tbody>';
+
+ var lineNum=1;
+ for(var i=0;i<cleanJobs.length;i++){
+  var j=cleanJobs[i];
+  var bg=i%2===0?'#fff':GREY;
+  h+='<tr style="background:'+bg+';border-bottom:1px solid #e0e0e0">';
+  h+='<td style="padding:6px">'+lineNum+'</td>';
+  h+='<td style="padding:6px">'+fmtDate(j.date)+'</td>';
+  h+='<td style="padding:6px">'+invCapitalize(j.villa)+'</td>';
+  h+='<td style="padding:6px">'+j.service+'</td>';
+  h+='<td style="padding:6px;text-align:right;font-weight:600">'+fmt(j.amount)+'</td>';
+  h+='</tr>';
+  lineNum++;
+ }
+ // Garbage line items
+ for(var i=0;i<garbageJobs.length;i++){
+  var g=garbageJobs[i];
+  var bg2=(cleanJobs.length+i)%2===0?'#fff':GREY;
+  h+='<tr style="background:'+bg2+';border-bottom:1px solid #e0e0e0">';
+  h+='<td style="padding:6px">'+lineNum+'</td>';
+  h+='<td style="padding:6px">'+fmtDate(g.date)+'</td>';
+  h+='<td style="padding:6px">'+invCapitalize(g.villa)+'</td>';
+  h+='<td style="padding:6px">Garbage Collection</td>';
+  h+='<td style="padding:6px;text-align:right;font-weight:600">'+fmt(g.amount)+'</td>';
+  h+='</tr>';
+  lineNum++;
+ }
+ h+='</tbody></table>';
+ h+='<div style="text-align:right;font-size:12px;padding:4px 0;margin-bottom:12px">Cleaning Subtotal: <strong>'+fmt(cleaningTotal)+' THB</strong></div>';
+
+ // === SECTION 2: LAUNDRY SERVICES ===
+ h+='<div style="font-size:13px;font-weight:700;color:'+NAVY+';text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;padding-bottom:4px;border-bottom:2px solid '+GOLD+'">Section 2 &mdash; Laundry Services</div>';
+ h+='<table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:8px">';
+ h+='<thead><tr style="background:'+NAVY+';color:#fff">';
+ h+='<th style="padding:8px 6px;text-align:left;width:30px">#</th>';
+ h+='<th style="padding:8px 6px;text-align:left;width:80px">Date</th>';
+ h+='<th style="padding:8px 6px;text-align:left">Villa</th>';
+ h+='<th style="padding:8px 6px;text-align:right;width:100px">Amount (THB)</th>';
+ h+='<th style="padding:8px 6px;text-align:center;width:60px" class="no-print"></th>';
+ h+='</tr></thead><tbody id="inv-laundry-tbody">';
+ for(var i=0;i<laundryRows.length;i++){
+  var lr=laundryRows[i];
+  var bg3=i%2===0?'#fff':GREY;
+  h+='<tr style="background:'+bg3+';border-bottom:1px solid #e0e0e0" data-lr-idx="'+i+'">';
+  h+='<td style="padding:6px">'+(i+1)+'</td>';
+  h+='<td style="padding:6px"><input type="date" value="'+lr.date+'" onchange="invLaundryEdit('+i+',\'date\',this.value)" style="border:none;background:transparent;font-size:12px;width:100px;font-family:inherit"></td>';
+  h+='<td style="padding:6px"><input type="text" value="'+lr.villa+'" onchange="invLaundryEdit('+i+',\'villa\',this.value)" style="border:none;background:transparent;font-size:12px;width:120px;font-family:inherit"></td>';
+  h+='<td style="padding:6px;text-align:right"><input type="number" value="'+lr.amount+'" min="0" onchange="invLaundryEdit('+i+',\'amount\',this.value)" style="border:none;background:transparent;font-size:12px;width:80px;text-align:right;font-weight:600;font-family:inherit"></td>';
+  h+='<td style="padding:6px;text-align:center" class="no-print"><button onclick="invLaundryDel('+i+')" style="background:none;border:none;color:'+RED+';cursor:pointer;font-size:14px;font-weight:700">&times;</button></td>';
+  h+='</tr>';
+ }
+ if(laundryRows.length===0){
+  h+='<tr><td colspan="5" style="padding:12px;text-align:center;color:#999;font-size:12px">No laundry entries yet &mdash; add manually below</td></tr>';
+ }
+ h+='</tbody></table>';
+ h+='<div style="text-align:right;font-size:12px;padding:4px 0;margin-bottom:4px">Laundry Subtotal: <strong>'+fmt(laundryTotal)+' THB</strong></div>';
+ h+='<button class="btn btn-sm btn-outline no-print" onclick="invLaundryAdd()" style="margin-bottom:16px">+ Add Laundry Row</button>';
+
+ // === TOTALS ===
+ h+='<div style="border-top:2px solid '+NAVY+';padding-top:12px;margin-top:16px;text-align:right;font-size:13px">';
+ h+='<div style="padding:4px 0">Cleaning: <strong>'+fmt(cleaningTotal)+' THB</strong></div>';
+ h+='<div style="padding:4px 0">Laundry: <strong>'+fmt(laundryTotal)+' THB</strong></div>';
+ h+='<div style="padding:4px 0;font-size:15px">Gross Total: <strong>'+fmt(grossTotal)+' THB</strong></div>';
+ h+='<div style="padding:4px 0;color:'+RED+'">WHT 3%: <strong>&minus;'+fmt(whtAmt)+' THB</strong></div>';
+ h+='<div style="padding:8px 0;border-top:2px solid '+NAVY+';font-size:18px;font-weight:700;color:'+NAVY+'">TOTAL DUE: '+fmt(totalDue)+' THB</div>';
+ h+='</div>';
+
+ // PAYMENT BOX
+ h+='<div style="background:'+GREY+';padding:16px;border-radius:4px;margin-bottom:20px;margin-top:20px">';
+ h+='<div style="font-size:12px;font-weight:700;color:'+NAVY+';margin-bottom:8px;letter-spacing:1px">PAYMENT DETAILS</div>';
+ h+='<div style="font-size:12px"><strong>Bank:</strong> Krungthai Bank (KTB)</div>';
+ h+='<div style="font-size:12px"><strong>Account Name:</strong> MR. PHYO NYI NYI THET</div>';
+ h+='<div style="font-size:12px"><strong>Account No.:</strong> <span style="font-weight:700;color:'+NAVY+'">982-3-93931-4</span></div>';
+ if(dueDate)h+='<div style="font-size:11px;color:#777;margin-top:8px">Please transfer by '+dueDate+'. Thank you.</div>';
+ else h+='<div style="font-size:11px;color:#777;margin-top:8px">Please transfer upon receipt. Thank you.</div>';
+ h+='</div>';
+
+ // SIGNATURE LINES
+ h+='<div style="display:flex;justify-content:space-between;margin-top:60px;padding-top:30px;border-top:1px solid #e0e0e0">';
+ h+='<div style="text-align:center;width:40%">';
+ h+='<div style="border-bottom:1px solid #333;height:50px"></div>';
+ h+='<div style="font-size:11px;color:#555;margin-top:6px">Customer</div>';
+ h+='<div style="font-size:10px;color:#999;margin-top:2px">Authorized Signature</div>';
+ h+='</div>';
+ h+='<div style="text-align:center;width:40%">';
+ h+='<div style="border-bottom:1px solid #333;height:50px"></div>';
+ h+='<div style="font-size:11px;color:#555;margin-top:6px">Vida Group Samui Co., Ltd.</div>';
+ h+='<div style="font-size:10px;color:#999;margin-top:2px">Authorized Signature</div>';
+ h+='</div>';
+ h+='</div>';
+
+ // FOOTER
+ h+='<div style="text-align:center;font-size:9px;color:#999;margin-top:20px;padding-top:8px;border-top:1px solid #e0e0e0">';
+ h+='VIDA GROUP SAMUI CO., LTD. | Reg. No.: 0845568014755 | 82/4 Moo 3, Bophut, Koh Samui, Suratthani 84320, Thailand';
+ h+='</div>';
+
+ // BUTTONS
+ h+='<div style="display:flex;gap:8px;margin-top:16px" class="no-print">';
+ h+='<button class="btn btn-navy btn-block" onclick="invPrint()">&#128424; Download PDF</button>';
+ h+='<button class="btn btn-gold btn-block" onclick="invCopyWA()">&#128224; Copy for WhatsApp</button>';
+ h+='</div>';
+ h+='</div>';
+ return h;
+}
+
+function invLaundryAdd(){
+ invLaundryRows.push({date:today(),villa:'',amount:''});
+ renderInvoice();
+}
+function invLaundryEdit(idx,field,val){
+ invLaundryRows[idx][field]=val;
+ renderInvoice();
+}
+function invLaundryDel(idx){
+ invLaundryRows.splice(idx,1);
+ renderInvoice();
+}
+
+function renderInvoice(){
+ var c=document.getElementById('invoice-content');
+ if(!c)return;
+ var h='<div class="card"><div class="card-h-gold">Invoice Generator</div>';
+ h+='<div class="fg2"><label>Client</label><select class="select" id="inv-client" onchange="invSetClient(this.value)">';
+ h+='<option value="">Select client...</option>';
+ for(var i=0;i<INV_CLIENTS.length;i++){
+  h+='<option value="'+INV_CLIENTS[i].id+'"'+(invState.client===INV_CLIENTS[i].id?' selected':'')+'>'+INV_CLIENTS[i].label+'</option>';
+ }
+ h+='</select></div>';
+
+ if(invState.client){
+  var defMode=invGetDefaultMode(invState.client);
+  if(!invState.mode)invState.mode=defMode;
+  h+='<div class="fg2"><label>Billing Type</label><select class="select" id="inv-mode" onchange="invSetMode(this.value)">';
+  h+='<option value="semi"'+(invState.mode==='semi'?' selected':'')+'>Semi-Monthly</option>';
+  h+='<option value="monthly"'+(invState.mode==='monthly'?' selected':'')+'>Monthly</option>';
+  h+='<option value="perjob"'+(invState.mode==='perjob'?' selected':'')+'>Per Job</option>';
+  h+='</select></div>';
+ }
+
+ if(invState.client&&invState.mode!=='perjob'){
+  h+='<div class="fg2"><label>Month</label><input class="input" type="month" id="inv-month" value="'+invState.month+'" onchange="invState.month=this.value;renderInvoice()"></div>';
+ }
+ if(invState.client&&invState.mode==='semi'){
+  h+='<div class="fg2"><label>Billing Period</label><select class="select" id="inv-period" onchange="invState.period=this.value;invLaundryRows=[];renderInvoice()">';
+  h+='<option value="">Select period...</option>';
+  h+='<option value="1"'+(invState.period==='1'?' selected':'')+'>1st - 15th (Due 15th)</option>';
+  h+='<option value="2"'+(invState.period==='2'?' selected':'')+'>16th - 30th (Due 30th)</option>';
+  h+='</select></div>';
+ }
+ if(invState.client==='steven'&&client&&client.subVillas){
+  h+='<div class="fg2"><label>Steven Villa</label><select class="select" id="inv-steven-villa" onchange="invState.stevenVilla=this.value;renderInvoice()">';
+  h+='<option value="">Select villa...</option>';
+  for(var vi=0;vi<client.subVillas.length;vi++){
+   h+='<option value="'+client.subVillas[vi].id+'"'+(invState.stevenVilla===client.subVillas[vi].id?' selected':'')+'>'+client.subVillas[vi].label+'</option>';
+  }
+  h+='</select></div>';
+ }
+ h+='</div>';
+
+ if(!invState.client){
+  h+='<div class="empty"><div class="empty-icon">&#128196;</div><div>Select a client to generate invoice</div></div>';
+  c.innerHTML=h;return;
+ }
+
+ var client=INV_CLIENTS.find(function(x){return x.id===invState.client});
+
+ if(invState.mode==='perjob'){
+  h+=invRenderPerJob(client);
+  c.innerHTML=h;return;
+ }
+
+ if(!invState.month){
+  h+='<div class="empty"><div class="empty-icon">&#128196;</div><div>Select month to generate invoice</div></div>';
+  c.innerHTML=h;return;
+ }
+ if(invState.mode==='semi'&&!invState.period){
+  h+='<div class="empty"><div class="empty-icon">&#128196;</div><div>Select billing period</div></div>';
+  c.innerHTML=h;return;
+ }
+ if(invState.client==='steven'&&!invState.stevenVilla){
+  h+='<div class="empty"><div class="empty-icon">&#128196;</div><div>Select a villa</div></div>';
+  c.innerHTML=h;return;
+ }
+
+ var dayFrom,dayTo,periodLabel,dueDate;
+ if(invState.mode==='semi'){
+  if(invState.period==='1'){dayFrom=1;dayTo=15;periodLabel='1-15 '+invState.month;dueDate='15 '+invState.month}
+  else{dayFrom=16;dayTo=31;periodLabel='16-30 '+invState.month;dueDate='30 '+invState.month}
+ }else{
+  var yr=parseInt(invState.month.split('-')[0]);
+  var mo=parseInt(invState.month.split('-')[1]);
+  var nextMo=mo+1;var nextYr=yr;
+  if(nextMo>12){nextMo=1;nextYr++}
+  dueDate='1 '+['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][nextMo]+' '+nextYr;
+  periodLabel=invState.month;
+ }
+
+ var jobs;
+ if(invState.client==='adam'){
+  jobs=invCalJobs.length>0?invCalJobs:[];
+  if(invCalLoading){
+   h+='<div class="empty"><div class="empty-icon">&#128196;</div><div>Loading calendar jobs...</div></div>';
+   c.innerHTML=h;
+   invFetchCalJobs(invState.month,dayFrom,dayTo,function(){renderInvoice()});
+   return;
+  }
+  if(jobs.length===0){
+   invFetchCalJobs(invState.month,dayFrom,dayTo,function(){renderInvoice()});
+   h+='<div class="empty"><div class="empty-icon">&#128196;</div><div>Fetching from Google Calendar...</div></div>';
+   c.innerHTML=h;return;
+  }
+  // Adam: two-section invoice
+  var invKey=invState.mode==='semi'?invState.period:'';
+  var invNum=invGetNextNum(client.prefix,invKey);
+  var invSuffix=invState.period==='1'?'a':'b';
+  var invNo=client.prefix+'-'+invState.month.slice(0,4)+'-'+invNum+invSuffix;
+  h+=invRenderAdamPreview(jobs,invCalGarbage,invLaundryRows,client,invNo,periodLabel,dueDate);
+  c.innerHTML=h;return;
+ }else{
+  jobs=invGetJobs(invState.month,dayFrom,dayTo);
+ }
+ if(jobs.length===0){
+  h+='<div class="empty"><div class="empty-icon">&#128196;</div><div>No jobs found for this period</div></div>';
+  c.innerHTML=h;return;
+ }
+
+ var invKey=invState.mode==='semi'?invState.period:'';
+ var invPrefix=client.prefix;
+ var billToClient=client;
+ if(invState.client==='steven'&&invState.stevenVilla){
+  var sv=client.subVillas.find(function(v){return v.id===invState.stevenVilla});
+  if(sv){billToClient={label:sv.label,addr:sv.addr||sv.label,wht:client.wht}}
+ }
+ var invNum=invGetNextNum(invPrefix,invKey);
+ var invSuffix='';
+ if(invState.mode==='semi')invSuffix=invState.period==='1'?'a':'b';
+ var invNo=invPrefix+'-'+invState.month.slice(0,4)+'-'+invNum+invSuffix;
+ var applyWht=billToClient.wht;
+
+ h+=invRenderPreview(jobs,billToClient,invNo,periodLabel,dueDate,applyWht);
+ c.innerHTML=h;
+}
+
+function invSetClient(cid){
+ invState.client=cid;
+ invState.mode=invGetDefaultMode(cid);
+ invState.period='';
+ invState.pjJobs=[];
+ invState.laurentVilla='';
+ invState.stevenVilla='';
+ invCalJobs=[];
+ invCalGarbage=[];
+ invLaundryRows=[];
+ renderInvoice();
+}
+
+function invSetMode(mode){
+ invState.mode=mode;
+ invState.period='';
+ invState.pjJobs=[];
+ invCalJobs=[];
+ invCalGarbage=[];
+ invLaundryRows=[];
+ renderInvoice();
+}
+
+function invRenderPerJob(client){
+ var h='<div class="card"><div class="card-h-gold">Add Jobs</div>';
+ if(invState.client==='steven'&&client&&client.subVillas){
+  h+='<div class="fg2"><label>Steven Villa</label><select class="select" id="pj-steven-villa" onchange="invState.stevenVilla=this.value;renderInvoice()">';
+  h+='<option value="">Select villa...</option>';
+  for(var vi=0;vi<client.subVillas.length;vi++){
+   h+='<option value="'+client.subVillas[vi].id+'"'+(invState.stevenVilla===client.subVillas[vi].id?' selected':'')+'>'+client.subVillas[vi].label+'</option>';
+  }
+  h+='</select></div>';
+ }
+ var villaDefault=(invState.client==='steven'&&invState.stevenVilla)?(client.subVillas.find(function(v){return v.id===invState.stevenVilla})||{}).label||'':'';
+ h+='<div class="fg2"><label>Villa Name</label><input class="input" type="text" id="pj-villa" value="'+villaDefault+'" placeholder="e.g. Villa Paradise"></div>';
+ h+='<div class="fg2"><label>Service Type</label><select class="select" id="pj-service">';
+ for(var i=0;i<INV_SERVICE_TYPES.length;i++){
+  h+='<option value="'+INV_SERVICE_TYPES[i].id+'">'+INV_SERVICE_TYPES[i].label+'</option>';
+ }
+ h+='</select></div>';
+ h+='<div class="fg2"><label>Date</label><input class="input" type="date" id="pj-date" value="'+today()+'"></div>';
+ h+='<div class="fg2"><label>Amount (THB)</label><input class="input" type="number" id="pj-amount" min="0" placeholder="0"></div>';
+ h+='<button class="btn btn-navy btn-block" onclick="invAddPJ()">+ Add Job</button>';
+ h+='</div>';
+
+ if(invState.pjJobs.length>0){
+  h+='<div class="card"><div class="card-h-gold">Jobs ('+invState.pjJobs.length+')</div>';
+  for(var i=0;i<invState.pjJobs.length;i++){
+   var j=invState.pjJobs[i];
+   h+='<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0f0f0">';
+   h+='<div><strong>'+j.villa+'</strong><br><span style="font-size:12px;color:var(--muted)">'+j.service+' | '+fmtDate(j.date)+'</span></div>';
+   h+='<div style="font-weight:600">'+fmt(j.amount)+' THB ';
+   h+='<button class="btn btn-sm btn-red" onclick="invRemovePJ('+i+')">&times;</button></div>';
+   h+='</div>';
+  }
+  h+='</div>';
+
+  var pjPrefix='PJ';
+  var pjClient=client;
+  if(invState.client==='steven'&&invState.stevenVilla){
+   var sv=client.subVillas.find(function(v){return v.id===invState.stevenVilla});
+   if(sv){pjClient={label:sv.label,addr:sv.addr||sv.label,wht:client.wht}}
+  }
+  var invNum=invGetNextNum(pjPrefix,'');
+  var invNo=pjPrefix+'-'+invState.month.slice(0,4)+'-'+invNum;
+  var applyWht=(pjClient.wht);
+  var periodLabel='Per Job Invoice';
+  h+=invRenderPreview(invState.pjJobs,pjClient,invNo,periodLabel,'',applyWht);
+ }
+ return h;
+}
+
+function invAddPJ(){
+ var villa=document.getElementById('pj-villa').value.trim();
+ var service=document.getElementById('pj-service').value;
+ var date=document.getElementById('pj-date').value;
+ var amount=parseInt(document.getElementById('pj-amount').value)||0;
+ if(!villa){alert('Enter villa name');return}
+ if(!date){alert('Select a date');return}
+ if(amount<=0){alert('Enter valid amount');return}
+ var svcLabel='';for(var i=0;i<INV_SERVICE_TYPES.length;i++){if(INV_SERVICE_TYPES[i].id===service)svcLabel=INV_SERVICE_TYPES[i].label}
+ invState.pjJobs.push({villa:villa,service:svcLabel,date:date,amount:amount});
+ sendToSheet({type:'job',date:date,client:invState.client,villa:villa,service:svcLabel,amount:amount,invoiceNo:''});
+ renderInvoice();
+}
+
+function invRemovePJ(idx){
+ invState.pjJobs.splice(idx,1);
+ renderInvoice();
+}
+
+function invPrint(){
+ var el=document.getElementById('inv-preview');
+ if(!el)return;
+ var w=window.open('','_blank','width=800,height=600');
+ w.document.write('<html><head><title></title>');
+ w.document.write('<style>');
+ w.document.write('body{font-family:Arial,Helvetica,sans-serif;padding:0;margin:0;color:#1a1a2e;background:#fff}');
+ w.document.write('table{width:100%;border-collapse:collapse}');
+ w.document.write('th,td{padding:6px;font-size:12px}');
+ w.document.write('.no-print{display:none!important}');
+ w.document.write('@media print{');
+ w.document.write('body{padding:0;margin:0}');
+ w.document.write('@page{size:A4 portrait;margin:18mm 20mm}');
+ w.document.write('}');
+ w.document.write('</style></head><body>');
+ w.document.write(el.innerHTML);
+ w.document.write('</body></html>');
+ w.document.close();
+ w.document.title='';
+ setTimeout(function(){w.print()},300);
+}
+
+function invCopyWA(){
+ var client=INV_CLIENTS.find(function(x){return x.id===invState.client});
+ if(!client)return;
+ var jobs=invState.mode==='perjob'?invState.pjJobs:invGetJobs(invState.month,
+  invState.mode==='semi'?(invState.period==='1'?1:16):undefined,
+  invState.mode==='semi'?(invState.period==='1'?15:31):undefined);
+ var total=0;for(var i=0;i<jobs.length;i++){total+=jobs[i].amount}
+ var applyWht=client.wht||(invState.mode==='perjob'&&(client.id==='adam'||client.id==='mps'));
+ var whtAmt=applyWht?Math.round(total*0.03):0;
+ var totalDue=total-whtAmt;
+ var invPrefix=client.prefix;
+ var billToLabel=client.billName;
+ var invNum=invGetNextNum(invState.mode==='perjob'?'PJ':invPrefix,invState.mode==='semi'?invState.period:'');
+ var invSuffix=invState.mode==='semi'?(invState.period==='1'?'a':'b'):'';
+ var invNo=(invState.mode==='perjob'?'PJ':invPrefix)+'-'+invState.month.slice(0,4)+'-'+invNum+invSuffix;
+ var periodLabel=invState.mode==='perjob'?'Per Job Invoice':(invState.mode==='semi'?(invState.period==='1'?'1-15':'16-30')+' '+invState.month:invState.month);
+
+ var txt='*INVOICE '+invNo+'*\n';
+ txt+='VIDA GROUP SAMUI CO., LTD.\n';
+ txt+='Period: '+periodLabel+'\n';
+ txt+='Client: '+billToLabel+'\n\n';
+ for(var i=0;i<jobs.length;i++){
+  var j=jobs[i];
+  txt+=fmtDate(j.date)+' | '+(j.villa||'-')+' | '+j.service+' | '+fmt(j.amount)+' THB\n';
+ }
+ txt+='\nSubtotal: '+fmt(total)+' THB\n';
+ if(applyWht)txt+='WHT 3%: -'+fmt(whtAmt)+' THB\n';
+ txt+='*Total Due: '+fmt(totalDue)+' THB*\n\n';
+ txt+='Payment:\nKrungthai Bank\n982-3-93931-4\nMR. PHYO NYI NYI THET';
+
+ if(navigator.clipboard){
+  navigator.clipboard.writeText(txt).then(function(){alert('Invoice copied to clipboard!')});
+ }else{
+  var ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+  alert('Invoice copied to clipboard!');
+ }
+}
+
+// ==================== P&L SUMMARY ====================
+var pnlMonth=new Date().toISOString().slice(0,7);
+
+function renderPnl(){
+ var c=document.getElementById('pnl-content');
+ if(!c)return;
+ var isViewer=CUR.role==='viewer';
+ var isDirector=CUR.role==='director';
+
+ // Month selector
+ var h='<div class="card"><div class="card-h-gold">P&L Summary</div>';
+ h+='<div class="fg2"><label>Month</label><input class="input" type="month" id="pnl-month" value="'+pnlMonth+'" onchange="pnlMonth=this.value;renderPnl()"></div>';
+ h+='</div>';
+
+ // Calculate totals for selected month
+ var expenses=ld('expenses')||[];
+ var chefJobs=ld('chef_jobs')||[];
+ var cleanCalcs=ld('clean_calcs')||{};
+ var poolJobs=ld('pool_jobs')||[];
+
+ var monthExp=expenses.filter(function(e){return e.at&&e.at.slice(0,7)===pnlMonth});
+ var monthChef=chefJobs.filter(function(c){return c.date&&c.date.slice(0,7)===pnlMonth});
+ var monthClean=[];
+ for(var villaId in cleanCalcs){
+  var villaData=cleanCalcs[villaId];
+  if(villaData._jobs){
+   for(var ji=0;ji<villaData._jobs.length;ji++){
+    var j=villaData._jobs[ji];
+    if(j.date&&j.date.slice(0,7)===pnlMonth)monthClean.push(j);
+   }
+  }
+ }
+ var monthPool=poolJobs.filter(function(p){return p.date&&p.date.slice(0,7)===pnlMonth});
+
+ var totalExp=0;for(var i=0;i<monthExp.length;i++){totalExp+=monthExp[i].amt}
+ var totalChef=0;for(var i=0;i<monthChef.length;i++){totalChef+=monthChef[i].profit||0}
+ var totalClean=0;for(var i=0;i<monthClean.length;i++){totalClean+=monthClean[i].profit||0}
+ var totalPool=0;for(var i=0;i<monthPool.length;i++){totalPool+=monthPool[i].profit||0}
+ var revenue=totalChef+totalClean+totalPool;
+ var profit=revenue-totalExp;
+
+ // Summary cards
+ h+='<div class="card"><div class="summary">';
+ h+='<div class="summary-row"><span>Revenue</span><span style="color:#16a34a;font-weight:600">'+fmt(revenue)+' THB</span></div>';
+ h+='<div class="summary-row"><span>Expenses</span><span style="color:#dc2626;font-weight:600">'+fmt(totalExp)+' THB</span></div>';
+ h+='<div class="summary-row"><span>Profit</span><span style="color:'+(profit>=0?'#16a34a':'#dc2626')+';font-weight:700;font-size:16px">'+fmt(profit)+' THB</span></div>';
+ h+='</div></div>';
+
+ // Revenue breakdown
+ h+='<div class="card"><div class="card-h">Revenue Breakdown</div>';
+ h+='<div class="summary">';
+ h+='<div class="summary-row"><span>Chef Profit</span><span>'+fmt(totalChef)+' THB</span></div>';
+ h+='<div class="summary-row"><span>Cleaning Profit</span><span>'+fmt(totalClean)+' THB</span></div>';
+ h+='<div class="summary-row"><span>Pool Profit</span><span>'+fmt(totalPool)+' THB</span></div>';
+ h+='</div></div>';
+
+ // Expense categories
+ h+='<div class="card"><div class="card-h">Expense Categories</div>';
+ var catTotals={};
+ for(var i=0;i<monthExp.length;i++){
+ var cat=monthExp[i].cat;
+ catTotals[cat]=(catTotals[cat]||0)+monthExp[i].amt;
+ }
+ var maxCat=0;var cats=Object.keys(catTotals);
+ for(var i=0;i<cats.length;i++){if(catTotals[cats[i]]>maxCat)maxCat=catTotals[cats[i]]}
+ if(cats.length===0){
+ h+='<div class="empty" style="padding:12px">No expenses this month</div>';
+ }else{
+ for(var i=0;i<cats.length;i++){
+ var cat=cats[i];
+ var pct=maxCat>0?(catTotals[cat]/maxCat*100):0;
+ h+='<div style="margin-bottom:8px">';
+ h+='<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:2px">';
+ h+='<span>'+expCatLabel(cat)+'</span><span style="font-weight:600">'+fmt(catTotals[cat])+' THB</span></div>';
+ h+='<div style="height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden">';
+ h+='<div style="height:100%;width:'+pct+'%;background:var(--gold);border-radius:4px"></div></div></div>';
+ }
+ }
+ h+='</div>';
+
+ // Expense by villa
+ h+='<div class="card"><div class="card-h">By Villa</div>';
+ var villaTotals={};
+ for(var i=0;i<monthExp.length;i++){
+ var v=monthExp[i].villaName||'General';
+ villaTotals[v]=(villaTotals[v]||0)+monthExp[i].amt;
+ }
+ var maxV=0;var villas=Object.keys(villaTotals);
+ for(var i=0;i<villas.length;i++){if(villaTotals[villas[i]]>maxV)maxV=villaTotals[villas[i]]}
+ if(villas.length===0){
+ h+='<div class="empty" style="padding:12px">No data</div>';
+ }else{
+ for(var i=0;i<villas.length;i++){
+ var v=villas[i];
+ var pct=maxV>0?(villaTotals[v]/maxV*100):0;
+ h+='<div style="margin-bottom:8px">';
+ h+='<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:2px">';
+ h+='<span>'+v+'</span><span style="font-weight:600">'+fmt(villaTotals[v])+' THB</span></div>';
+ h+='<div style="height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden">';
+ h+='<div style="height:100%;width:'+pct+'%;background:var(--navy);border-radius:4px"></div></div></div>';
+ }
+ }
+ h+='</div>';
+
+ // Staff expense summary
+ h+='<div class="card"><div class="card-h">By Staff</div>';
+ var staffTotals={};
+ for(var i=0;i<monthExp.length;i++){
+ var s=monthExp[i].byName;
+ staffTotals[s]=(staffTotals[s]||0)+monthExp[i].amt;
+ }
+ var maxS=0;var staffs=Object.keys(staffTotals);
+ for(var i=0;i<staffs.length;i++){if(staffTotals[staffs[i]]>maxS)maxS=staffTotals[staffs[i]]}
+ if(staffs.length===0){
+ h+='<div class="empty" style="padding:12px">No data</div>';
+ }else{
+ for(var i=0;i<staffs.length;i++){
+ var s=staffs[i];
+ var pct=maxS>0?(staffTotals[s]/maxS*100):0;
+ h+='<div style="margin-bottom:8px">';
+ h+='<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:2px">';
+ h+='<span>'+s+'</span><span style="font-weight:600">'+fmt(staffTotals[s])+' THB</span></div>';
+ h+='<div style="height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden">';
+ h+='<div style="height:100%;width:'+pct+'%;background:#8b5cf6;border-radius:4px"></div></div></div>';
+ }
+ }
+ h+='</div>';
+
+ c.innerHTML=h;
+}
+
+// ==================== JOB PHOTO (inside Expenses) ====================
+var jobPhotoState={photoData:'',photoFile:null};
+var JOB_PHOTO_API_URL='https://script.google.com/macros/s/AKfycbzqnVHPkxSZtJsLrxNqm8D6kPY9VjMFtrkjzxFj-GCFHi5b9JpTkMtYxkN4EwCb8A/exec';
+
+function jobPhotoSelectFile(input){
+ if(!input.files||!input.files[0])return;
+ jobPhotoState.photoFile=input.files[0];
+ var reader=new FileReader();
+ reader.onload=function(e){
+  var img=new Image();
+  img.onload=function(){
+   var canvas=document.createElement('canvas');
+   var MAX=1200;var w=img.width,h=img.height;
+   if(w>MAX){h=h*MAX/w;w=MAX}if(h>MAX){w=w*MAX/h;h=MAX}
+   canvas.width=w;canvas.height=h;
+   var ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,w,h);
+   jobPhotoState.photoData=canvas.toDataURL('image/jpeg',0.7);
+   document.getElementById('job-photo-preview').innerHTML='<img class="exp-thumb" src="'+jobPhotoState.photoData+'" style="width:100%;max-width:300px;height:auto">';
+  };
+  img.src=e.target.result;
+ };
+ reader.readAsDataURL(input.files[0]);
+}
+
+function jobPhotoClear(){
+ jobPhotoState.photoData='';jobPhotoState.photoFile=null;
+ var fi=document.getElementById('job-photo-file');if(fi)fi.value='';
+ var pv=document.getElementById('job-photo-preview');if(pv)pv.innerHTML='';
+}
+
+function jobPhotoUpload(dateStr,villaName,catLabel){
+ if(!jobPhotoState.photoData)return;
+ var safeVilla=villaName.replace(/[^a-zA-Z0-9]/g,'_').toLowerCase();
+ var d=new Date(dateStr);
+ var day=String(d.getDate()).padStart(2,'0');
+ var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+ var mon=months[d.getMonth()]||'Jan';
+ var yr=d.getFullYear();
+ var safeDate=day+'-'+mon+'-'+yr;
+ var filename=safeDate+'-'+safeVilla+'-'+catLabel.toLowerCase()+'.jpg';
+
+ var payload={type:'photo',date:dateStr,villa:villaName,jobType:catLabel,photo:jobPhotoState.photoData,filename:filename};
+
+ var xhr=new XMLHttpRequest();
+ xhr.open('POST',JOB_PHOTO_API_URL,true);
+ xhr.setRequestHeader('Content-Type','application/json');
+ xhr.onload=function(){
+  if(xhr.status===200){
+   var photos=ld('job_photos')||[];
+   photos.push({id:gid('jphoto'),villa:villaName,villaName:villaName,jobType:catLabel,date:dateStr,thumb:jobPhotoState.photoData,at:new Date().toISOString(),by:CUR.u,byName:CUR.name});
+   sv('job_photos',photos);
+   jobPhotoClear();
+  }
+ };
+ xhr.onerror=function(){};
+ xhr.send(JSON.stringify(payload));
+}
+
+// ==================== AI STAFF BRIEFING ====================
+var briefingState={messages:[],input:'',loading:false};
+var ANTHROPIC_API_KEY='';
+
+function renderBriefing(){
+ var c=document.getElementById('briefing-content');
+ if(!c)return;
+ var isDirector=CUR.role==='director';
+
+ // Get tomorrow's jobs from calendar
+ var jobs=ld('_sched_view')||[];
+ var tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);tomorrow.setHours(0,0,0,0);
+ var tomorrowEnd=new Date(tomorrow);tomorrowEnd.setHours(23,59,59,999);
+ var tomorrowJobs=jobs.filter(function(j){var d=new Date(j.start);return d>=tomorrow&&d<=tomorrowEnd});
+
+ var h='<div class="card" style="background:var(--navy);border:none">';
+ h+='<div style="font-size:14px;font-weight:700;color:var(--gold);margin-bottom:4px">🤖 AI Staff Briefing</div>';
+ h+='<div style="font-size:12px;color:rgba(255,255,255,0.6)">Ask about tomorrow\'s schedule or get staff briefing</div>';
+ h+='</div>';
+
+ // Tomorrow jobs summary
+ if(tomorrowJobs.length>0){
+  h+='<div class="card"><div class="card-h-gold">📅 Tomorrow\'s Jobs</div>';
+  for(var i=0;i<tomorrowJobs.length;i++){
+   var j=tomorrowJobs[i];
+   var d=new Date(j.start);
+   var t=d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+   var title=j.title||j.summary||'Job';
+   h+='<div style="padding:8px 0;border-bottom:1px solid #f0f0f0;font-size:13px">';
+   h+='<div style="font-weight:600;color:var(--navy)">'+title+'</div>';
+   h+='<div style="color:var(--muted)">'+t+'</div>';
+   h+='</div>';
+  }
+  h+='</div>';
+ }else{
+  h+='<div class="card"><div class="card-h-gold">📅 Tomorrow\'s Jobs</div>';
+  h+='<div style="font-size:13px;color:var(--muted);padding:8px 0">No jobs loaded. Go to Schedule tab first to sync calendar.</div>';
+  h+='</div>';
+ }
+
+ // API Key input (director only)
+ if(isDirector){
+  h+='<div class="card"><div class="card-h-gold">⚙️ API Settings</div>';
+  h+='<div class="fg2"><label>Anthropic API Key</label>';
+  h+='<input class="input" type="password" id="brief-api-key" value="'+(ld('brief_api_key')||'')+'" placeholder="sk-ant-..." onchange="sv(&quot;brief_api_key&quot;,this.value);ANTHROPIC_API_KEY=this.value">';
+  h+='</div></div>';
+ }
+
+ // Chat messages
+ h+='<div class="card" style="min-height:200px" id="brief-chat-box">';
+ if(briefingState.messages.length===0){
+  h+='<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">';
+  h+='<div style="font-size:32px;margin-bottom:8px">🤖</div>';
+  h+='<div>Ask me about tomorrow\'s jobs, staff assignments, or get the evening briefing</div>';
+  h+='<div style="margin-top:12px;display:flex;flex-direction:column;gap:8px">';
+  h+='<button class="btn btn-outline" style="font-size:12px" onclick="briefSendQuick(&quot;Generate tonight briefing for staff in Burmese&quot;)">📋 Generate Staff Briefing (Burmese)</button>';
+  h+='<button class="btn btn-outline" style="font-size:12px" onclick="briefSendQuick(&quot;Who has day off tomorrow?&quot;)">👤 Who has day off?</button>';
+  h+='<button class="btn btn-outline" style="font-size:12px" onclick="briefSendQuick(&quot;How many checkout cleans tomorrow and do we need to split teams?&quot;)">🧹 Team split needed?</button>';
+  h+='</div></div>';
+ }else{
+  for(var i=0;i<briefingState.messages.length;i++){
+   var m=briefingState.messages[i];
+   var isUser=m.role==='user';
+   h+='<div style="margin-bottom:12px;display:flex;justify-content:'+(isUser?'flex-end':'flex-start')+'">';
+   h+='<div style="max-width:85%;padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.5;';
+   h+=isUser?'background:var(--navy);color:#fff;border-radius:12px 12px 0 12px':'background:#f3f4f6;color:var(--text);border-radius:12px 12px 12px 0';
+   h+='">'+m.content.replace(/
+/g,'<br>')+'</div></div>';
+  }
+ }
+ if(briefingState.loading){
+  h+='<div style="padding:8px;color:var(--muted);font-size:13px">🤖 Thinking...</div>';
+ }
+ h+='</div>';
+
+ // Input
+ h+='<div style="display:flex;gap:8px;margin-top:8px">';
+ h+='<input class="input" type="text" id="brief-input" placeholder="Ask about tomorrow\'s schedule..." style="flex:1" onkeydown="if(event.key===&quot;Enter&quot;)briefSend()">';
+ h+='<button class="btn btn-gold" onclick="briefSend()" style="white-space:nowrap">Send</button>';
+ h+='</div>';
+ if(briefingState.messages.length>0){
+  h+='<button class="btn btn-outline btn-block" onclick="briefingState.messages=[];renderBriefing()" style="margin-top:8px;font-size:12px">Clear Chat</button>';
+ }
+
+ c.innerHTML=h;
+ ANTHROPIC_API_KEY=ld('brief_api_key')||'';
+}
+
+function briefSendQuick(msg){
+ briefingState.messages=[];
+ briefSendMsg(msg);
+}
+
+function briefSend(){
+ var input=document.getElementById('brief-input');
+ if(!input||!input.value.trim())return;
+ briefSendMsg(input.value.trim());
+}
+
+function briefSendMsg(msg){
+ var jobs=ld('_sched_view')||[];
+ var tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);tomorrow.setHours(0,0,0,0);
+ var tomorrowEnd=new Date(tomorrow);tomorrowEnd.setHours(23,59,59,999);
+ var tomorrowJobs=jobs.filter(function(j){var d=new Date(j.start);return d>=tomorrow&&d<=tomorrowEnd});
+
+ var staff=["Han Win Naing (Manager/Coordinator)","Ko Hein (Staff)","Aung Aung (Staff)","Ngwe Zin Thoon (Staff)","Thuzar (Staff)","Nyi Lin (Freelance - Client Communication)","Minhtwe (Pool/Garden/Maintenance)"];
+ var rules=[
+  "Checkout clean with same-day check-in = URGENT, full team or split if multiple villas",
+  "Checkout without same-day check-in = flexible, can do afternoon or next morning",
+  "Deep clean = full team needed (4 staff + manager), check who has day off first",
+  "Staff work 8:30am to 5:30pm, overtime needs Phyo approval",
+  "One staff has day off each day - check calendar for 'Day Off' events",
+  "If 2 same-day villas = split 2 teams, if 3 = split 2 teams + do last one based on check-in time",
+  "Pool/garden handled by Minhtwe separately",
+  "Chef bookings handled by AI automatically - Phyo only for special requests",
+  "Evening briefing sent at 8pm daily to staff WhatsApp group"
+ ];
+
+ var systemPrompt="You are the AI operations manager for Vida Group Samui, a villa services company in Koh Samui, Thailand. "+
+  "You help manage staff scheduling and operations.
+
+"+
+  "Staff: "+staff.join(", ")+".
+
+"+
+  "Business rules:
+"+rules.map(function(r){return "- "+r}).join("
+")+"
+
+"+
+  "Tomorrow's jobs from Google Calendar:
+"+
+  (tomorrowJobs.length>0?tomorrowJobs.map(function(j){
+   var d=new Date(j.start);
+   return "- "+j.title+" at "+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+(j.description?" ("+j.description+")":"");
+  }).join("
+"):"No jobs scheduled yet - calendar may not be synced.")+"
+
+"+
+  "When generating Burmese staff briefing, format it clearly with villa names, times, assigned staff, and any urgent warnings. "+
+  "Keep responses concise and practical. If asked for Burmese briefing, write the full message they can copy-paste to WhatsApp.";
+
+ briefingState.messages.push({role:'user',content:msg});
+ briefingState.loading=true;
+ renderBriefing();
+
+ var apiKey=ld('brief_api_key')||'';
+ if(!apiKey){
+  briefingState.messages.push({role:'assistant',content:'⚠️ Please add your Anthropic API key in the settings above (director login required).'});
+  briefingState.loading=false;
+  renderBriefing();
+  return;
+ }
+
+ var messages=briefingState.messages.map(function(m){return{role:m.role,content:m.content}});
+
+ fetch('https://api.anthropic.com/v1/messages',{
+  method:'POST',
+  headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+  body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,system:systemPrompt,messages:messages})
+ })
+ .then(function(r){return r.json()})
+ .then(function(data){
+  var reply=(data.content&&data.content[0]&&data.content[0].text)||'Sorry, no response.';
+  briefingState.messages.push({role:'assistant',content:reply});
+  briefingState.loading=false;
+  renderBriefing();
+  var box=document.getElementById('brief-chat-box');
+  if(box)box.scrollTop=box.scrollHeight;
+ })
+ .catch(function(err){
+  briefingState.messages.push({role:'assistant',content:'Error: '+err.message});
+  briefingState.loading=false;
+  renderBriefing();
+ });
+}
+
+</script>
+</body>
+</html>
