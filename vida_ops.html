@@ -2239,7 +2239,7 @@ function renderBriefing(){
  if(isDirector){
   h+='<div class="card"><div class="card-h-gold">⚙️ API Settings</div>';
   h+='<div class="fg2"><label>Anthropic API Key</label>';
-  h+='<input class="input" type="password" id="brief-api-key" value="'+(ld('brief_api_key')||'')+'" placeholder="sk-ant-..." onchange="sv('brief_api_key',this.value);ANTHROPIC_API_KEY=this.value">';
+  h+='<input class="input" type="password" id="brief-api-key" value="'+(ld('brief_api_key')||'')+'" placeholder="sk-ant-..." onchange="sv(&quot;brief_api_key&quot;,this.value);ANTHROPIC_API_KEY=this.value">';
   h+='</div></div>';
  }
 
@@ -2250,9 +2250,9 @@ function renderBriefing(){
   h+='<div style="font-size:32px;margin-bottom:8px">🤖</div>';
   h+='<div>Ask me about tomorrow's jobs, staff assignments, or get the evening briefing</div>';
   h+='<div style="margin-top:12px;display:flex;flex-direction:column;gap:8px">';
-  h+='<button class="btn btn-outline" style="font-size:12px" onclick="briefSendQuick('Generate tonight briefing for staff in Burmese')">📋 Generate Staff Briefing (Burmese)</button>';
-  h+='<button class="btn btn-outline" style="font-size:12px" onclick="briefSendQuick('Who has day off tomorrow?')">👤 Who has day off?</button>';
-  h+='<button class="btn btn-outline" style="font-size:12px" onclick="briefSendQuick('How many checkout cleans tomorrow and do we need to split teams?')">🧹 Team split needed?</button>';
+  h+='<button class="btn btn-outline" style="font-size:12px" onclick="briefSendQuick(&quot;Generate tonight briefing for staff in Burmese&quot;)">📋 Generate Staff Briefing (Burmese)</button>';
+  h+='<button class="btn btn-outline" style="font-size:12px" onclick="briefSendQuick(&quot;Who has day off tomorrow?&quot;)">👤 Who has day off?</button>';
+  h+='<button class="btn btn-outline" style="font-size:12px" onclick="briefSendQuick(&quot;How many checkout cleans tomorrow and do we need to split teams?&quot;)">🧹 Team split needed?</button>';
   h+='</div></div>';
  }else{
   for(var i=0;i<briefingState.messages.length;i++){
@@ -2272,7 +2272,7 @@ function renderBriefing(){
 
  // Input
  h+='<div style="display:flex;gap:8px;margin-top:8px">';
- h+='<input class="input" type="text" id="brief-input" placeholder="Ask about tomorrow's schedule..." style="flex:1" onkeydown="if(event.key==='Enter')briefSend()">';
+ h+='<input class="input" type="text" id="brief-input" placeholder="Ask about tomorrow's schedule..." style="flex:1" onkeydown="if(event.key===&quot;Enter&quot;)briefSend()">';
  h+='<button class="btn btn-gold" onclick="briefSend()" style="white-space:nowrap">Send</button>';
  h+='</div>';
  if(briefingState.messages.length>0){
