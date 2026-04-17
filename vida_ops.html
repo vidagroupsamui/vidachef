@@ -2346,11 +2346,21 @@ function renderLaundry(){
  h+='<div class="fg2"><label>Date</label><input class="input" type="date" id="lau-date" value="'+today()+'"></div>';
  h+='<div class="fg2"><label>Villa</label><select class="select" id="lau-villa">';
  h+='<option value="">Select villa...</option>';
- var adamVillas=VILLAS.filter(function(v){return v.group==="ADAM/KAGAMI"});
- for(var i=0;i<adamVillas.length;i++){
-  h+='<option value="'+adamVillas[i].name+'">'+adamVillas[i].name+'</option>';
+ var groups=['ADAM/KAGAMI','MPS','CHEN','STEVEN','LAURENT','OTHERS'];
+ for(var gi=0;gi<groups.length;gi++){
+  h+='<optgroup label="'+groups[gi]+'">';
+  for(var i=0;i<VILLAS.length;i++){
+   if(VILLAS[i].group===groups[gi]){
+    h+='<option value="'+VILLAS[i].name+'">'+VILLAS[i].name+'</option>';
+   }
+  }
+  h+='</optgroup>';
  }
  h+='</select></div>';
+ h+='</div>';
+ h+='<div class="fg2"><label>Invoice Amount Override (optional)</label>';
+ h+='<input class="input" type="number" id="lau-override" placeholder="Leave empty to use calculated price" min="0">';
+ h+='<div style="font-size:11px;color:var(--muted);margin-top:4px">For fixed-price villas, enter the amount you will charge on invoice</div>';
  h+='</div>';
 
  // Item quantities
@@ -2411,7 +2421,7 @@ function renderLaundry(){
    h+='<div style="font-size:12px;color:var(--muted)">'+fmtDate(r.date)+' | PCL: ฿'+r.totalPCL.toFixed(2)+'</div>';
    h+='</div>';
    h+='<div style="text-align:right">';
-   h+='<div style="font-weight:700;color:var(--gold)">฿'+r.totalClient.toFixed(2)+'</div>';
+   h+='<div style="font-weight:700;color:var(--gold)">฿'+(r.invoiceAmt||r.totalClient).toFixed(2)+'</div>';
    h+='<button class="btn btn-sm btn-red" style="margin-top:4px" onclick="laundryDelete(&quot;'+r.id+'&quot;)">&#10005;</button>';
    h+='</div></div>';
    // Item breakdown
@@ -2433,7 +2443,7 @@ function renderLaundry(){
   var month=document.getElementById?'':'';
   var monthTotal=0;
   var monthRecords=records.filter(function(r){return r.date&&r.date.slice(0,7)===new Date().toISOString().slice(0,7)});
-  for(var i=0;i<monthRecords.length;i++){monthTotal+=monthRecords[i].totalClient}
+  for(var i=0;i<monthRecords.length;i++){monthTotal+=(monthRecords[i].invoiceAmt||monthRecords[i].totalClient)}
   h+='<div class="summary">';
   h+='<div class="summary-row"><span>Records this month</span><span>'+monthRecords.length+'</span></div>';
   h+='<div class="summary-row total"><span>Total for Invoice</span><span style="color:var(--gold)">฿'+monthTotal.toFixed(2)+'</span></div>';
@@ -2465,6 +2475,8 @@ function laundrySave(){
   }
  }
  if(!hasItems){alert('Add at least one item');return}
+ var overrideEl=document.getElementById('lau-override');
+ var invoiceAmt=overrideEl&&overrideEl.value?parseFloat(overrideEl.value):totalClient;
  var records=ld('laundry_records')||[];
  records.push({
   id:gid('lau'),
@@ -2473,6 +2485,7 @@ function laundrySave(){
   quantities:JSON.parse(JSON.stringify(laundryState.quantities)),
   totalPCL:totalPCL,
   totalClient:totalClient,
+  invoiceAmt:invoiceAmt,
   by:CUR.u,
   byName:CUR.name
  });
