@@ -189,7 +189,7 @@ input,select,textarea{font-family:var(--sans);font-size:16px;touch-action:manipu
  <div id="mod-schedule" class="module"><div class="container" id="schedule-content"></div></div>
  <div id="mod-pnl" class="module"><div class="container" id="pnl-content"></div></div>
  <div id="mod-invoice" class="module"><div class="container" id="invoice-content"></div></div>
- <div id="mod-pool" class="module"><div class="container" id="pool-content"></div></div>
+ 
  <div id="mod-briefing" class="module"><div class="container" id="briefing-content"></div></div>
  </main>
  <nav id="bottom-tabs">
@@ -199,7 +199,7 @@ input,select,textarea{font-family:var(--sans);font-size:16px;touch-action:manipu
  <button class="tab-btn" data-mod="schedule" onclick="showMod('schedule')"><span class="tab-icon">&#128197;</span><span>Schedule</span></button>
  <button class="tab-btn" data-mod="pnl" onclick="showMod('pnl')"><span class="tab-icon">&#128200;</span><span>P&L</span></button>
  <button class="tab-btn" data-mod="invoice" onclick="showMod('invoice')"><span class="tab-icon">&#128196;</span><span>Invoice</span></button>
- <button class="tab-btn" data-mod="pool" onclick="showMod('pool')"><span class="tab-icon">&#127946;</span><span>Pool & Garden</span></button>
+ 
  <button class="tab-btn" data-mod="briefing" onclick="showMod('briefing')"><span class="tab-icon">&#129302;</span><span>AI Brief</span></button>
  </nav>
 </div>
@@ -270,9 +270,9 @@ var VILLAS=[
  {id:'adhoc-304',name:'304 (Ad-hoc)',client:'Ad-hoc',group:'OTHERS',co:800,st:800,wht:false,laundry:false}
 ];
 var SHARE_LABELS=['Labor','Ingredients','Commission','Company Profit','Buffer'];
-var MOD_TITLES={chef:'Chef Calculator',cleaning:'Cleaning Calculator',upload:'Expenses',schedule:'Schedule',pnl:'P&L Summary',invoice:'Invoice Generator',pool:'Pool & Garden Calculator',briefing:'AI Staff Briefing'};
-var ACCESS={chef:{director:1,viewer:0,manager:1,staff:0},cleaning:{director:1,viewer:0,manager:1,staff:0},upload:{director:1,viewer:0,manager:1,staff:1},schedule:{director:1,viewer:1,manager:1,staff:1},pnl:{director:1,viewer:1,manager:0,staff:0},invoice:{phyo:1,thuthu:1},pool:{director:1,viewer:0,manager:1,staff:0},briefing:{director:1,viewer:0,manager:1,staff:1}};
-var EDITABLE={chef:{director:1,viewer:0,manager:1,staff:0},cleaning:{director:1,viewer:0,manager:1,staff:0},upload:{director:1,viewer:0,manager:1,staff:1},schedule:{director:1,viewer:0,manager:1,staff:1},pnl:{director:1,viewer:0,manager:0,staff:0},invoice:{phyo:1,thuthu:1},pool:{director:1,viewer:0,manager:1,staff:0},briefing:{director:1,viewer:0,manager:1,staff:1}};
+var MOD_TITLES={chef:'Chef Calculator',cleaning:'Cleaning Calculator',upload:'Expenses',schedule:'Schedule',pnl:'P&L Summary',invoice:'Invoice Generator',briefing:'AI Staff Briefing'};
+var ACCESS={chef:{director:1,viewer:0,manager:1,staff:0},cleaning:{director:1,viewer:0,manager:1,staff:0},upload:{director:1,viewer:0,manager:1,staff:1},schedule:{director:1,viewer:1,manager:1,staff:1},pnl:{director:1,viewer:1,manager:0,staff:0},invoice:{phyo:1,thuthu:1},briefing:{director:1,viewer:0,manager:1,staff:1}};
+var EDITABLE={chef:{director:1,viewer:0,manager:1,staff:0},cleaning:{director:1,viewer:0,manager:1,staff:0},upload:{director:1,viewer:0,manager:1,staff:1},schedule:{director:1,viewer:0,manager:1,staff:1},pnl:{director:1,viewer:0,manager:0,staff:0},invoice:{phyo:1,thuthu:1},briefing:{director:1,viewer:0,manager:1,staff:1}};
 var EXP_CATS=[
  {id:'fuel',label:'Fuel / Gasoline'},
  {id:'cleaning_supplies',label:'Cleaning Supplies'},
@@ -361,7 +361,7 @@ function showMod(m){
  else if(m==='schedule'){if(calTimer)clearInterval(calTimer);schedFetchCal();calTimer=setInterval(function(){schedFetchCal()},300000);renderSchedule();}
  else if(m==='pnl')renderPnl();
  else if(m==='invoice')renderInvoice();
- else if(m==='pool')renderPool();
+ 
  else if(m==='briefing')renderBriefing();
 }
 function openModal(html){document.getElementById('modal-body').innerHTML=html;document.getElementById('modal-bg').classList.add('on')}
