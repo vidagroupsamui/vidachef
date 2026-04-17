@@ -191,6 +191,7 @@ input,select,textarea{font-family:var(--sans);font-size:16px;touch-action:manipu
  <div id="mod-invoice" class="module"><div class="container" id="invoice-content"></div></div>
  
  <div id="mod-briefing" class="module"><div class="container" id="briefing-content"></div></div>
+ <div id="mod-laundry" class="module"><div class="container" id="laundry-content"></div></div>
  </main>
  <nav id="bottom-tabs">
  <button class="tab-btn" data-mod="chef" onclick="showMod('chef')"><span class="tab-icon">&#127859;</span><span>Chef</span></button>
@@ -201,6 +202,7 @@ input,select,textarea{font-family:var(--sans);font-size:16px;touch-action:manipu
  <button class="tab-btn" data-mod="invoice" onclick="showMod('invoice')"><span class="tab-icon">&#128196;</span><span>Invoice</span></button>
  
  <button class="tab-btn" data-mod="briefing" onclick="showMod('briefing')"><span class="tab-icon">&#129302;</span><span>AI Brief</span></button>
+ <button class="tab-btn" data-mod="laundry" onclick="showMod('laundry')"><span class="tab-icon">&#129531;</span><span>Laundry</span></button>
  </nav>
 </div>
 
@@ -270,9 +272,9 @@ var VILLAS=[
  {id:'adhoc-304',name:'304 (Ad-hoc)',client:'Ad-hoc',group:'OTHERS',co:800,st:800,wht:false,laundry:false}
 ];
 var SHARE_LABELS=['Labor','Ingredients','Commission','Company Profit','Buffer'];
-var MOD_TITLES={chef:'Chef Calculator',cleaning:'Cleaning Calculator',upload:'Expenses',schedule:'Schedule',pnl:'P&L Summary',invoice:'Invoice Generator',briefing:'AI Staff Briefing'};
-var ACCESS={chef:{director:1,viewer:0,manager:0,staff:0},cleaning:{director:1,viewer:0,manager:0,staff:0},upload:{director:1,viewer:0,manager:1,staff:1},schedule:{director:1,viewer:1,manager:1,staff:1},pnl:{director:1,viewer:1,manager:0,staff:0},invoice:{phyo:1,thuthu:1},briefing:{director:1,viewer:0,manager:1,staff:1}};
-var EDITABLE={chef:{director:1,viewer:0,manager:1,staff:0},cleaning:{director:1,viewer:0,manager:1,staff:0},upload:{director:1,viewer:0,manager:1,staff:1},schedule:{director:1,viewer:0,manager:1,staff:1},pnl:{director:1,viewer:0,manager:0,staff:0},invoice:{phyo:1,thuthu:1},briefing:{director:1,viewer:0,manager:1,staff:1}};
+var MOD_TITLES={chef:'Chef Calculator',cleaning:'Cleaning Calculator',upload:'Expenses',schedule:'Schedule',pnl:'P&L Summary',invoice:'Invoice Generator',briefing:'AI Staff Briefing',laundry:'Laundry Calculator'};
+var ACCESS={chef:{director:1,viewer:0,manager:0,staff:0},cleaning:{director:1,viewer:0,manager:0,staff:0},upload:{director:1,viewer:0,manager:1,staff:1},schedule:{director:1,viewer:1,manager:1,staff:1},pnl:{director:1,viewer:1,manager:0,staff:0},invoice:{phyo:1,thuthu:1},briefing:{director:1,viewer:0,manager:1,staff:1},laundry:{director:1,viewer:0,manager:1,staff:0}};
+var EDITABLE={chef:{director:1,viewer:0,manager:1,staff:0},cleaning:{director:1,viewer:0,manager:1,staff:0},upload:{director:1,viewer:0,manager:1,staff:1},schedule:{director:1,viewer:0,manager:1,staff:1},pnl:{director:1,viewer:0,manager:0,staff:0},invoice:{phyo:1,thuthu:1},briefing:{director:1,viewer:0,manager:1,staff:1},laundry:{director:1,viewer:0,manager:1,staff:0}};
 var EXP_CATS=[
  {id:'fuel',label:'Fuel / Gasoline'},
  {id:'cleaning_supplies',label:'Cleaning Supplies'},
@@ -363,6 +365,7 @@ function showMod(m){
  else if(m==='invoice')renderInvoice();
  
  else if(m==='briefing')renderBriefing();
+ else if(m==='laundry')renderLaundry();
 }
 function openModal(html){document.getElementById('modal-body').innerHTML=html;document.getElementById('modal-bg').classList.add('on')}
 function closeModal(){document.getElementById('modal-bg').classList.remove('on')}
@@ -2319,5 +2322,173 @@ function briefSendMsg(msg){
   briefingState.loading=false;renderBriefing();
  });
 }
+
+// ==================== LAUNDRY CALCULATOR ====================
+var PCL_ITEMS=[
+ {id:'handtowel',label:'Hand Towel',pcl:6.86},
+ {id:'mat',label:'Bath Mat',pcl:7.84},
+ {id:'bathtowel',label:'Bath Towel',pcl:20.78},
+ {id:'pooltowel',label:'Pool Towel',pcl:19.60},
+ {id:'pillowcase',label:'Pillow Case',pcl:7.84},
+ {id:'bedsheet',label:'Bed Sheet',pcl:27.44},
+ {id:'duvetcover',label:'Duvet Cover',pcl:38.22}
+];
+var LAUNDRY_MARKUP=1.15;
+var laundryState={villa:'',date:'',quantities:{},records:[]};
+
+function laundryClientPrice(pcl){return Math.ceil(pcl*LAUNDRY_MARKUP*100)/100;}
+
+function renderLaundry(){
+ var c=document.getElementById('laundry-content');
+ if(!c)return;
+ var ed=canEdit('laundry');
+ var h='<div class="card"><div class="card-h-gold">PCL Laundry Calculator</div>';
+ h+='<div class="fg2"><label>Date</label><input class="input" type="date" id="lau-date" value="'+today()+'"></div>';
+ h+='<div class="fg2"><label>Villa</label><select class="select" id="lau-villa">';
+ h+='<option value="">Select villa...</option>';
+ var adamVillas=VILLAS.filter(function(v){return v.group==="ADAM/KAGAMI"});
+ for(var i=0;i<adamVillas.length;i++){
+  h+='<option value="'+adamVillas[i].name+'">'+adamVillas[i].name+'</option>';
+ }
+ h+='</select></div>';
+ h+='</div>';
+
+ // Item quantities
+ h+='<div class="card"><div class="card-h-gold">Items</div>';
+ h+='<table style="width:100%;font-size:13px;border-collapse:collapse">';
+ h+='<thead><tr style="background:var(--navy);color:#fff">';
+ h+='<th style="padding:8px;text-align:left">Item</th>';
+ h+='<th style="padding:8px;text-align:center;width:80px">Qty</th>';
+ h+='<th style="padding:8px;text-align:right;width:80px">PCL (฿)</th>';
+ h+='<th style="padding:8px;text-align:right;width:90px">Client (฿)</th>';
+ h+='</tr></thead><tbody>';
+ var totalPCL=0;var totalClient=0;
+ for(var i=0;i<PCL_ITEMS.length;i++){
+  var item=PCL_ITEMS[i];
+  var qty=laundryState.quantities[item.id]||0;
+  var clientPrice=laundryClientPrice(item.pcl);
+  var rowPCL=qty*item.pcl;
+  var rowClient=qty*clientPrice;
+  totalPCL+=rowPCL;totalClient+=rowClient;
+  var bg=i%2===0?'#fff':'#f9f9f9';
+  h+='<tr style="background:'+bg+';border-bottom:1px solid #eee">';
+  h+='<td style="padding:8px">'+item.label+'</td>';
+  h+='<td style="padding:4px;text-align:center">';
+  h+='<div style="display:flex;align-items:center;justify-content:center;gap:6px">';
+  h+='<button onclick="laundryQty(''+item.id+'',-1)" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--gold-bdr);background:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">-</button>';
+  h+='<span style="min-width:20px;text-align:center;font-weight:600">'+qty+'</span>';
+  h+='<button onclick="laundryQty(''+item.id+'',1)" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--gold-bdr);background:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button>';
+  h+='</div></td>';
+  h+='<td style="padding:8px;text-align:right;color:var(--muted)">'+item.pcl.toFixed(2)+'</td>';
+  h+='<td style="padding:8px;text-align:right;font-weight:600;color:var(--navy)">'+clientPrice.toFixed(2)+'</td>';
+  h+='</tr>';
+ }
+ h+='</tbody></table>';
+
+ // Totals
+ h+='<div class="summary" style="margin-top:8px">';
+ h+='<div class="summary-row"><span>PCL Cost</span><span>฿'+totalPCL.toFixed(2)+'</span></div>';
+ h+='<div class="summary-row"><span>Markup (15%)</span><span>฿'+(totalClient-totalPCL).toFixed(2)+'</span></div>';
+ h+='<div class="summary-row total"><span>Charge to Client</span><span style="color:var(--gold)">฿'+totalClient.toFixed(2)+'</span></div>';
+ h+='</div>';
+
+ if(totalClient>0){
+  h+='<button class="btn btn-navy btn-block" style="margin-top:10px" onclick="laundrySave()">Save Record</button>';
+ }
+ h+='</div>';
+
+ // Records list
+ var records=ld('laundry_records')||[];
+ if(records.length>0){
+  h+='<div class="card"><div class="card-h-gold">Laundry Records</div>';
+  var sorted=records.slice().reverse();
+  for(var i=0;i<sorted.length;i++){
+   var r=sorted[i];
+   h+='<div style="padding:10px 0;border-bottom:1px solid #f0f0f0">';
+   h+='<div style="display:flex;justify-content:space-between;align-items:center">';
+   h+='<div>';
+   h+='<div style="font-weight:600;color:var(--navy)">'+r.villa+'</div>';
+   h+='<div style="font-size:12px;color:var(--muted)">'+fmtDate(r.date)+' | PCL: ฿'+r.totalPCL.toFixed(2)+'</div>';
+   h+='</div>';
+   h+='<div style="text-align:right">';
+   h+='<div style="font-weight:700;color:var(--gold)">฿'+r.totalClient.toFixed(2)+'</div>';
+   h+='<button class="btn btn-sm btn-red" style="margin-top:4px" onclick="laundryDelete(''+r.id+'')">&#10005;</button>';
+   h+='</div></div>';
+   // Item breakdown
+   h+='<div style="font-size:11px;color:var(--muted);margin-top:4px">';
+   for(var item in r.quantities){
+    if(r.quantities[item]>0){
+     var itemObj=PCL_ITEMS.find(function(x){return x.id===item});
+     if(itemObj)h+=itemObj.label+': '+r.quantities[item]+' | ';
+    }
+   }
+   h+='</div>';
+   h+='</div>';
+  }
+  h+='</div>';
+
+  // Monthly summary for invoice
+  h+='<div class="card"><div class="card-h-gold">Monthly Summary (for Adam Invoice)</div>';
+  h+='<div class="fg2"><label>Month</label><input class="input" type="month" id="lau-month" value="'+new Date().toISOString().slice(0,7)+'" onchange="renderLaundry()"></div>';
+  var month=document.getElementById?'':'';
+  var monthTotal=0;
+  var monthRecords=records.filter(function(r){return r.date&&r.date.slice(0,7)===new Date().toISOString().slice(0,7)});
+  for(var i=0;i<monthRecords.length;i++){monthTotal+=monthRecords[i].totalClient}
+  h+='<div class="summary">';
+  h+='<div class="summary-row"><span>Records this month</span><span>'+monthRecords.length+'</span></div>';
+  h+='<div class="summary-row total"><span>Total for Invoice</span><span style="color:var(--gold)">฿'+monthTotal.toFixed(2)+'</span></div>';
+  h+='</div></div>';
+ }
+
+ c.innerHTML=h;
+}
+
+function laundryQty(itemId, delta){
+ if(!laundryState.quantities[itemId])laundryState.quantities[itemId]=0;
+ laundryState.quantities[itemId]=Math.max(0,laundryState.quantities[itemId]+delta);
+ renderLaundry();
+}
+
+function laundrySave(){
+ var villa=document.getElementById('lau-villa').value;
+ var date=document.getElementById('lau-date').value;
+ if(!villa){alert('Select a villa');return}
+ if(!date){alert('Select a date');return}
+ var totalPCL=0;var totalClient=0;
+ var hasItems=false;
+ for(var i=0;i<PCL_ITEMS.length;i++){
+  var qty=laundryState.quantities[PCL_ITEMS[i].id]||0;
+  if(qty>0){
+   hasItems=true;
+   totalPCL+=qty*PCL_ITEMS[i].pcl;
+   totalClient+=qty*laundryClientPrice(PCL_ITEMS[i].pcl);
+  }
+ }
+ if(!hasItems){alert('Add at least one item');return}
+ var records=ld('laundry_records')||[];
+ records.push({
+  id:gid('lau'),
+  villa:villa,
+  date:date,
+  quantities:JSON.parse(JSON.stringify(laundryState.quantities)),
+  totalPCL:totalPCL,
+  totalClient:totalClient,
+  by:CUR.u,
+  byName:CUR.name
+ });
+ sv('laundry_records',records);
+ laundryState.quantities={};
+ alert('Saved!');
+ renderLaundry();
+}
+
+function laundryDelete(id){
+ if(!confirm('Delete this record?'))return;
+ var records=ld('laundry_records')||[];
+ records=records.filter(function(r){return r.id!==id});
+ sv('laundry_records',records);
+ renderLaundry();
+}
+
 </script>
 </body>
