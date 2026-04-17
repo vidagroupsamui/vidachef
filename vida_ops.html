@@ -352,7 +352,7 @@ function applyTabAccess(){
 }
 function showMod(m){
  if(!canAccess(m))return;
- var mods=['chef','cleaning','upload','schedule','pnl','invoice','pool'];
+ var mods=['chef','cleaning','upload','schedule','pnl','invoice','briefing','laundry'];
  for(var i=0;i<mods.length;i++){var el=document.getElementById('mod-'+mods[i]);if(el){el.classList.toggle('on',mods[i]===m)}}
  var btns=document.querySelectorAll('.tab-btn');
  for(var i=0;i<btns.length;i++){btns[i].classList.toggle('on',btns[i].getAttribute('data-mod')===m)}
