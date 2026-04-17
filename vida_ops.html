@@ -2212,12 +2212,12 @@ function renderBriefing(){
 
  var h='<div class="card" style="background:var(--navy);border:none">';
  h+='<div style="font-size:14px;font-weight:700;color:var(--gold);margin-bottom:4px">🤖 AI Staff Briefing</div>';
- h+='<div style="font-size:12px;color:rgba(255,255,255,0.6)">Ask about tomorrow's schedule or get staff briefing</div>';
+ h+='<div style="font-size:12px;color:rgba(255,255,255,0.6)">Ask about tomorrow\'s schedule or get staff briefing</div>';
  h+='</div>';
 
  // Tomorrow jobs summary
  if(tomorrowJobs.length>0){
-  h+='<div class="card"><div class="card-h-gold">📅 Tomorrow's Jobs</div>';
+  h+='<div class="card"><div class="card-h-gold">📅 Tomorrow\'s Jobs</div>';
   for(var i=0;i<tomorrowJobs.length;i++){
    var j=tomorrowJobs[i];
    var d=new Date(j.start);
@@ -2230,7 +2230,7 @@ function renderBriefing(){
   }
   h+='</div>';
  }else{
-  h+='<div class="card"><div class="card-h-gold">📅 Tomorrow's Jobs</div>';
+  h+='<div class="card"><div class="card-h-gold">📅 Tomorrow\'s Jobs</div>';
   h+='<div style="font-size:13px;color:var(--muted);padding:8px 0">No jobs loaded. Go to Schedule tab first to sync calendar.</div>';
   h+='</div>';
  }
@@ -2248,7 +2248,7 @@ function renderBriefing(){
  if(briefingState.messages.length===0){
   h+='<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">';
   h+='<div style="font-size:32px;margin-bottom:8px">🤖</div>';
-  h+='<div>Ask me about tomorrow's jobs, staff assignments, or get the evening briefing</div>';
+  h+='<div>Ask me about tomorrow\'s jobs, staff assignments, or get the evening briefing</div>';
   h+='<div style="margin-top:12px;display:flex;flex-direction:column;gap:8px">';
   h+='<button class="btn btn-outline" style="font-size:12px" onclick="briefSendQuick(&quot;Generate tonight briefing for staff in Burmese&quot;)">📋 Generate Staff Briefing (Burmese)</button>';
   h+='<button class="btn btn-outline" style="font-size:12px" onclick="briefSendQuick(&quot;Who has day off tomorrow?&quot;)">👤 Who has day off?</button>';
@@ -2272,7 +2272,7 @@ function renderBriefing(){
 
  // Input
  h+='<div style="display:flex;gap:8px;margin-top:8px">';
- h+='<input class="input" type="text" id="brief-input" placeholder="Ask about tomorrow's schedule..." style="flex:1" onkeydown="if(event.key===&quot;Enter&quot;)briefSend()">';
+ h+='<input class="input" type="text" id="brief-input" placeholder="Ask about tomorrow\'s schedule..." style="flex:1" onkeydown="if(event.key===&quot;Enter&quot;)briefSend()">';
  h+='<button class="btn btn-gold" onclick="briefSend()" style="white-space:nowrap">Send</button>';
  h+='</div>';
  if(briefingState.messages.length>0){
