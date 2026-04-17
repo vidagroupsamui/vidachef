@@ -2375,9 +2375,9 @@ function renderLaundry(){
   h+='<td style="padding:8px">'+item.label+'</td>';
   h+='<td style="padding:4px;text-align:center">';
   h+='<div style="display:flex;align-items:center;justify-content:center;gap:6px">';
-  h+='<button onclick="laundryQty(''+item.id+'',-1)" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--gold-bdr);background:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">-</button>';
+  h+='<button onclick="laundryQty(&quot;'+item.id+'&quot;,-1)" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--gold-bdr);background:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">-</button>';
   h+='<span style="min-width:20px;text-align:center;font-weight:600">'+qty+'</span>';
-  h+='<button onclick="laundryQty(''+item.id+'',1)" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--gold-bdr);background:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button>';
+  h+='<button onclick="laundryQty(&quot;'+item.id+'&quot;,1)" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--gold-bdr);background:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button>';
   h+='</div></td>';
   h+='<td style="padding:8px;text-align:right;color:var(--muted)">'+item.pcl.toFixed(2)+'</td>';
   h+='<td style="padding:8px;text-align:right;font-weight:600;color:var(--navy)">'+clientPrice.toFixed(2)+'</td>';
@@ -2412,7 +2412,7 @@ function renderLaundry(){
    h+='</div>';
    h+='<div style="text-align:right">';
    h+='<div style="font-weight:700;color:var(--gold)">฿'+r.totalClient.toFixed(2)+'</div>';
-   h+='<button class="btn btn-sm btn-red" style="margin-top:4px" onclick="laundryDelete(''+r.id+'')">&#10005;</button>';
+   h+='<button class="btn btn-sm btn-red" style="margin-top:4px" onclick="laundryDelete(&quot;'+r.id+'&quot;)">&#10005;</button>';
    h+='</div></div>';
    // Item breakdown
    h+='<div style="font-size:11px;color:var(--muted);margin-top:4px">';
