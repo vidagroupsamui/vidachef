@@ -1313,7 +1313,7 @@ function invFetchCalJobs(month,dayFrom,dayTo,callback){
      // Villa Love garbage: only on last day of month (30th or 31st), NOT on 15th/16th
      var daysInMonth=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();
      if(day===daysInMonth){
-      garbageJobs.push({date:dateStr,villa:villaObj.name,amount:1500});
+      garbageJobs.push({date:dateStr,villa:villaObj.name,amount:300});
      }
     }
    }
@@ -1636,18 +1636,34 @@ function invRenderAdamPreview(cleanJobs,garbageJobs,laundryRows,client,invNo,per
   h+='</tr>';
   lineNum++;
  }
- // Garbage line items
+ var garbageByKey={};
  for(var i=0;i<garbageJobs.length;i++){
-  var g=garbageJobs[i];
-  var bg2=(cleanJobs.length+i)%2===0?'#fff':GREY;
-  h+='<tr style="background:'+bg2+';border-bottom:1px solid #e0e0e0">';
+  var gk=garbageJobs[i].date+'|'+garbageJobs[i].villa;
+  if(!garbageByKey[gk])garbageByKey[gk]=[];
+  garbageByKey[gk].push(garbageJobs[i]);
+ }
+ for(var i=0;i<cleanJobs.length;i++){
+  var j=cleanJobs[i];
+  var bg=i%2===0?'#fff':GREY;
+  h+='<tr style="background:'+bg+';border-bottom:1px solid #e0e0e0">';
   h+='<td style="padding:6px">'+lineNum+'</td>';
-  h+='<td style="padding:6px">'+fmtDate(g.date)+'</td>';
-  h+='<td style="padding:6px">'+invCapitalize(g.villa)+'</td>';
-  h+='<td style="padding:6px">Garbage Collection</td>';
-  h+='<td style="padding:6px;text-align:right;font-weight:600">'+fmt(g.amount)+'</td>';
+  h+='<td style="padding:6px">'+fmtDate(j.date)+'</td>';
+  h+='<td style="padding:6px">'+invCapitalize(j.villa)+'</td>';
+  h+='<td style="padding:6px">'+j.service+'</td>';
+  h+='<td style="padding:6px;text-align:right;font-weight:600">'+fmt(j.amount)+'</td>';
   h+='</tr>';
   lineNum++;
+  var subRows=garbageByKey[j.date+'|'+j.villa]||[];
+  for(var gi=0;gi<subRows.length;gi++){
+   var g=subRows[gi];
+   h+='<tr style="background:'+bg+';border-bottom:1px solid #e0e0e0">';
+   h+='<td style="padding:4px 6px;color:#999"></td>';
+   h+='<td style="padding:4px 6px;color:#999"></td>';
+   h+='<td style="padding:4px 6px 4px 18px;color:#777;font-size:11px">'+invCapitalize(g.villa)+'</td>';
+   h+='<td style="padding:4px 6px;color:#777;font-size:11px">■ Garbage Collection</td>';
+   h+='<td style="padding:4px 6px;text-align:right;font-size:11px;font-weight:600;color:#777">'+fmt(g.amount)+'</td>';
+   h+='</tr>';
+  }
  }
  h+='</tbody></table>';
  h+='<div style="text-align:right;font-size:12px;padding:4px 0;margin-bottom:12px">Cleaning Subtotal: <strong>'+fmt(cleaningTotal)+' THB</strong></div>';
