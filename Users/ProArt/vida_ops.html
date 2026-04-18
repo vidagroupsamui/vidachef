@@ -190,6 +190,7 @@ input,select,textarea{font-family:var(--sans);font-size:16px;touch-action:manipu
  <div id="mod-pnl" class="module"><div class="container" id="pnl-content"></div></div>
  <div id="mod-invoice" class="module"><div class="container" id="invoice-content"></div></div>
  <div id="mod-pool" class="module"><div class="container" id="pool-content"></div></div>
+ <div id="mod-briefing" class="module"><div class="container" id="briefing-content"></div></div>
  </main>
  <nav id="bottom-tabs">
  <button class="tab-btn" data-mod="chef" onclick="showMod('chef')"><span class="tab-icon">&#127859;</span><span>Chef</span></button>
@@ -199,6 +200,7 @@ input,select,textarea{font-family:var(--sans);font-size:16px;touch-action:manipu
  <button class="tab-btn" data-mod="pnl" onclick="showMod('pnl')"><span class="tab-icon">&#128200;</span><span>P&L</span></button>
  <button class="tab-btn" data-mod="invoice" onclick="showMod('invoice')"><span class="tab-icon">&#128196;</span><span>Invoice</span></button>
  <button class="tab-btn" data-mod="pool" onclick="showMod('pool')"><span class="tab-icon">&#127946;</span><span>Pool</span></button>
+ <button class="tab-btn" data-mod="briefing" onclick="showMod('briefing')"><span class="tab-icon">&#129302;</span><span>AI Brief</span></button>
  </nav>
 </div>
 
@@ -225,7 +227,9 @@ var ACCOUNTS=[
  {u:'ngwezin', pin:'3331',role:'staff', name:'Ngwe Zin'},
  {u:'kohein', pin:'3332',role:'staff', name:'Ko Hein'},
  {u:'aungaung', pin:'3333',role:'staff', name:'Aung Aung'},
- {u:'thuzar', pin:'3334',role:'staff', name:'Thu Zar'}
+ {u:'thuzar', pin:'3334',role:'staff', name:'Thu Zar'},
+ {u:'nyilin', pin:'4441',role:'manager', name:'Nyi Lin'},
+ {u:'minhtwe', pin:'4442',role:'manager', name:'Minhtwe'}
 ];
 var CHEF_PRICING={breakfast:[],floating:[],thai:[
  {min:1,max:3,price:3450},{min:4,max:6,price:5384},{min:7,max:9,price:8801},
@@ -246,6 +250,7 @@ var VILLAS=[
  {id:'villa_anna',name:'Villa Anna',client:'MPS',group:'MPS',co:1300,st:1300,wht:false,laundry:false},
  {id:'villa_diana',name:'Villa Diana',client:'MPS',group:'MPS',co:1300,st:1300,wht:false,laundry:false},
  {id:'villa_yoco',name:'Villa Yoco',client:'MPS',group:'MPS',co:1500,st:1500,wht:false,laundry:false},
+ {id:'just_and_then',name:'Just and Then',client:'MPS',group:'MPS',co:1500,st:1500,wht:false,laundry:false},
  {id:'big_buddha',name:'Big Buddha',client:'Chen',group:'CHEN',co:1500,st:1500,wht:false,garbage:0,laundry:true,laundryCost:500,cleanCost:1000},
  {id:'aqua_314',name:'Aqua 314',client:'Chen',group:'CHEN',co:1600,st:1600,wht:false,garbage:0,laundry:true,laundryCost:400,cleanCost:1200},
  {id:'aqua_319_up',name:'Aqua 319 upstairs',client:'Chen',group:'CHEN',co:1600,st:1600,wht:false,garbage:0,laundry:true,laundryCost:400,cleanCost:1200},
@@ -258,16 +263,16 @@ var VILLAS=[
  {id:'nicolas_1',name:'Nicolas 1',client:'Nicolas',group:'OTHERS',co:750,st:250,wht:false,laundry:false},
  {id:'nicolas_2',name:'Nicolas 2',client:'Nicolas',group:'OTHERS',co:750,st:250,wht:false,laundry:false},
  {id:'nicolas3',name:'Nicolas 3',client:'Nicolas',group:'OTHERS',co:750,st:250,wht:false,laundry:false},
- {id:'bophut-david',name:'Bo Phut / David',client:'Others',group:'OTHERS',co:1700,st:1700,wht:false,laundry:true,laundryCost:500},
+ {id:'bophut-david',name:'Bo Phut / David',client:'Others',group:'OTHERS',co:1700,st:1700,wht:false,laundry:true,laundryCost:0,laundryPerRoom:true,laundryRoomRate:250},
  {id:'sandra-home',name:'Sandra Home',client:'Others',group:'OTHERS',co:1800,st:1800,wht:false,laundry:false},
  {id:'sandra_airbnb',name:'Sandra Airbnb',client:'Others',group:'OTHERS',co:1800,st:1800,wht:false,laundry:false},
  {id:'adhoc-307',name:'307 (Ad-hoc)',client:'Ad-hoc',group:'OTHERS',co:800,st:800,wht:false,laundry:false},
  {id:'adhoc-304',name:'304 (Ad-hoc)',client:'Ad-hoc',group:'OTHERS',co:800,st:800,wht:false,laundry:false}
 ];
 var SHARE_LABELS=['Labor','Ingredients','Commission','Company Profit','Buffer'];
-var MOD_TITLES={chef:'Chef Calculator',cleaning:'Cleaning Calculator',upload:'Expenses',schedule:'Schedule',pnl:'P&L Summary',invoice:'Invoice Generator',pool:'Pool Calculator'};
-var ACCESS={chef:{director:1,viewer:0,manager:1,staff:0},cleaning:{director:1,viewer:0,manager:1,staff:0},upload:{director:1,viewer:0,manager:1,staff:1},schedule:{director:1,viewer:0,manager:1,staff:1},pnl:{director:1,viewer:1,manager:0,staff:0},invoice:{phyo:1,thuhu:1},pool:{director:1,viewer:0,manager:1,staff:0}};
-var EDITABLE={chef:{director:1,viewer:0,manager:1,staff:0},cleaning:{director:1,viewer:0,manager:1,staff:0},upload:{director:1,viewer:0,manager:1,staff:1},schedule:{director:1,viewer:0,manager:1,staff:1},pnl:{director:1,viewer:0,manager:0,staff:0},invoice:{phyo:1,thuhu:1},pool:{director:1,viewer:0,manager:1,staff:0}};
+var MOD_TITLES={chef:'Chef Calculator',cleaning:'Cleaning Calculator',upload:'Expenses',schedule:'Schedule',pnl:'P&L Summary',invoice:'Invoice Generator',pool:'Pool Calculator',briefing:'AI Staff Briefing'};
+var ACCESS={chef:{director:1,viewer:0,manager:1,staff:0},cleaning:{director:1,viewer:0,manager:1,staff:0},upload:{director:1,viewer:0,manager:1,staff:1},schedule:{director:1,viewer:1,manager:1,staff:1},pnl:{director:1,viewer:1,manager:0,staff:0},invoice:{phyo:1,thuhu:1},pool:{director:1,viewer:0,manager:1,staff:0},briefing:{director:1,viewer:0,manager:1,staff:1}};
+var EDITABLE={chef:{director:1,viewer:0,manager:1,staff:0},cleaning:{director:1,viewer:0,manager:1,staff:0},upload:{director:1,viewer:0,manager:1,staff:1},schedule:{director:1,viewer:0,manager:1,staff:1},pnl:{director:1,viewer:0,manager:0,staff:0},invoice:{phyo:1,thuhu:1},pool:{director:1,viewer:0,manager:1,staff:0},briefing:{director:1,viewer:0,manager:1,staff:1}};
 var EXP_CATS=[
  {id:'fuel',label:'Fuel / Gasoline'},
  {id:'cleaning_supplies',label:'Cleaning Supplies'},
@@ -341,7 +346,7 @@ function showApp(){
 }
 function applyTabAccess(){
  var btns=document.querySelectorAll('.tab-btn');
- for(var i=0;i<btns.length;i++){var m=btns[i].getAttribute('data-mod');if(m==='pool'){btns[i].style.display='';continue}btns[i].style.display=canAccess(m)?'':'none';}
+ for(var i=0;i<btns.length;i++){var m=btns[i].getAttribute('data-mod');if(m==='pool'||m==='briefing'){btns[i].style.display=canAccess(m)?'':'none';continue}btns[i].style.display=canAccess(m)?'':'none';}
 }
 function showMod(m){
  if(!canAccess(m))return;
@@ -357,6 +362,7 @@ function showMod(m){
  else if(m==='pnl')renderPnl();
  else if(m==='invoice')renderInvoice();
  else if(m==='pool')renderPool();
+ else if(m==='briefing')renderBriefing();
 }
 function openModal(html){document.getElementById('modal-body').innerHTML=html;document.getElementById('modal-bg').classList.add('on')}
 function closeModal(){document.getElementById('modal-bg').classList.remove('on')}
@@ -1313,10 +1319,15 @@ function invFetchCalJobs(month,dayFrom,dayTo,callback){
    }
   }
   cleaningJobs.sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:0});
-  // Auto-generate laundry rows from cleaning jobs
+  // Auto-generate laundry rows from eligible cleaning jobs only
   var laundryRows=[];
   for(var i=0;i<cleaningJobs.length;i++){
-   laundryRows.push({date:cleaningJobs[i].date,villa:cleaningJobs[i].villa,amount:''});
+   var sj=(cleaningJobs[i].service||'').toLowerCase();
+   var eligible=(sj.indexOf('checkout')>=0||sj.indexOf('check out')>=0||sj.indexOf('staying')>=0||sj.indexOf('stay clean')>=0||sj.indexOf('during stay')>=0);
+   var excluded=(sj.indexOf('garbage')>=0||sj.indexOf('wall')>=0||sj.indexOf('deep')>=0);
+   if(eligible&&!excluded){
+    laundryRows.push({date:cleaningJobs[i].date,villa:cleaningJobs[i].villa,amount:'',locked:1});
+   }
   }
   invCalJobs=cleaningJobs;
   invCalGarbage=garbageJobs;
@@ -1361,6 +1372,7 @@ var INV_CLIENTS=[
   {id:'chacha',label:'Villa Chacha',addr:'Koh Samui, Suratthani'},
   {id:'julia',label:'Villa Julia',addr:'Koh Samui, Suratthani'}
  ]},
+ {id:'david',label:'Bo Phut / David',billName:'Bo Phut / David',prefix:'BPD',wht:false,addr:'Koh Samui, Suratthani'},
  {id:'laurent',label:'Laurent',billName:'Laurent',prefix:'LAU',wht:false,addr:'Koh Samui, Suratthani',subVillas:[
   {id:'villa6',label:'Bo Phut Villa 6 \u2014 Daao R\u00e9sidence',company:'Daao R\u00e9sidence',attn:'Owner: Khun R\u00e9gis | Attn: Laurent',addr:'Koh Samui, Suratthani',invPrefix:'LAU-V6'},
   {id:'a9',label:'Bangpor A9 \u2014 R\u00e9sidence Coast Breeze',company:'R\u00e9sidence Coast Breeze',attn:'Owner: Khun Yonni | Attn: Laurent',addr:'Koh Samui, Suratthani',invPrefix:'LAU-A9'}
@@ -1432,7 +1444,7 @@ function invClientMatch(villaName){
  if(!villaName)return'';
  var vl=villaName.toLowerCase();
  if(vl.indexOf('adam')>=0||vl.indexOf('kagami')>=0||vl.indexOf('love')>=0||vl.indexOf('majesta')>=0||vl.indexOf(' n1')>=0||vl.indexOf(' n2')>=0||vl.indexOf(' n3')>=0||vl.indexOf('j3')>=0||vl.indexOf('sunrise')>=0)return'adam';
- if(vl.indexOf('anna')>=0||vl.indexOf('diana')>=0||vl.indexOf('yoco')>=0||vl.indexOf('mps')>=0)return'mps';
+ if(vl.indexOf('anna')>=0||vl.indexOf('diana')>=0||vl.indexOf('yoco')>=0||vl.indexOf('just')>=0||vl.indexOf('mps')>=0)return'mps';
  if(vl.indexOf('buddha')>=0||vl.indexOf('aqua')>=0||vl.indexOf('chen')>=0)return'chen';
  if(vl.indexOf('chacha')>=0||vl.indexOf('julia')>=0||vl.indexOf('steven')>=0)return'steven';
  if(vl.indexOf('bangpor')>=0||vl.indexOf('laurent')>=0)return'laurent';
@@ -1648,11 +1660,12 @@ function invRenderAdamPreview(cleanJobs,garbageJobs,laundryRows,client,invNo,per
  for(var i=0;i<laundryRows.length;i++){
   var lr=laundryRows[i];
   var bg3=i%2===0?'#fff':GREY;
+  var locked=!!lr.locked;
   h+='<tr style="background:'+bg3+';border-bottom:1px solid #e0e0e0" data-lr-idx="'+i+'">';
   h+='<td style="padding:6px">'+(i+1)+'</td>';
-  h+='<td style="padding:6px"><input type="date" value="'+lr.date+'" onchange="invLaundryEdit('+i+',\'date\',this.value)" style="border:none;background:transparent;font-size:12px;width:100px;font-family:inherit"></td>';
-  h+='<td style="padding:6px"><input type="text" value="'+lr.villa+'" onchange="invLaundryEdit('+i+',\'villa\',this.value)" style="border:none;background:transparent;font-size:12px;width:120px;font-family:inherit"></td>';
-  h+='<td style="padding:6px;text-align:right"><input type="number" value="'+lr.amount+'" min="0" onchange="invLaundryEdit('+i+',\'amount\',this.value)" style="border:none;background:transparent;font-size:12px;width:80px;text-align:right;font-weight:600;font-family:inherit"></td>';
+  h+='<td style="padding:6px">'+(locked?('<input type="date" value="'+lr.date+'" readonly style="border:none;background:transparent;font-size:12px;width:100px;font-family:inherit">'):('<input type="date" value="'+lr.date+'" onchange="invLaundryEdit('+i+',\'date\',this.value)" style="border:none;background:transparent;font-size:12px;width:100px;font-family:inherit">'))+'</td>';
+  h+='<td style="padding:6px">'+(locked?('<input type="text" value="'+lr.villa+'" readonly style="border:none;background:transparent;font-size:12px;width:120px;font-family:inherit">'):('<input type="text" value="'+lr.villa+'" onchange="invLaundryEdit('+i+',\'villa\',this.value)" style="border:none;background:transparent;font-size:12px;width:120px;font-family:inherit">'))+'</td>';
+  h+='<td style="padding:6px;text-align:right"><input type="number" value="'+(lr.amount||'')+'" min="0" onchange="invLaundryEdit('+i+',\'amount\',this.value)" style="border:none;background:transparent;font-size:12px;width:80px;text-align:right;font-weight:600;font-family:inherit"></td>';
   h+='<td style="padding:6px;text-align:center" class="no-print"><button onclick="invLaundryDel('+i+')" style="background:none;border:none;color:'+RED+';cursor:pointer;font-size:14px;font-weight:700">&times;</button></td>';
   h+='</tr>';
  }
@@ -1711,10 +1724,11 @@ function invRenderAdamPreview(cleanJobs,garbageJobs,laundryRows,client,invNo,per
 }
 
 function invLaundryAdd(){
- invLaundryRows.push({date:today(),villa:'',amount:''});
+ invLaundryRows.push({date:today(),villa:'',amount:'',locked:0});
  renderInvoice();
 }
 function invLaundryEdit(idx,field,val){
+ if(invLaundryRows[idx]&&invLaundryRows[idx].locked&&field!=='amount')return;
  invLaundryRows[idx][field]=val;
  renderInvoice();
 }
@@ -2187,6 +2201,132 @@ function jobPhotoUpload(dateStr,villaName,catLabel){
  xhr.onerror=function(){};
  xhr.send(JSON.stringify(payload));
 }
+
+// ==================== AI STAFF BRIEFING ====================
+var briefingState={messages:[],input:'',loading:false};
+var ANTHROPIC_API_KEY='';
+
+function renderBriefing(){
+ var c=document.getElementById('briefing-content');
+ if(!c)return;
+ var isDirector=CUR.role==='director';
+ var jobs=ld('_sched_view')||[];
+ var tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);tomorrow.setHours(0,0,0,0);
+ var tomorrowEnd=new Date(tomorrow);tomorrowEnd.setHours(23,59,59,999);
+ var tomorrowJobs=jobs.filter(function(j){var d=new Date(j.start);return d>=tomorrow&&d<=tomorrowEnd});
+ var h='';
+ h+='<div class="card" style="background:var(--navy);border:none">';
+ h+='<div style="font-size:14px;font-weight:700;color:var(--gold);margin-bottom:4px">AI Staff Briefing</div>';
+ h+='<div style="font-size:12px;color:rgba(255,255,255,0.6)">Ask about tomorrow schedule or get staff briefing</div>';
+ h+='</div>';
+ if(tomorrowJobs.length>0){
+  h+='<div class="card"><div class="card-h-gold">Tomorrow Jobs</div>';
+  for(var i=0;i<tomorrowJobs.length;i++){
+   var j=tomorrowJobs[i];
+   var d=new Date(j.start);
+   var t=d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+   var title=j.title||j.summary||'Job';
+   h+='<div style="padding:8px 0;border-bottom:1px solid #f0f0f0;font-size:13px">';
+   h+='<div style="font-weight:600;color:var(--navy)">'+briefEsc(title)+'</div>';
+   h+='<div style="color:var(--muted)">'+t+'</div>';
+   h+='</div>';
+  }
+  h+='</div>';
+ }else{
+  h+='<div class="card"><div class="card-h-gold">Tomorrow Jobs</div>';
+  h+='<div style="font-size:13px;color:var(--muted);padding:8px 0">No jobs loaded. Go to Schedule tab first to sync calendar.</div>';
+  h+='</div>';
+ }
+ if(isDirector){
+  h+='<div class="card"><div class="card-h-gold">API Settings</div>';
+  h+='<div class="fg2"><label>Anthropic API Key</label>';
+  h+='<input class="input" type="password" id="brief-api-key" value="'+briefEsc(ld('brief_api_key')||'')+'" placeholder="sk-ant-..." onchange="briefSaveKey(this.value)">';
+  h+='</div></div>';
+ }
+ h+='<div class="card" style="min-height:200px" id="brief-chat-box">';
+ if(briefingState.messages.length===0){
+  h+='<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">';
+  h+='<div style="font-size:32px;margin-bottom:8px">&#129302;</div>';
+  h+='<div>Ask me about tomorrow jobs or get the staff evening briefing</div>';
+  h+='<div style="margin-top:12px;display:flex;flex-direction:column;gap:8px">';
+  h+='<button class="btn btn-outline" style="font-size:12px" onclick="briefSendQuick(1)">Generate Staff Briefing in Burmese</button>';
+  h+='<button class="btn btn-outline" style="font-size:12px" onclick="briefSendQuick(2)">Who has day off tomorrow?</button>';
+  h+='<button class="btn btn-outline" style="font-size:12px" onclick="briefSendQuick(3)">How many checkout cleans tomorrow?</button>';
+  h+='</div></div>';
+ }else{
+  for(var i=0;i<briefingState.messages.length;i++){
+   var m=briefingState.messages[i];
+   var isUser=m.role==='user';
+   h+='<div style="margin-bottom:12px;display:flex;justify-content:'+(isUser?'flex-end':'flex-start')+'">';
+   h+='<div style="max-width:85%;padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.5;background:'+(isUser?'var(--navy)':'#f3f4f6')+';color:'+(isUser?'#fff':'var(--text)')+'">'+briefEsc(m.content).replace(/\n/g,'<br>')+'</div></div>';
+  }
+ }
+ if(briefingState.loading){h+='<div style="padding:8px;color:var(--muted);font-size:13px">Thinking...</div>';}
+ h+='</div>';
+ h+='<div style="display:flex;gap:8px;margin-top:8px">';
+ h+='<input class="input" type="text" id="brief-input" placeholder="Ask about schedule..." style="flex:1">';
+ h+='<button class="btn btn-gold" onclick="briefSend()" style="white-space:nowrap">Send</button>';
+ h+='</div>';
+ if(briefingState.messages.length>0){
+  h+='<button class="btn btn-outline btn-block" onclick="briefClear()" style="margin-top:8px;font-size:12px">Clear Chat</button>';
+ }
+ c.innerHTML=h;
+ var inp=document.getElementById('brief-input');
+ if(inp){inp.addEventListener('keydown',function(e){if(e.key==='Enter')briefSend()});}
+ ANTHROPIC_API_KEY=ld('brief_api_key')||'';
+}
+
+function briefClear(){briefingState.messages=[];renderBriefing();}
+function briefSaveKey(v){sv('brief_api_key',v);ANTHROPIC_API_KEY=v;}
+
+function briefSendQuick(n){
+ briefingState.messages=[];
+ var msgs=['Generate tonight briefing for staff in Burmese','Who has day off tomorrow?','How many checkout cleans tomorrow and do we need to split teams?'];
+ briefSendMsg(msgs[n-1]);
+}
+
+function briefSend(){
+ var input=document.getElementById('brief-input');
+ if(!input||!input.value.trim())return;
+ briefSendMsg(input.value.trim());
+}
+
+function briefEsc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+
+function briefSendMsg(msg){
+ var jobs=ld('_sched_view')||[];
+ var tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);tomorrow.setHours(0,0,0,0);
+ var tomorrowEnd=new Date(tomorrow);tomorrowEnd.setHours(23,59,59,999);
+ var tomorrowJobs=jobs.filter(function(j){var d=new Date(j.start);return d>=tomorrow&&d<=tomorrowEnd});
+ var staff=["Han Win Naing (Manager)","Ko Hein (Staff)","Aung Aung (Staff)","Ngwe Zin Thoon (Staff)","Thuzar (Staff)","Nyi Lin (Client Communication)","Minhtwe (Pool/Garden)"];
+ var rules=["Checkout + same-day check-in = URGENT, full team or split","Checkout only = flexible, afternoon or next morning","Deep clean = full team needed","Staff work 8:30am-5:30pm, overtime needs Phyo approval","One staff has day off each day","2 same-day villas = split 2 teams, 3 = split + do last based on check-in time","Pool/garden = Minhtwe only"];
+ var systemPrompt="You are AI operations manager for Vida Group Samui villa services in Koh Samui Thailand. Staff: "+staff.join(", ")+". Rules: "+rules.join("; ")+". Tomorrow jobs: "+(tomorrowJobs.length>0?tomorrowJobs.map(function(j){var d=new Date(j.start);return j.title+" at "+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}).join(", "):"No jobs yet - calendar may not be synced")+". For Burmese briefing write full WhatsApp message. Be concise.";
+ briefingState.messages.push({role:'user',content:msg});
+ briefingState.loading=true;
+ renderBriefing();
+ var apiKey=ld('brief_api_key')||'';
+ if(!apiKey){
+  briefingState.messages.push({role:'assistant',content:'Please add your Anthropic API key in settings (director login required).'});
+  briefingState.loading=false;renderBriefing();return;
+ }
+ var messages=briefingState.messages.map(function(m){return{role:m.role,content:m.content}});
+ fetch('https://api.anthropic.com/v1/messages',{
+  method:'POST',
+  headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+  body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,system:systemPrompt,messages:messages})
+ })
+ .then(function(r){return r.json()})
+ .then(function(data){
+  var reply=(data.content&&data.content[0]&&data.content[0].text)||'Sorry, no response.';
+  briefingState.messages.push({role:'assistant',content:reply});
+  briefingState.loading=false;renderBriefing();
+  var box=document.getElementById('brief-chat-box');
+  if(box)box.scrollTop=box.scrollHeight;
+ })
+ .catch(function(err){
+  briefingState.messages.push({role:'assistant',content:'Error: '+err.message});
+  briefingState.loading=false;renderBriefing();
+ });
+}
 </script>
 </body>
-</html>
