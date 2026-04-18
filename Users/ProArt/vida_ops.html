@@ -1319,14 +1319,14 @@ function invFetchCalJobs(month,dayFrom,dayTo,callback){
    }
   }
   cleaningJobs.sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:0});
-  // Auto-generate laundry rows from eligible cleaning jobs only
+  // Auto-generate laundry rows from explicit cleaning jobs only
   var laundryRows=[];
   for(var i=0;i<cleaningJobs.length;i++){
    var sj=(cleaningJobs[i].service||'').toLowerCase();
-   var eligible=(sj.indexOf('checkout')>=0||sj.indexOf('check out')>=0||sj.indexOf('staying')>=0||sj.indexOf('stay clean')>=0||sj.indexOf('during stay')>=0);
-   var excluded=(sj.indexOf('garbage')>=0||sj.indexOf('wall')>=0||sj.indexOf('deep')>=0);
-   if(eligible&&!excluded){
-    laundryRows.push({date:cleaningJobs[i].date,villa:cleaningJobs[i].villa,amount:'',locked:1});
+   var explicitCheckout=sj.indexOf('checkout')>=0||sj.indexOf('check out')>=0;
+   var explicitStay=sj.indexOf('staying clean')>=0||sj.indexOf('during stay')>=0||sj.indexOf('stay clean')>=0;
+   if(explicitCheckout||explicitStay){
+    laundryRows.push({date:cleaningJobs[i].date,villa:cleaningJobs[i].villa,amount:''});
    }
   }
   invCalJobs=cleaningJobs;
@@ -1456,6 +1456,11 @@ function invCapitalize(s){
  return s.replace(/\b\w/g,function(c){return c.toUpperCase()});
 }
 
+function monthName(monthStr){
+ var m=parseInt(String(monthStr).split('-')[1],10);
+ return ['','January','February','March','April','May','June','July','August','September','October','November','December'][m]||'';
+}
+
 function invRenderPreview(jobs,client,invNo,periodLabel,dueDate,applyWht){
  var total=0;for(var i=0;i<jobs.length;i++){total+=jobs[i].amount}
  var whtAmt=applyWht?Math.round(total*0.03):0;
@@ -1574,7 +1579,7 @@ function invRenderAdamPreview(cleanJobs,garbageJobs,laundryRows,client,invNo,per
  for(var i=0;i<laundryRows.length;i++){laundryTotal+=(parseInt(laundryRows[i].amount)||0)}
 
  var grossTotal=cleaningTotal+laundryTotal;
- var whtAmt=Math.round(grossTotal*0.03);
+ var whtAmt=Math.round(cleaningTotal*0.03);
  var totalDue=grossTotal-whtAmt;
 
  var h='<div id="inv-preview" style="background:#fff;font-family:Arial,Helvetica,sans-serif;color:#1a1a2e;max-width:680px;margin:0 auto;padding:40px 50px;margin-bottom:16px">';
@@ -1660,12 +1665,11 @@ function invRenderAdamPreview(cleanJobs,garbageJobs,laundryRows,client,invNo,per
  for(var i=0;i<laundryRows.length;i++){
   var lr=laundryRows[i];
   var bg3=i%2===0?'#fff':GREY;
-  var locked=!!lr.locked;
   h+='<tr style="background:'+bg3+';border-bottom:1px solid #e0e0e0" data-lr-idx="'+i+'">';
   h+='<td style="padding:6px">'+(i+1)+'</td>';
-  h+='<td style="padding:6px">'+(locked?('<input type="date" value="'+lr.date+'" readonly style="border:none;background:transparent;font-size:12px;width:100px;font-family:inherit">'):('<input type="date" value="'+lr.date+'" onchange="invLaundryEdit('+i+',\'date\',this.value)" style="border:none;background:transparent;font-size:12px;width:100px;font-family:inherit">'))+'</td>';
-  h+='<td style="padding:6px">'+(locked?('<input type="text" value="'+lr.villa+'" readonly style="border:none;background:transparent;font-size:12px;width:120px;font-family:inherit">'):('<input type="text" value="'+lr.villa+'" onchange="invLaundryEdit('+i+',\'villa\',this.value)" style="border:none;background:transparent;font-size:12px;width:120px;font-family:inherit">'))+'</td>';
-  h+='<td style="padding:6px;text-align:right"><input type="number" value="'+(lr.amount||'')+'" min="0" onchange="invLaundryEdit('+i+',\'amount\',this.value)" style="border:none;background:transparent;font-size:12px;width:80px;text-align:right;font-weight:600;font-family:inherit"></td>';
+  h+='<td style="padding:6px"><input type="date" value="'+lr.date+'" onchange="invLaundryEdit('+i+',\'date\',this.value)" style="border:none;background:transparent;font-size:12px;width:100px;font-family:inherit"></td>';
+  h+='<td style="padding:6px"><input type="text" value="'+lr.villa+'" onchange="invLaundryEdit('+i+',\'villa\',this.value)" style="border:none;background:transparent;font-size:12px;width:120px;font-family:inherit"></td>';
+  h+='<td style="padding:6px;text-align:right"><input type="number" value="'+lr.amount+'" min="0" onchange="invLaundryEdit('+i+',\'amount\',this.value)" style="border:none;background:transparent;font-size:12px;width:80px;text-align:right;font-weight:600;font-family:inherit"></td>';
   h+='<td style="padding:6px;text-align:center" class="no-print"><button onclick="invLaundryDel('+i+')" style="background:none;border:none;color:'+RED+';cursor:pointer;font-size:14px;font-weight:700">&times;</button></td>';
   h+='</tr>';
  }
@@ -1724,11 +1728,10 @@ function invRenderAdamPreview(cleanJobs,garbageJobs,laundryRows,client,invNo,per
 }
 
 function invLaundryAdd(){
- invLaundryRows.push({date:today(),villa:'',amount:'',locked:0});
+ invLaundryRows.push({date:today(),villa:'',amount:''});
  renderInvoice();
 }
 function invLaundryEdit(idx,field,val){
- if(invLaundryRows[idx]&&invLaundryRows[idx].locked&&field!=='amount')return;
  invLaundryRows[idx][field]=val;
  renderInvoice();
 }
@@ -1805,14 +1808,14 @@ function renderInvoice(){
 
  var dayFrom,dayTo,periodLabel,dueDate;
  if(invState.mode==='semi'){
-  if(invState.period==='1'){dayFrom=1;dayTo=15;periodLabel='1-15 '+invState.month;dueDate='15 '+invState.month}
-  else{dayFrom=16;dayTo=31;periodLabel='16-30 '+invState.month;dueDate='30 '+invState.month}
+  if(invState.period==='1'){dayFrom=1;dayTo=15;periodLabel='1-15 '+invState.month;dueDate='15 '+monthName(invState.month)+' '+invState.month.slice(0,4)}
+  else{dayFrom=16;dayTo=31;periodLabel='16-30 '+invState.month;dueDate='30 '+monthName(invState.month)+' '+invState.month.slice(0,4)}
  }else{
   var yr=parseInt(invState.month.split('-')[0]);
   var mo=parseInt(invState.month.split('-')[1]);
   var nextMo=mo+1;var nextYr=yr;
   if(nextMo>12){nextMo=1;nextYr++}
-  dueDate='1 '+['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][nextMo]+' '+nextYr;
+  dueDate='1 '+monthName(nextYr+'-'+String(nextMo).padStart(2,'0'))+' '+nextYr;
   periodLabel=invState.month;
  }
 
@@ -1990,7 +1993,7 @@ function invCopyWA(){
  var invNum=invGetNextNum(invState.mode==='perjob'?'PJ':invPrefix,invState.mode==='semi'?invState.period:'');
  var invSuffix=invState.mode==='semi'?(invState.period==='1'?'a':'b'):'';
  var invNo=(invState.mode==='perjob'?'PJ':invPrefix)+'-'+invState.month.slice(0,4)+'-'+invNum+invSuffix;
- var periodLabel=invState.mode==='perjob'?'Per Job Invoice':(invState.mode==='semi'?(invState.period==='1'?'1-15':'16-30')+' '+invState.month:invState.month);
+ var periodLabel=invState.mode==='perjob'?'Per Job Invoice':(invState.mode==='semi'?(invState.period==='1'?'1-15':'16-30')+' '+monthName(invState.month)+' '+invState.month.slice(0,4):invState.month);
 
  var txt='*INVOICE '+invNo+'*\n';
  txt+='VIDA GROUP SAMUI CO., LTD.\n';
@@ -2227,7 +2230,7 @@ function renderBriefing(){
    var t=d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
    var title=j.title||j.summary||'Job';
    h+='<div style="padding:8px 0;border-bottom:1px solid #f0f0f0;font-size:13px">';
-   h+='<div style="font-weight:600;color:var(--navy)">'+briefEsc(title)+'</div>';
+   h+='<div style="font-weight:600;color:var(--navy)">'+title+'</div>';
    h+='<div style="color:var(--muted)">'+t+'</div>';
    h+='</div>';
   }
@@ -2240,7 +2243,7 @@ function renderBriefing(){
  if(isDirector){
   h+='<div class="card"><div class="card-h-gold">API Settings</div>';
   h+='<div class="fg2"><label>Anthropic API Key</label>';
-  h+='<input class="input" type="password" id="brief-api-key" value="'+briefEsc(ld('brief_api_key')||'')+'" placeholder="sk-ant-..." onchange="briefSaveKey(this.value)">';
+  h+='<input class="input" type="password" id="brief-api-key" value="'+(ld('brief_api_key')||'')+'" placeholder="sk-ant-..." onchange="briefSaveKey(this.value)">';
   h+='</div></div>';
  }
  h+='<div class="card" style="min-height:200px" id="brief-chat-box">';
@@ -2258,7 +2261,7 @@ function renderBriefing(){
    var m=briefingState.messages[i];
    var isUser=m.role==='user';
    h+='<div style="margin-bottom:12px;display:flex;justify-content:'+(isUser?'flex-end':'flex-start')+'">';
-   h+='<div style="max-width:85%;padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.5;background:'+(isUser?'var(--navy)':'#f3f4f6')+';color:'+(isUser?'#fff':'var(--text)')+'">'+briefEsc(m.content).replace(/\n/g,'<br>')+'</div></div>';
+   h+='<div style="max-width:85%;padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.5;background:'+(isUser?'var(--navy)':'#f3f4f6')+';color:'+(isUser?'#fff':'var(--text)')+'">'+m.content.replace(/\n/g,'<br>')+'</div></div>';
   }
  }
  if(briefingState.loading){h+='<div style="padding:8px;color:var(--muted);font-size:13px">Thinking...</div>';}
@@ -2290,8 +2293,6 @@ function briefSend(){
  if(!input||!input.value.trim())return;
  briefSendMsg(input.value.trim());
 }
-
-function briefEsc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 
 function briefSendMsg(msg){
  var jobs=ld('_sched_view')||[];
